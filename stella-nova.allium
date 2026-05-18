@@ -1,0 +1,468 @@
+-- allium: 3
+--
+-- Stella Nova — especificación de comportamiento del skin.
+--
+-- ALCANCE. Allium describe comportamiento observable, no presentación.
+-- Por eso este spec NO modela (y deliberadamente lo deja a ARCHITECTURE.md /
+-- tokens.css / CSS):
+--   · tipografía "Work Sans" (cargar vs. clonar es decisión de empaquetado),
+--   · feather icons, la metáfora "página de papel", fondo gris ahuesado,
+--   · tokens semánticos en archivos separados, layout/posiciones exactas,
+--   · la búsqueda y el logo→home (comportamiento de MediaWiki core, no del skin).
+--
+-- Sí modela los núcleos con estado y decisión condicional:
+--   1. Preferencias de skin (7, estilo Citizen): resolución por campo
+--      explícito > SO (donde aplica) > default; persistencia híbrida por
+--      identidad — registrado → cuenta MediaWiki (BBDD, cross-device);
+--      anónimo/temporal → sesión del navegador (por-navegador).
+--   2. Chrome administrable desde páginas wiki del namespace Stella-Nova
+--      (pie, barra lateral, aviso): visibilidad y autorización CRUD.
+--   3. Qué expone cada región según identidad (anónimo / cuenta temporal
+--      1.43 / registrado).
+--   4. Modo de página: standard (chrome del tema) | fullscreen (control
+--      total para páginas experimentales; sólo afordancia de escape).
+--   5. Pie compuesto: obligaciones core de MediaWiki (última modificación,
+--      licencia/atribución, places, icons, hooks) SIEMPRE + un bloque
+--      institucional gestionado desde una página del namespace del skin.
+--   6. Contrato de fidelidad estructural: el skin emite todas las data
+--      keys de SkinMustache y respeta los puntos de inyección de las
+--      extensiones de Casiopea (SMW/SRF/PageForms/Widgets/…).
+
+------------------------------------------------------------
+-- External Entities
+------------------------------------------------------------
+
+-- Gobernadas por MediaWiki, no por este spec.
+
+external entity User {
+    identity: UserIdentity          -- anónimo-IP / cuenta temporal / registrado
+    groups: Set<String>             -- nombres de grupos MediaWiki
+}
+
+external entity WikiPage {
+    namespace: String
+    exists: Boolean
+    content: String?                -- wikitexto; null si la página no existe
+}
+
+-- Cualquier operación mutante (crear, editar, mover, borrar) sobre una
+-- página: la "C/U/D" del CRUD. La "R" (ver el fragmento renderizado) es
+-- pública y se modela en la surface ManagedChrome, no aquí.
+external entity ChromePageWrite {
+    actor: User
+    page: WikiPage
+    outcome: pending | permitted | denied
+}
+
+-- Marcador de tipo: el documento HTML que MediaWiki/SkinMustache produce.
+-- Su forma la gobierna MediaWiki; aquí sólo es la frontera del contrato
+-- de fidelidad estructural.
+external entity RenderedDocument {}
+
+------------------------------------------------------------
+-- Contracts
+------------------------------------------------------------
+
+-- Obligación de fidelidad: Stella Nova se escribe desde cero, pero NO
+-- puede recortar lo que MediaWiki y las extensiones de Casiopea emiten.
+-- Esta es la protección más fuerte para la carga SMW/PageForms/Widgets
+-- (doctrina en ARCHITECTURE.md §3). Verificación: snapshot del DOM contra
+-- vector-2022 en las páginas reales de Fase 5.
+contract SkinRenderFidelity {
+    render: (page: WikiPage, viewer: User) -> RenderedDocument
+
+    @invariant StandardKeysEmitted
+        -- El documento emite TODAS las data keys estándar de SkinMustache
+        -- 1.43, aunque el skin no las estilice: html-headelement,
+        -- html-title-heading, html-subtitle, html-body-content,
+        -- html-categories (catlinks), html-site-notice, html-undelete-link,
+        -- html-after-content, html-printtail; data-portlets (sidebar y los
+        -- nombrados: user-menu, notifications, user-interface-preferences,
+        -- views, actions, namespaces, associated-pages, variants);
+        -- data-search-box; data-footer (data-info = última modificación +
+        -- licencia/atribución, data-places = privacidad/acerca/aviso,
+        -- data-icons); data-toc; data-indicators; link-mainpage; data-logos.
+
+    @invariant CoreFooterAlwaysPresent
+        -- Las obligaciones de data-footer (última modificación, licencia/
+        -- atribución, places, icons y hooks de extensión) se renderizan
+        -- SIEMPRE, con independencia del bloque institucional gestionado
+        -- (ver surface ManagedChrome). Suprimirlas rompería la atribución
+        -- de la licencia de contenido.
+
+    @invariant NoExtensionHtmlStripped
+        -- El HTML inyectado por extensiones nunca se elimina ni se
+        -- reestructura su DOM; el skin sólo lo envuelve y estiliza.
+
+    @invariant FactboxPlacement
+        -- El Factbox de SemanticMediaWiki se renderiza en su posición
+        -- (junto al cuerpo), dentro de mw-body-content; no se reubica.
+
+    @invariant SemanticResultsPlacement
+        -- Resultados de #ask / SemanticResultFormats (tablas, listas,
+        -- mapas, etc.) conservan su markup; el desbordamiento se resuelve
+        -- por contenedor (overflow), nunca recortando contenido.
+
+    @invariant PageFormsPlacement
+        -- Formularios PageForms viven dentro de html-body-content; el
+        -- skin no recorta su markup ni los estilos TemplateStyles.
+
+    @invariant WidgetsOutputPreserved
+        -- La salida de Widgets/Smarty (incl. el lienzo experimental y
+        -- p5.js) se emite intacta; el skin no la sanitiza ni la envuelve
+        -- de forma que rompa su CSS/JS.
+
+    @invariant InjectionHooksEmitted
+        -- Los puntos de inyección de extensiones se emiten intactos:
+        -- html-after-content (DiscussionTools, RelatedArticles, SMW),
+        -- data-indicators (estados de página), catlinks (categorías,
+        -- incl. ocultas según preferencia), html-subtitle (redirecciones,
+        -- contexto de discusión).
+
+    @invariant SpecialPageOutput
+        -- Páginas Special: sin pestañas de artículo se renderizan sin
+        -- inventar acciones inexistentes; el cuerpo de OutputPage íntegro.
+
+    @guidance
+        -- Lista viva: al añadir/quitar extensiones en Casiopea se ajusta
+        -- la enumeración. Ámbito de extensiones actual confirmado en
+        -- ARCHITECTURE.md §3 y CLAUDE.md (Fase 4): SMW, SCQ, SRF,
+        -- PageForms, ParserFunctions, WikiEditor, TemplateStyles, Maps,
+        -- Widgets, Mermaid, Cite, Poem, Math, ImageMap, CategoryTree.
+}
+
+------------------------------------------------------------
+-- Enumerations
+------------------------------------------------------------
+
+enum Theme { light | dark }
+
+-- MediaWiki 1.43: el editor no autenticado obtiene una cuenta temporal
+-- (IP-masking, nombre ~AAAA-NNN, no puede loguear, features limitadas);
+-- distinta del anónimo-IP clásico y del registrado.
+enum UserIdentity { anonymous | temporary | registered }
+
+enum ChromeSlot { footer | sidebar | notice }
+
+enum LayoutMode { standard | fullscreen }
+
+-- Las 7 preferencias de skin (estilo Citizen/Vector-2022).
+enum ContentWidth { narrow | standard | wide | full }
+enum FontSize { small | medium | large }
+enum LineHeight { compact | normal | relaxed }
+enum Toggle { enabled | disabled }
+enum TocMode { persistent | inline }
+enum Motion { full | reduced }
+
+------------------------------------------------------------
+-- Value Types
+------------------------------------------------------------
+
+-- El conjunto de 7 preferencias de skin. Cada campo es opcional: null =
+-- "sin elección explícita" → se resuelve por SO (donde aplica) o default.
+value Preferences {
+    theme: Theme?
+    content_width: ContentWidth?
+    font_size: FontSize?
+    line_height: LineHeight?
+    collapsible_sections: Toggle?       -- recordar estado de secciones
+    toc_mode: TocMode?                  -- índice persistente vs en línea
+    reduced_motion: Motion?             -- override de prefers-reduced-motion
+}
+
+------------------------------------------------------------
+-- Entities
+------------------------------------------------------------
+
+-- Una sesión de visualización. `saved` es el conjunto explícito que el
+-- usuario guardó; DÓNDE vive es realización (registrado → cuenta MW/BBDD,
+-- cross-device; anónimo/temporal → sesión del navegador) — ver
+-- ViewerUpdatesPreferences. `os_scheme`/`os_motion` son señales del SO.
+entity ViewingSession {
+    user: User
+    os_scheme: Theme?               -- prefers-color-scheme; null = sin señal
+    os_motion: Motion?              -- prefers-reduced-motion; null = sin señal
+    saved: Preferences?             -- null = nada explícito guardado aún
+
+    -- Resolución por campo: explícito > SO (donde aplica) > default skin.
+    -- Defaults de diseño (tunables por globales del skin en realización,
+    -- ARCHITECTURE.md §6). active_theme nunca indeterminado.
+    active_theme: saved?.theme ?? os_scheme ?? light
+    active_motion: saved?.reduced_motion ?? os_motion ?? full
+    active_content_width: saved?.content_width ?? standard
+    active_font_size: saved?.font_size ?? medium
+    active_line_height: saved?.line_height ?? normal
+    active_collapsible: saved?.collapsible_sections ?? enabled
+    active_toc_mode: saved?.toc_mode ?? persistent
+}
+
+-- Conjunto cerrado de tres regiones (footer, sidebar, notice). No es un
+-- modelo genérico: añadir una cuarta exige editar ChromeSlot (cambio de spec),
+-- que es exactamente la decisión "tres instancias concretas" tomada.
+entity InterfaceFragment {
+    slot: ChromeSlot
+    source_page: WikiPage
+
+    -- "is_blank" es una función caja-negra: contenido vacío tras recortar
+    -- espacios/comentarios (semántica exacta = pregunta abierta).
+    is_published: source_page.exists
+        and source_page.content != null
+        and not is_blank(source_page.content)
+}
+
+-- Cómo se renderiza una página concreta. `mode` lo declara la propia
+-- página con el magic word __PANTALLACOMPLETA__ en su wikitexto; standard
+-- en su defecto (realización: behaviour switch detectado al parsear, sin
+-- propiedad SMW). Cualquier editor puede declararlo: quitar el chrome es
+-- bajo riesgo; el riesgo de script vive en el mecanismo de inyección JS
+-- (hoy Common.js global), no en el wikitexto de la página.
+entity PageRender {
+    page: WikiPage
+    mode: LayoutMode
+}
+
+------------------------------------------------------------
+-- Config
+------------------------------------------------------------
+
+config {
+    chrome_namespace: String = "Stella-Nova"
+    interface_editor_group: String = "editores-de-interfaz"
+}
+
+------------------------------------------------------------
+-- Rules
+------------------------------------------------------------
+
+-- El visitante guarda su conjunto de preferencias desde el panel.
+rule ViewerUpdatesPreferences {
+    when: SavePreferences(session, prefs)
+    ensures: session.saved = prefs
+    @guidance
+        -- Persistencia por identidad (session.user.identity):
+        --   registered → preferencia de cuenta MediaWiki (BBDD); sigue al
+        --     usuario entre navegadores y dispositivos (cross-device).
+        --   anonymous | temporary → sesión del navegador
+        --     (cookie/localStorage); por-navegador, no migra. La cuenta
+        --     temporal 1.43 no se loguea, por lo que nunca es cross-device.
+}
+
+-- El visitante restablece: vuelve a SO/defaults del skin.
+rule ViewerResetsPreferences {
+    when: ResetPreferences(session)
+    requires: session.saved != null
+    ensures: session.saved = null
+}
+
+-- Toda escritura sobre el namespace de chrome (crear/editar/mover/borrar)
+-- queda restringida al grupo dedicado o a sysop: CRUD completo para ellos.
+-- El skin define namespace y grupo; el WIKI aplica el derecho.
+rule RestrictChromeNamespaceWrites {
+    when: op: ChromePageWrite.created
+    requires: op.page.namespace = config.chrome_namespace
+    ensures:
+        if config.interface_editor_group in op.actor.groups
+            or "sysop" in op.actor.groups:
+            op.outcome = permitted
+        else:
+            op.outcome = denied
+    @guidance
+        -- Realizado vía $wgNamespaceProtection / derechos de grupo en
+        -- LocalSettings, con Especial:PermisosUsuario para asignar el grupo
+        -- (administrable por admins). No re-especifica la gestión de grupos
+        -- de MediaWiki. La lectura del fragmento renderizado es pública.
+        -- Las cuentas temporales (1.43) carecen del grupo y de sysop →
+        -- denegadas, comportamiento correcto.
+}
+
+------------------------------------------------------------
+-- Invariants
+------------------------------------------------------------
+
+-- El tema aplicado siempre se resuelve a claro u oscuro: nunca indeterminado
+-- (el fallback final a `light` lo garantiza).
+invariant ThemeAlwaysResolved {
+    for s in ViewingSessions:
+        s.active_theme = light or s.active_theme = dark
+}
+
+------------------------------------------------------------
+-- Surfaces
+------------------------------------------------------------
+
+-- Panel de preferencias. Público: cualquier visitante (anónimo, temporal
+-- o registrado). Las 7 preferencias estilo Citizen.
+surface PreferencesPanel {
+    facing viewer: User
+    context session: ViewingSession where user = viewer
+
+    exposes:
+        session.active_theme
+        session.active_motion
+        session.active_content_width
+        session.active_font_size
+        session.active_line_height
+        session.active_collapsible
+        session.active_toc_mode
+        session.os_scheme
+        session.os_motion
+
+    provides:
+        SavePreferences(session, prefs)
+        ResetPreferences(session)
+            when session.saved != null
+
+    @guarantee Precedence
+        -- Cada preferencia se resuelve: valor explícito guardado >
+        -- señal del SO donde aplica (tema ← prefers-color-scheme; motion
+        -- ← prefers-reduced-motion) > default de diseño del skin.
+        -- active_theme nunca es indeterminado.
+
+    @guarantee CrossDeviceForRegistered
+        -- identity = registered: lo guardado persiste en la cuenta
+        -- MediaWiki y sigue al usuario entre navegadores y dispositivos.
+
+    @guarantee PerBrowserOtherwise
+        -- identity = anonymous | temporary: lo guardado vive en la sesión
+        -- del navegador; por-navegador, no migra entre dispositivos.
+
+    @guarantee SuppressedInFullscreen
+        -- No se renderiza cuando la página vista está en
+        -- LayoutMode.fullscreen (ver surface ExperimentalCanvas).
+}
+
+-- Regiones de chrome administradas desde páginas wiki. Una instancia de
+-- surface por fragmento (footer, sidebar, notice).
+--
+-- IMPORTANTE para el slot `footer`: el pie es COMPUESTO. Este fragmento
+-- gestionado es SÓLO el bloque institucional. Las obligaciones core del
+-- pie (última modificación, licencia/atribución, places, icons, hooks de
+-- extensión) las garantiza SkinRenderFidelity.CoreFooterAlwaysPresent con
+-- independencia de este bloque: ocultar el fragmento NO oculta el pie core.
+surface ManagedChrome {
+    facing viewer: User
+    context fragment: InterfaceFragment
+
+    exposes:
+        fragment.slot
+        fragment.source_page.content
+            when fragment.is_published
+
+    @guarantee HiddenWhenUnpublished
+        -- Si is_published es falso (página ausente o en blanco) SÓLO este
+        -- bloque gestionado se omite; sin fallback ni contenido por
+        -- defecto para él. El pie core de MediaWiki es independiente y
+        -- sigue presente (ver SkinRenderFidelity.CoreFooterAlwaysPresent).
+
+    @guarantee SuppressedInFullscreen
+        -- No se renderiza cuando la página vista está en
+        -- LayoutMode.fullscreen (ver surface ExperimentalCanvas).
+}
+
+-- Herramientas de usuario en el horizonte superior. Lo que se ofrece
+-- depende de la autenticación; el skin renderiza el conjunto correcto,
+-- no inventa el comportamiento de sesión (lo posee MediaWiki).
+surface UserTools {
+    facing viewer: User
+    context session: ViewingSession where user = viewer
+
+    exposes:
+        session.user.identity
+
+    @guarantee AuthDependentTools
+        -- identity = anonymous → expone sólo iniciar sesión / crear cuenta.
+        -- identity = temporary → expone el nombre temporal, un aviso de
+        --   "cuenta temporal" y la invitación a crear cuenta / iniciar
+        --   sesión (no hay logout: la cuenta temporal no se loguea).
+        -- identity = registered → expone el menú de usuario (discusión,
+        --   preferencias, seguimiento, contribuciones) y cerrar sesión.
+
+    @guarantee SuppressedInFullscreen
+        -- No se renderiza cuando la página vista está en
+        -- LayoutMode.fullscreen (ver surface ExperimentalCanvas).
+}
+
+-- Lienzo experimental: sólo en pantalla completa. La página posee el
+-- viewport para HTML/p5.js propio; el skin no impone chrome.
+surface ExperimentalCanvas {
+    facing viewer: User
+    context render: PageRender where mode = fullscreen
+
+    exposes:
+        render.page.content
+
+    @guarantee ChromeSuppressed
+        -- En fullscreen el skin suprime header, búsqueda, herramientas de
+        -- usuario, sidebar, pie y panel de preferencias. El body de la
+        -- página ocupa el viewport completo, salvo la afordancia de escape.
+
+    @guidance
+        -- Hoy el JS interactivo (p5.js) se inyecta vía MediaWiki:Common.js
+        -- (script global del sitio): subóptimo y reconocido como deuda —
+        -- ver pregunta abierta. El magic word es libre para cualquier
+        -- editor; el riesgo de script NO está en el wikitexto de la página
+        -- sino centralizado en Common.js (controlado por admins).
+}
+
+-- Afordancia mínima persistente: única pieza de chrome que sobrevive a
+-- fullscreen. Garantiza no atrapar al usuario (WCAG, ARCHITECTURE.md §5).
+surface EscapeAffordance {
+    facing viewer: User
+    context render: PageRender where mode = fullscreen
+
+    exposes:
+        render.page
+
+    @guarantee AlwaysReachable
+        -- Control discreto pero siempre visible y operable por teclado
+        -- para volver/salir y, si procede, editar. Presente durante todo
+        -- el modo fullscreen; nunca oculto tras hover-only.
+}
+
+-- Isotipo del sitio, enlazado a la portada. Decisión: AUTOCONTENIDO en el
+-- skin (el asset canónico se versiona en el repo del skin, no en la wiki).
+-- Estándar MediaWiki: el logo vive en $wgLogos (LocalSettings, nivel wiki)
+-- y llega al skin por data-logos; el core NO tiene variante por tema. Aquí
+-- se invierte por preferencia: el skin trae el isotipo y su adaptación
+-- clara/oscura; $wgLogos, si está definido, actúa como override de
+-- instalación.
+surface SiteIsotype {
+    facing viewer: User
+    context session: ViewingSession where user = viewer
+
+    exposes:
+        session.active_theme
+
+    @guarantee ThemeAdaptive
+        -- Se muestra la variante del isotipo acorde a active_theme. El
+        -- asset por defecto vive en el repo del skin; la adaptación
+        -- clara/oscura es responsabilidad del skin (el core no la provee).
+
+    @guarantee WikiOverride
+        -- Si la instalación define $wgLogos (data-logos), ese valor
+        -- sustituye al isotipo embebido; sin él, se usa el del skin.
+
+    @guarantee LinksHome
+        -- Enlaza a la portada (link-mainpage); comportamiento de MW core.
+
+    @guarantee SuppressedInFullscreen
+        -- Forma parte del chrome: ausente en LayoutMode.fullscreen.
+}
+
+-- Frontera código-a-código entre el skin y el host MediaWiki + sus
+-- extensiones. Sin parte humana: el skin CUMPLE el contrato de fidelidad.
+surface MediaWikiIntegration {
+    exposes:
+        RenderedDocument
+
+    contracts:
+        fulfils SkinRenderFidelity
+}
+
+------------------------------------------------------------
+-- Open Questions
+------------------------------------------------------------
+
+open question "Semántica exacta de 'en blanco' para una página de chrome (¿sólo espacios? ¿sólo comentarios HTML? ¿sólo enlaces de categoría?) — gobierna is_published de InterfaceFragment."
+
+open question "Mecanismo definitivo de inyección de JS interactivo (p5.js) en páginas fullscreen: hoy es MediaWiki:Common.js global, subóptimo. Evaluar Widget curado, módulo ResourceLoader cargado sólo en páginas fullscreen, o assets por-página — sin habilitar JS arbitrario por editor."
