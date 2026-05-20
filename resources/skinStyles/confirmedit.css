@@ -1,0 +1,41 @@
+/* ============================================================
+ * skinStyles/confirmedit.css — Stella Nova
+ * 
+ * Snapshot inicial del CSS de la extensión ConfirmEdit (+ hCaptcha bundled)
+ * versión 1.6.0, licencia upstream: GPL-2.0-or-later.
+ * Capturado el 2026-05-19 desde ConfirmEdit/extension.json para
+ * absorber los estilos dentro del sistema visual de Stella Nova.
+ * 
+ * Estos bloques se reescribirán gradualmente usando los tokens del
+ * skin (var(--sn-...)). Mientras tanto, sirven como referencia
+ * exacta de lo que la extensión inyecta hoy.
+ * 
+ * Cargado vía ResourceModuleSkinStyles en skin.json con prefijo `+`,
+ * lo que añade este CSS DESPUÉS del CSS original de la extensión
+ * sin reemplazarlo: la cascada hace que estas reglas ganen.
+ * ============================================================ */
+
+/* ─── Módulo: ext.confirmEdit.editPreview.ipwhitelist.styles ─── */
+/* archivo origen: resources/ext.confirmEdit.editPreview.ipwhitelist.styles.css */
+.mw-confirmedit-ip-notvalid {
+	background-color: var(--sn-danger);
+}
+
+.mw-confirmedit-ip-valid {
+	background-color: var(--sn-ok);
+}
+
+
+/* ─── Módulo: ext.confirmEdit.simpleCaptcha ─── */
+/* archivo origen: SimpleCaptcha/resources/ext.confirmEdit.simpleCaptcha.css */
+.simplecaptcha-field .oo-ui-fieldLayout-header {
+	/* stylelint-disable declaration-no-important */
+	width: auto !important;
+	padding-right: 1em !important;
+	/* stylelint-enable declaration-no-important */
+}
+
+.simplecaptcha-answer.oo-ui-textInputWidget {
+	width: 5em;
+}
+

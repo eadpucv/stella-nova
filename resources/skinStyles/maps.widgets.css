@@ -1,0 +1,189 @@
+.leaflet-popup-tip-container {
+	width: 2.5rem;
+	height: 1.25em;
+	position: absolute;
+	left: 50%;
+	margin-left: -1.25rem;
+	overflow: hidden;
+	pointer-events: none;
+	}
+.leaflet-popup-tip {
+	width: 1.062rem;
+	height: 1.062em;
+	padding: 1px;
+
+	margin: -0.625rem auto 0;
+
+	-webkit-transform: rotate(45deg);
+	   -moz-transform: rotate(45deg);
+	    -ms-transform: rotate(45deg);
+	        transform: rotate(45deg);
+	}
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+	background: white;
+	color: var(--sn-ink);
+	box-shadow: 0 3px 14px rgba(0,0,0,0.4);
+	}
+.leaflet-container a.leaflet-popup-close-button {
+	position: absolute;
+	top: 0;
+	right: 0;
+	padding: 4px 4px 0 0; /* TODO tok: shorthand */
+	border: none;
+	text-align: center;
+	width: 1.125rem;
+	height: 0.875em;
+	font: 16px/14px Tahoma, Verdana, sans-serif;
+	color: var(--sn-hairline);
+	text-decoration: none;
+	font-weight: bold;
+	background: transparent;
+	}
+.leaflet-container a.leaflet-popup-close-button:hover {
+	color: var(--sn-ink-faint);
+	}
+.leaflet-popup-scrolled {
+	overflow: auto;
+	border-bottom: 1px solid var(--sn-hairline);
+	border-top: 1px solid var(--sn-hairline);
+	}
+
+.leaflet-oldie .leaflet-popup-content-wrapper {
+	zoom: 1;
+	}
+.leaflet-oldie .leaflet-popup-tip {
+	width: var(--sn-s-5);
+	margin: 0 auto;
+
+	-ms-filter: "progid:DXImageTransform.Microsoft.Matrix(M11=0.70710678, M12=0.70710678, M21=-0.70710678, M22=0.70710678)";
+	filter: progid:DXImageTransform.Microsoft.Matrix(M11=0.70710678, M12=0.70710678, M21=-0.70710678, M22=0.70710678);
+	}
+.leaflet-oldie .leaflet-popup-tip-container {
+	margin-top: -1px;
+	}
+
+.leaflet-oldie .leaflet-control-zoom,
+.leaflet-oldie .leaflet-control-layers,
+.leaflet-oldie .leaflet-popup-content-wrapper,
+.leaflet-oldie .leaflet-popup-tip {
+	border: 1px solid var(--sn-ink-faint);
+	}
+
+
+/* div icon */
+
+.leaflet-div-icon {
+	background: var(--sn-paper);
+	border: 1px solid var(--sn-ink-soft);
+	}
+
+
+/* Tooltip */
+/* Base styles for the element that has a tooltip */
+.leaflet-tooltip {
+	position: absolute;
+	padding: 0.375rem;
+	background-color: var(--sn-paper);
+	border: 1px solid var(--sn-paper);
+	border-radius: var(--sn-radius-paper);
+	color: var(--sn-ink);
+	white-space: nowrap;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	pointer-events: none;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+	}
+.leaflet-tooltip.leaflet-clickable {
+	cursor: pointer;
+	pointer-events: auto;
+	}
+.leaflet-tooltip-top:before,
+.leaflet-tooltip-bottom:before,
+.leaflet-tooltip-left:before,
+.leaflet-tooltip-right:before {
+	position: absolute;
+	pointer-events: none;
+	border: 6px solid transparent;
+	background: transparent;
+	content: "";
+	}
+
+/* Directions */
+
+.leaflet-tooltip-bottom {
+	margin-top: 0.375em;
+}
+.leaflet-tooltip-top {
+	margin-top: -0.375em;
+}
+.leaflet-tooltip-bottom:before,
+.leaflet-tooltip-top:before {
+	left: 50%;
+	margin-left: -0.375rem;
+	}
+.leaflet-tooltip-top:before {
+	bottom: 0;
+	margin-bottom: -0.75em;
+	border-top-color: var(--sn-paper);
+	}
+.leaflet-tooltip-bottom:before {
+	top: 0;
+	margin-top: -0.75em;
+	margin-left: -0.375rem;
+	border-bottom-color: var(--sn-paper);
+	}
+.leaflet-tooltip-left {
+	margin-left: -0.375rem;
+}
+.leaflet-tooltip-right {
+	margin-left: 0.375rem;
+}
+.leaflet-tooltip-left:before,
+.leaflet-tooltip-right:before {
+	top: 50%;
+	margin-top: -0.375em;
+	}
+.leaflet-tooltip-left:before {
+	right: 0;
+	margin-right: -var(--sn-s-3);
+	border-left-color: var(--sn-paper);
+	}
+.leaflet-tooltip-right:before {
+	left: 0;
+	margin-left: -var(--sn-s-3);
+	border-right-color: var(--sn-paper);
+	}
+
+
+/* ─── Módulo: ext.maps.leaflet.fullscreen ─── */
+/* archivo origen: resources/lib/leaflet.fullscreen/Control.FullScreen.css */
+.fullscreen-icon { background-image: url(icon-fullscreen.png); }
+.leaflet-retina .fullscreen-icon { background-image: url(icon-fullscreen-2x.png); background-size: 26px 26px; }
+/* one selector per rule as explained here : http://www.sitepoint.com/html5-full-screen-api/ */
+.leaflet-container:-webkit-full-screen { width: 100% !important; height: 100% !important; z-index: 99999; }
+.leaflet-container:-ms-fullscreen { width: 100% !important; height: 100% !important; z-index: 99999; }
+.leaflet-container:full-screen { width: 100% !important; height: 100% !important; z-index: 99999; }
+.leaflet-container:fullscreen { width: 100% !important; height: 100% !important; z-index: 99999; }
+.leaflet-pseudo-fullscreen { position: fixed !important; width: 100% !important; height: 100% !important; top: 0px !important; left: 0px !important; z-index: 99999; }
+
+
+/* ─── Módulo: ext.maps.leaflet.markercluster ─── */
+/* archivo origen: resources/lib/leaflet.markercluster/MarkerCluster.css */
+.leaflet-cluster-anim .leaflet-marker-icon, .leaflet-cluster-anim .leaflet-marker-shadow {
+	-webkit-transition: -webkit-transform 0.3s ease-out, opacity 0.3s ease-in;
+	-moz-transition: -moz-transform 0.3s ease-out, opacity 0.3s ease-in;
+	-o-transition: -o-transform 0.3s ease-out, opacity 0.3s ease-in;
+	transition: transform 0.3s ease-out, opacity 0.3s ease-in;
+}
+
+.leaflet-cluster-spider-leg {
+	/* stroke-dashoffset (duration and function) should match with leaflet-marker-icon transform in order to track it exactly */
+	-webkit-transition: -webkit-stroke-dashoffset 0.3s ease-out, -webkit-stroke-opacity 0.3s ease-in;
+	-moz-transition: -moz-stroke-dashoffset 0.3s ease-out, -moz-stroke-opacity 0.3s ease-in;
+	-o-transition: -o-stroke-dashoffset 0.3s ease-out, -o-stroke-opacity 0.3s ease-in;
+	transition: stroke-dashoffset 0.3s ease-out, stroke-opacity 0.3s ease-in;
+}
+

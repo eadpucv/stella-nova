@@ -1,0 +1,100 @@
+/* ============================================================
+ * skinStyles/simplebatchupload.css — Stella Nova
+ * 
+ * Snapshot inicial del CSS de la extensión SimpleBatchUpload
+ * versión 3.0.0, licencia upstream: GPL-2.0-or-later.
+ * Capturado el 2026-05-19 desde SimpleBatchUpload/extension.json para
+ * absorber los estilos dentro del sistema visual de Stella Nova.
+ * 
+ * Estos bloques se reescribirán gradualmente usando los tokens del
+ * skin (var(--sn-...)). Mientras tanto, sirven como referencia
+ * exacta de lo que la extensión inyecta hoy.
+ * 
+ * Cargado vía ResourceModuleSkinStyles en skin.json con prefijo `+`,
+ * lo que añade este CSS DESPUÉS del CSS original de la extensión
+ * sin reemplazarlo: la cascada hace que estas reglas ganen.
+ * ============================================================ */
+
+/* ─── Módulo: ext.SimpleBatchUpload.jquery-file-upload ─── */
+/* archivo origen: res/jquery.fileupload.css */
+@charset "UTF-8";
+/*
+ * jQuery File Upload Plugin CSS
+ * https://github.com/blueimp/jQuery-File-Upload
+ *
+ * Copyright 2013, Sebastian Tschan
+ * https://blueimp.net
+ *
+ * Licensed under the MIT license:
+ * https://opensource.org/licenses/MIT
+ */
+
+.fileinput-button {
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+}
+.fileinput-button input {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 0;
+  height: 100%;
+  opacity: 0;
+  filter: alpha(opacity=0);
+  font-size: 200px !important;
+  direction: ltr;
+  cursor: pointer;
+}
+
+/* Fixes for IE < 8 */
+@media screen\9 {
+  .fileinput-button input {
+    font-size: 150% !important;
+  }
+}
+
+
+/* ─── Módulo: ext.SimpleBatchUpload ─── */
+/* archivo origen: res/ext.SimpleBatchUpload.css */
+span.fileinput-button {
+    -moz-user-select: none;
+    background-color: #f9f9f9;
+    background-image: none;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    color: #333333;
+    cursor: pointer;
+    display: inline-block;
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 1.42857;
+    margin-bottom: 0;
+    padding: 6px 12px;
+    text-align: center;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+ul.fileupload-results {
+    list-style: outside none none;
+    margin-top: 1em;
+    padding-left: 0;
+}
+
+ul.fileupload-results li {
+    padding: 0.2em 1em;
+}
+
+ul.fileupload-results li.ful-success{
+    background-color: lightgreen;
+}
+
+ul.fileupload-results li.ful-success a {
+    color: #0645ad;
+}
+
+ul.fileupload-results li.ful-error{
+    background-color: lightpink;
+}
+

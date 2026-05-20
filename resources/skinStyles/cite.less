@@ -1,0 +1,166 @@
+/* ============================================================
+ * skinStyles/cite.css — Stella Nova
+ * 
+ * Snapshot inicial del CSS de la extensión Cite
+ * versión ?, licencia upstream: GPL-2.0-or-later.
+ * Capturado el 2026-05-19 desde Cite/extension.json para
+ * absorber los estilos dentro del sistema visual de Stella Nova.
+ * 
+ * Estos bloques se reescribirán gradualmente usando los tokens del
+ * skin (var(--sn-...)). Mientras tanto, sirven como referencia
+ * exacta de lo que la extensión inyecta hoy.
+ * 
+ * Cargado vía ResourceModuleSkinStyles en skin.json con prefijo `+`,
+ * lo que añade este CSS DESPUÉS del CSS original de la extensión
+ * sin reemplazarlo: la cascada hace que estas reglas ganen.
+ * ============================================================ */
+
+/* ─── Módulo: ext.cite.styles ─── */
+/* archivo origen: modules/ext.cite.styles.less */
+@import 'mediawiki.skin.variables.less';
+@import 'mediawiki.mixins.less';
+
+.mw-cite-backlink,
+.cite-accessibility-label {
+	.user-select( none );
+}
+
+.mw-references-columns {
+	.column-width( 30em );
+	margin-top: 0.3em;
+
+	/* Lines first column up nicely. */
+	.mw-parser-output & .references {
+		margin-top: 0;
+	}
+
+	/* Avoid elements from breaking between columns */
+	li {
+		.column-break-inside-avoid();
+	}
+}
+
+ol.references {
+	/**
+	 * Resetting *any* counter on an <ol> element messes up the built-in numbering in Firefox.
+	 * Explicitly resetting the built-in "list-item" counter fixes this.
+	 *
+	 * We have 2 counters for Parsoid HTML for different functionality.
+	 * Make sure both are reset!
+	 **/
+	counter-reset: mw-ref-extends-parent mw-references list-item;
+
+	> li {
+		/**
+		 * We have 2 counters for Parsoid HTML for different functionality.
+		 * Make sure both are incremented!
+		 **/
+		counter-increment: mw-ref-extends-parent mw-references;
+		counter-reset: mw-ref-extends-child;
+	}
+
+	.mw-extended-references {
+		list-style: none;
+		margin-left: 2em;
+		padding: 0;
+	}
+}
+
+.mw-extended-references > li::before {
+	counter-increment: mw-ref-extends-child;
+	content: counter( mw-ref-extends-parent, decimal ) '.' counter( mw-ref-extends-child, decimal ) '. ';
+}
+
+sup.reference {
+	/* Isolation to fix references in case of RTL words at the end of a reference */
+	unicode-bidi: -moz-isolate;
+	unicode-bidi: -webkit-isolate;
+	unicode-bidi: isolate;
+
+	/* Don't allow a reference that includes a group name
+	to break in the end of the line */
+	white-space: nowrap;
+
+	/* Do not inherit bold or italic */
+	font-weight: normal;
+	font-style: normal;
+}
+
+/* Highlight clicked reference in blue to help navigation */
+ol.references li:target,
+sup.reference:target {
+	background-color: var(--sn-nova-wash);
+}
+
+/* Make cite errors "strong" */
+.mw-ext-cite-error {
+	font-weight: bold;
+	/* For the case that the error is embedded in an element with a different direction */
+	unicode-bidi: embed;
+
+	code {
+		/* As code is inheriting `#f8f9fa` as background color from `code`,
+		   we need to increase contrast, by setting it to `transparent`. See T247903. */
+		background-color: transparent;
+		color: inherit;
+		/* Reduce inherited `padding` to make code fit in better in Resources list. */
+		padding: 1px 2px; /* TODO tok: shorthand */
+	}
+}
+
+/* @noflip */
+.mw-cite-dir-ltr .reference-text {
+	direction: ltr;
+	unicode-bidi: embed;
+}
+
+/* @noflip */
+.mw-cite-dir-rtl .reference-text {
+	direction: rtl;
+	unicode-bidi: embed;
+}
+
+/* archivo origen: modules/ext.cite.print.less */
+/* opciones del módulo: {'media': 'print'} */
+.mw-cite-backlink {
+	display: none;
+}
+
+
+/* ─── Módulo: ext.cite.ux-enhancements ─── */
+/* archivo origen: modules/ext.cite.a11y.less */
+/**
+ * Per http://developer.yahoo.com/blogs/ydn/clip-hidden-content-better-accessibility-53456.html
+ * and https://en.wikipedia.org/w/index.php?oldid=572888139#Scrolling_past_the_bottom_of_the_page...
+ */
+.cite-accessibility-label {
+	/* Workaround a Webkit/Blink bug about positioning within columns as many wikis format references with several columns */
+	top: -6250em;
+	clip: rect( 1px, 1px, 1px, 1px );
+	/* stylelint-disable declaration-no-important */
+	position: absolute !important;
+	padding: 0 !important;
+	border: 0 !important;
+	height: 1px !important;
+	width: 1px !important;
+	/* stylelint-enable declaration-no-important */
+	overflow: hidden;
+}
+
+/* archivo origen: modules/ext.cite.highlighting.less */
+:target .mw-cite-targeted-backlink {
+	font-weight: bold;
+}
+
+.mw-cite-up-arrow-backlink {
+	display: none;
+
+	:target & {
+		display: inline;
+	}
+}
+
+:target .mw-cite-up-arrow {
+	display: none;
+}
+

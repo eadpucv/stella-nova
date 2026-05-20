@@ -342,24 +342,84 @@ a:visited { color: var(--sn-link-visited); }
 /* ─────────────────────── La hoja (paper) ─────────────────── */
 .sn-paper-wrap { min-width: 0; }
 .sn-paper {
+	/* --sn-paper-px / --sn-paper-py exponen como contrato el padding del
+	   paper. Cualquier hijo que quiera reventar (p.ej. .full-width) lo
+	   niega con margin-inline / margin-block: calc(-1 * var(--…)). */
+	--sn-paper-px: clamp(var(--sn-s-4), 4vw, var(--sn-s-7));
+	--sn-paper-py: clamp(var(--sn-s-5), 4vw, var(--sn-s-7));
 	background: var(--sn-paper);
 	border: 1px solid var(--sn-paper-edge);
 	border-radius: var(--sn-radius-paper);
 	box-shadow: var(--sn-lift-paper);
-	padding: clamp(var(--sn-s-5), 4vw, var(--sn-s-7)) clamp(var(--sn-s-4), 4vw, var(--sn-s-7));
+	padding: var(--sn-paper-py) var(--sn-paper-px);
 	min-width: 0;
 }
 @media (min-width: 90rem) {
 	:root:not([data-sn-width="full"]) .sn-paper {
-		padding-inline: clamp(var(--sn-s-7), 6vw, var(--sn-s-8));
+		--sn-paper-px: clamp(var(--sn-s-7), 6vw, var(--sn-s-8));
 	}
 }
 
+/* .sn-indicators y #contentSub son metadata (badges/loaders por página y
+   avisos contextuales como "Redirigido desde X") que MW inyecta dentro del
+   <article>. Visualmente NO son contenido editorial — se tratan como
+   marcadores adheridos al borde de la hoja: chips arriba a la derecha
+   asomando del paper, y un kicker line proyectado por encima.
+
+   El DOM no se mueve (mantenemos el contrato de fidelidad con MW: gadgets
+   y scripts core esperan estos contenedores como anchors estables); el
+   efecto es 100% CSS via position:absolute con el paper como coordinate
+   system. overflow:visible (default del paper) deja que protruyan. */
+.sn-paper { position: relative; }
+
+/* Indicators: chip-stickers asomando del borde superior-derecho del paper.
+   translateY(-50%) los pone mitad sobre la hoja, mitad afuera — el efecto
+   "marcador adherido". El SMW entity-examiner u otros loaders que viven
+   acá heredan el estilo de chip. */
 .sn-indicators {
-	display: flex; flex-wrap: wrap; gap: var(--sn-s-2);
-	justify-content: flex-end; margin-bottom: var(--sn-s-3);
+	position: absolute;
+	inset-block-start: 0;
+	inset-inline-end: clamp(var(--sn-s-4), 4vw, var(--sn-s-6));
+	transform: translateY(-50%);
+	display: flex; flex-wrap: nowrap; gap: var(--sn-s-2);
+	margin: 0;
+	z-index: 2;
+	pointer-events: none;
 }
 .sn-indicators:empty { display: none; }
+/* Ocultar indicadores "muertos" — los que vienen como wrapper con hijo
+   vacío (caso del smw-entity-examiner loader que viene <div></div>
+   adentro). Mismo patrón que ya aplica a #contentSub. */
+.sn-indicators > .mw-indicator:empty,
+.sn-indicators > .mw-indicator:has(> *:only-child:empty),
+/* También ocultar el SMW entity examiner loader específicamente — es un
+   indicador técnico de background que el lector no necesita ver. */
+.sn-indicators > .mw-indicator:has(> .smw-entity-examiner) {
+	display: none;
+}
+.sn-indicators > .mw-indicator {
+	pointer-events: auto;
+	background: var(--sn-paper);
+	border: 1px solid var(--sn-paper-edge);
+	border-radius: var(--sn-radius-s);
+	padding: .25rem .55rem;
+	font-size: var(--sn-fs-xs);
+	line-height: 1.2;
+	color: var(--sn-ink-soft);
+	box-shadow: 0 2px 6px rgb(0 0 0 / .07), 0 1px 2px rgb(0 0 0 / .04);
+}
+@media (max-width: 36rem) {
+	/* En móvil vuelve al flujo dentro del paper para no chocar con la chrome
+	   ni quedar comido por el header. */
+	.sn-indicators {
+		position: static; transform: none;
+		justify-content: flex-end;
+		margin-block-end: var(--sn-s-3);
+	}
+	.sn-indicators > .mw-indicator {
+		background: transparent; border: 0; box-shadow: none; padding: 0;
+	}
+}
 
 .sn-notice, .mw-body-content .sitedir-ltr > .sn-notice {
 	margin: 0 0 var(--sn-s-5);
@@ -389,9 +449,44 @@ a:visited { color: var(--sn-link-visited); }
 }
 /* Vacío (caso normal, p. ej. portada: solo el #mw-content-subtitle hueco)
    → cero altura, ninguna inserción visible. Solo cuando trae algo real
-   (aviso de redirección, enlace de restaurar) reserva un respiro. */
-.sn-subtitle:empty { display: none; }
-.sn-subtitle:has(a), .sn-subtitle:has(*:not(:empty)) { margin: 0 0 var(--sn-s-3); }
+   (aviso de redirección, enlace de restaurar) reserva un respiro.
+   ":empty" estricto NO cubre el caso de #contentSub, que MW emite con un
+   <div id="mw-content-subtitle"> dentro (hijo vacío). Se añade el caso
+   ":has(> *:only-child:empty)" para esa estructura. */
+.sn-subtitle:empty,
+.sn-subtitle:has(> *:only-child:empty) { display: none; }
+
+/* #contentSub (avisos de redirección / contexto) cuando aporta contenido:
+   se proyecta arriba del paper como kicker line — sticker editorial, no
+   compite con el cuerpo. inset-inline limitado al padding lateral del
+   paper alinea el kicker con el ancho de la columna interna.
+   #contentSub2 (undelete admin) queda con la regla del flujo normal. */
+.sn-paper > #contentSub:has(a),
+.sn-paper > #contentSub:has(*:not(:empty)) {
+	position: absolute;
+	inset-block-start: 0;
+	inset-inline: var(--sn-paper-px);
+	transform: translateY(-100%);
+	padding-block-end: var(--sn-s-2);
+	margin: 0;
+	font-size: var(--sn-fs-xs);
+	line-height: 1.4;
+	color: var(--sn-ink-soft);
+	z-index: 1;
+}
+.sn-paper > #contentSub2:has(a),
+.sn-paper > #contentSub2:has(*:not(:empty)) {
+	margin: 0 0 var(--sn-s-3);
+}
+@media (max-width: 36rem) {
+	/* Móvil: kicker vuelve al flujo */
+	.sn-paper > #contentSub:has(a),
+	.sn-paper > #contentSub:has(*:not(:empty)) {
+		position: static; transform: none;
+		padding: 0; margin: 0 0 var(--sn-s-3);
+		font-size: var(--sn-fs-sm);
+	}
+}
 .sn-subtitle a { color: var(--sn-ink-soft); }
 
 /* ─────────────── Cuerpo: ritmo editorial ─────────────── */
@@ -494,6 +589,108 @@ a:visited { color: var(--sn-link-visited); }
 }
 .sn-body :is(img, video) { max-width: 100%; height: auto; }
 .sn-body figure { margin: var(--sn-s-5) 0; }
+
+/* .img-circle: override de MediaWiki:Common.css.
+   En Common.css la regla aplica clip-path:circle() al <figure>, NO al <img>.
+   Cuando el figure contiene <figcaption> el bounding box mide imagen+caption,
+   el centro de circle() cae más abajo que el centro de la imagen, y el
+   círculo recorta los px superiores de la imagen y devora la caption.
+
+   Lo movemos al elemento real (la imagen): clip-path al <img> directamente
+   sobre su propio cuadrado, sin contaminación del caption. La caption se
+   oculta dentro de .img-circle porque en .vcard el nombre ya aparece
+   abajo como .person-name (duplicación no aporta). */
+.sn-body .img-circle { clip-path: none; }
+.sn-body .img-circle :is(img, .mw-file-element) {
+	clip-path: circle();
+	display: block;
+}
+.sn-body .img-circle > figcaption { display: none; }
+
+/* Full-bleed: imagen/figura/wrapper con class="full-width" se revienta del
+   padding lateral del .sn-paper para ir borde-a-borde del <article>.
+   Funciona para tres patrones de wikitexto:
+     [[Archivo:foo.jpg|class=full-width]]                → clase en <img>
+     [[Archivo:foo.jpg|frameless|class=full-width]]      → en <a class="image">
+     <div class="full-width">[[Archivo:foo.jpg]]</div>   → wrapper manual
+   El truco: width:auto + max-width:none + margin-inline negativo igual al
+   padding lateral del paper (expuesto como --sn-paper-px). La imagen interna
+   se estira al 100% del nuevo ancho. Si está dentro de un .thumb la caja
+   thumb también se revienta — la leyenda queda alineada al nuevo ancho. */
+.sn-paper :is(.full-width, .thumb.full-width, figure.full-width) {
+	display: block;
+	width: auto;
+	max-width: none;
+	margin-inline: calc(-1 * var(--sn-paper-px));
+	margin-block: var(--sn-s-5);
+	float: none;  /* anula el float que ponen thumb-left/right de core */
+}
+.sn-paper :is(.full-width, .thumb.full-width, figure.full-width) :is(img, video),
+.sn-paper :is(img, video).full-width {
+	display: block;
+	width: 100%;
+	height: auto;
+	max-width: 100%;
+	margin-inline: 0;
+}
+/* Si el .full-width es un <img> o un <a class="image"> directo (no envuelto
+   en .thumb), aplicar la misma regla — class va al elemento mismo. */
+.sn-paper :is(a.image.full-width, img.full-width, video.full-width) {
+	display: block;
+	width: auto;
+	max-width: none;
+	margin-inline: calc(-1 * var(--sn-paper-px));
+	margin-block: var(--sn-s-5);
+}
+.sn-paper a.image.full-width img { width: 100%; height: auto; display: block; }
+/* La leyenda dentro de un .thumb full-width vuelve al ancho del cuerpo para
+   no quedar pegada al borde del paper. */
+.sn-paper .thumb.full-width .thumbcaption {
+	padding-inline: var(--sn-paper-px);
+	text-align: start;
+}
+
+/* Bleed vertical de borde: cuando .full-width es el PRIMER o ÚLTIMO elemento
+   del cuerpo (.sn-body), también revienta el padding vertical del paper
+   y redondea las esquinas para alinearse con el border-radius del <article>.
+
+   La cadena de wrappers desde .sn-body hasta el <span class="full-width"> que
+   emite MW es típicamente:
+     .sn-body > #mw-content-text > .mw-parser-output > <p> > .full-width
+   El bleed solo aplica si .full-width es :first-child (o :last-child) en
+   cada nivel — así no se dispara para imágenes que están a media página
+   dentro del primer <p> después de texto. Se enumeran los 4 niveles de
+   anidamiento típicos; basta con que uno matchee.
+
+   El colapso de margen propaga el margin-block negativo a través de los
+   wrappers (ninguno tiene padding/border vertical) hasta detenerse en
+   .sn-paper (que sí tiene padding-block). overflow:hidden clipea el <img>
+   interno al radio del paper en las esquinas tocadas.
+
+   Caveat: en páginas con <h1#firstHeading> visible, el bleed-top tira la
+   imagen hacia arriba y la superpone al título. Usar __NOTITLE__ en páginas
+   diseñadas con hero al tope, o no marcar la primera imagen como full-width.
+   .sn-indicators está ahora position:absolute (ver más arriba) y no ocupa
+   flujo, por lo que .sn-body es siempre el primer elemento de flujo dentro
+   del paper en páginas con __NOTITLE__. */
+.sn-body > .full-width:first-child,
+.sn-body > *:first-child > .full-width:first-child,
+.sn-body > *:first-child > *:first-child > .full-width:first-child,
+.sn-body > *:first-child > *:first-child > *:first-child > .full-width:first-child {
+	margin-block-start: calc(-1 * var(--sn-paper-py));
+	border-start-start-radius: var(--sn-radius-paper);
+	border-start-end-radius:   var(--sn-radius-paper);
+	overflow: hidden;
+}
+.sn-body > .full-width:last-child,
+.sn-body > *:last-child > .full-width:last-child,
+.sn-body > *:last-child > *:last-child > .full-width:last-child,
+.sn-body > *:last-child > *:last-child > *:last-child > .full-width:last-child {
+	margin-block-end: calc(-1 * var(--sn-paper-py));
+	border-end-start-radius: var(--sn-radius-paper);
+	border-end-end-radius:   var(--sn-radius-paper);
+	overflow: hidden;
+}
 
 /* El skin DECRETA que <canvas> e <iframe> embebidos (p5.js, widgets como
    {{#widget:P5js}} que incrustan un sitio externo, lienzos experimentales)
@@ -836,10 +1033,26 @@ canvas, iframe,
 @keyframes sn-fade { from { opacity: 0; } to { opacity: 1; } }
 
 /* Pequeñas verdades de MediaWiki que conviene respetar */
-.mw-editsection { font-family: var(--sn-font-text); font-size: var(--sn-fs-xs);
-	font-weight: 400; }
-.mw-editsection a { color: var(--sn-ink-faint); }
-.mw-editsection a:hover { color: var(--sn-nova); }
+/* Editar (junto a títulos): nav-pill sin corchetes, distanciado del título. */
+.mw-editsection {
+	display: inline-flex; align-items: center; gap: var(--sn-s-2);
+	margin-inline-start: var(--sn-s-4);
+	font-family: var(--sn-font-text); font-size: var(--sn-fs-xs);
+	font-weight: 400; vertical-align: middle;
+}
+.mw-editsection-bracket,
+.mw-editsection-divider { display: none; }
+.mw-editsection a {
+	display: inline-flex; align-items: center;
+	padding: .15rem var(--sn-s-3);
+	border: 1px solid transparent; border-radius: 999px;
+	color: var(--sn-ink-faint); text-decoration: none;
+	transition: background var(--sn-dur-1), border-color var(--sn-dur-1), color var(--sn-dur-1);
+}
+.mw-editsection a:hover, .mw-editsection a:focus-visible {
+	background: var(--sn-paper); border-color: var(--sn-hairline);
+	color: var(--sn-nova);
+}
 .mw-redirectedfrom, .mw-revision { color: var(--sn-ink-soft);
 	font-size: var(--sn-fs-sm); }
 .error, .mw-message-box-error { color: var(--sn-danger); }

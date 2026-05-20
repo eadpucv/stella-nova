@@ -1,0 +1,212 @@
+
+/* archivo origen: modules/styles/mw.echo.ui.PageFilterWidget.less */
+@import 'mediawiki.skin.variables.less';
+@import '../echo.variables.less';
+
+.mw-echo-ui-pageFilterWidget {
+	margin-top: 2 * @specialpage-separation-unit;
+
+	&-title {
+		padding-left: 0.5em;
+		font-weight: bold;
+	}
+}
+
+/* archivo origen: modules/styles/mw.echo.ui.CrossWikiUnreadFilterWidget.less */
+@import 'mediawiki.skin.variables.less';
+@import '../echo.variables.less';
+
+.mw-echo-ui-crossWikiUnreadFilterWidget {
+	border: 1px solid var(--sn-hairline);
+	padding: @specialpage-separation-unit;
+
+	&-title {
+		display: block;
+		font-size: 1.3em;
+		font-weight: bold;
+	}
+
+	&-subtitle {
+		display: block;
+		color: @grey-light;
+	}
+}
+
+/* archivo origen: modules/styles/mw.echo.ui.SpecialHelpMenuWidget.less */
+@import 'mediawiki.skin.variables.less';
+@import '../echo.variables.less';
+
+.mw-echo-ui-specialHelpMenuWidget-menu {
+	a.oo-ui-menuOptionWidget {
+		color: inherit;
+		text-decoration: inherit;
+	}
+}
+
+
+/* ─── Módulo: ext.echo.styles.special ─── */
+/* archivo origen: modules/nojs/mw.echo.special.less */
+/* Echo specific CSS */
+
+@import 'mediawiki.skin.variables.less';
+@import 'mediawiki.mixins.less';
+@import '../echo.variables.less';
+
+.mw-echo-special-container {
+	max-width: 37.5rem;
+}
+
+.client-js .mw-echo-special-nojs {
+	min-height: 5em;
+	/* @embed */
+	background-image: url( ../../images/pending.gif );
+
+	.mw-echo-special-container {
+		display: none;
+	}
+}
+
+// Hide the preferences link
+// in the JS version, since it appear inside
+// the cog menu
+
+.client-js #mw-echo-pref-link,
+.client-js #contentSub {
+	display: none;
+}
+
+@media all and ( min-width: @specialpage-hd-width ) {
+	.client-js #mw-content-text {
+		margin-top: 2em;
+	}
+}
+
+.mw-echo-special-markAllReadButton {
+	float: right;
+}
+
+/* Special styles to use if we're converting subtitle links into header icons */
+#firstHeading {
+	.mw-echo-special-header-link {
+		display: block;
+		height: 1.188em;
+		width: 1.188rem;
+	}
+}
+
+.mw-echo-date-section {
+	border-bottom: 1px solid var(--sn-hairline);
+	margin: 20px 0 5px 0; /* TODO tok: shorthand */
+	color: @grey-light;
+	display: inline-block;
+	width: 100%;
+	padding-bottom: 0.5em;
+}
+
+.mw-echo-date-section-text {
+	text-transform: uppercase;
+	font-size: 1.1em;
+	font-weight: 800;
+	display: inline-block;
+}
+
+ul.mw-echo-special-notifications {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	width: 100%;
+
+	div.mw-htmlform-submit-buttons {
+		margin: 0;
+	}
+}
+
+.mw-echo-special-navbar-top {
+	margin-bottom: 0.625em;
+}
+
+.mw-echo-special-navbar-bottom {
+	margin-top: 1.25em;
+	padding-top: 0.625em;
+	border-top: 1px solid var(--sn-hairline);
+}
+
+.mw-echo-notification {
+	padding: 30px 40px 15px 10px; /* TODO tok: shorthand */
+
+	.mw-echo-markAsReadButton {
+		display: none;
+
+		button {
+			padding: 0;
+		}
+	}
+}
+
+.mw-echo-markAsReadSectionButton {
+	float: right;
+	display: inline-block;
+
+	button.oo-ui-buttonElement-button {
+		padding: 2px 12px 2px 12px; /* TODO tok: shorthand */
+	}
+
+	// HACK: temporary workaround for T136024
+	line-height: normal;
+
+	.oo-ui-buttonElement-button {
+		.oo-ui-labelElement-label {
+			font-weight: normal;
+		}
+	}
+}
+
+.mw-echo-special-notifications {
+	overflow-y: auto;
+
+	.mw-echo-notification {
+		background-color: var(--sn-paper);
+
+		&:hover {
+			background-color: var(--sn-sunk);
+		}
+
+		&-unread {
+			color: var(--sn-ink);
+			background-color: transparent;
+			padding-right: 0;
+
+			.mw-echo-title {
+				font-weight: bold;
+			}
+
+			.mw-echo-markAsReadButton {
+				float: right;
+				display: inline-block;
+				margin: 0;
+				opacity: 0.5;
+
+				&:hover {
+					opacity: 1;
+				}
+			}
+		}
+	}
+}
+
+div.mw-htmlform-ooui-wrapper {
+	margin: 0;
+}
+
+@media all and ( max-width: ( @specialpage-hd-width - 1 ) ) {
+	/* stylelint-disable-next-line selector-class-pattern */
+	.pre-content.heading-holder {
+		// Center 'preferences' in mobile special page
+		text-align: center;
+	}
+
+	.mw-echo-special-header-link {
+		display: none;
+	}
+}
+

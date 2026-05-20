@@ -1,0 +1,500 @@
+/* ============================================================
+ * skinStyles/echo.css — Stella Nova
+ * 
+ * Snapshot inicial del CSS de la extensión Echo
+ * versión ?, licencia upstream: MIT.
+ * Capturado el 2026-05-19 desde Echo/extension.json para
+ * absorber los estilos dentro del sistema visual de Stella Nova.
+ * 
+ * Estos bloques se reescribirán gradualmente usando los tokens del
+ * skin (var(--sn-...)). Mientras tanto, sirven como referencia
+ * exacta de lo que la extensión inyecta hoy.
+ * 
+ * Cargado vía ResourceModuleSkinStyles en skin.json con prefijo `+`,
+ * lo que añade este CSS DESPUÉS del CSS original de la extensión
+ * sin reemplazarlo: la cascada hace que estas reglas ganen.
+ * ============================================================ */
+
+/* ─── Módulo: ext.echo.styles.badge ─── */
+/* archivo origen: modules/nojs/mw.echo.badge.less */
+@import 'mediawiki.skin.variables.less';
+@import '../echo.variables.less';
+
+/* stylelint-disable no-descending-specificity */
+/* We have to include the #pt-notifications selector due to monobook */
+.mw-echo-notifications-badge {
+	#pt-notifications-alert &,
+	#pt-notifications-notice & {
+		position: relative;
+		display: block;
+		box-sizing: border-box;
+		width: 1.25rem;
+		height: 1.25em;
+		margin: 0 2px;
+		// Hide the text, but keep accessible for screen-readers
+		// Later we put the counter back onscreen with a zero text-indent
+		top: 0;
+		text-indent: -9999px;
+		border-radius: var(--sn-radius);
+		cursor: pointer;
+		text-decoration: none;
+		line-height: normal;
+		opacity: 0.87;
+		color: transparent;
+
+		&:hover,
+		&:active,
+		&:focus {
+			outline: var(--sn-focus-ring);
+		}
+
+		&:focus {
+			box-shadow: 0 0 0 1px var(--sn-paper), 0 0 0 3px var(--sn-link);
+			opacity: 1;
+
+			&::after {
+				border-color: var(--sn-focus-border);
+			}
+		}
+
+		// Counter
+		&::after {
+			position: absolute;
+			display: inline-block;
+			cursor: pointer;
+			// Bring it back onscreen
+			top: 0.5625em;
+			text-indent: 0;
+			left: 55%;
+			font-size: 0.9em;
+			font-weight: bold;
+			padding: 0 0.3em;
+			border: 1px solid var(--sn-paper);
+			border-radius: var(--sn-radius);
+			background-color: @badge-counter-background-seen;
+			content: attr( data-counter-text );
+			color: var(--sn-paper);
+		}
+
+		&-dimmed {
+			opacity: 0.4;
+		}
+
+		&.mw-echo-notifications-badge-long-label {
+			margin-right: 0.5em;
+
+			&::after {
+				left: 35%;
+			}
+		}
+
+		&.mw-echo-notifications-badge-all-read {
+			opacity: 0.51;
+
+			&::after {
+				visibility: hidden;
+			}
+		}
+	}
+
+	&.oo-ui-flaggedElement-unseen,
+	&.mw-echo-unseen-notifications {
+		#pt-notifications-alert &::after {
+			background-color: var(--sn-danger);
+		}
+
+		#pt-notifications-notice &::after {
+			background-color: var(--sn-link);
+		}
+	}
+}
+/* stylelint-enable no-descending-specificity */
+
+
+/* ─── Módulo: ext.echo.styles.notifications ─── */
+/* archivo origen: modules/nojs/mw.echo.notifications.less */
+@import 'mediawiki.skin.variables.less';
+@import 'mediawiki.mixins.less';
+@import '../echo.variables.less';
+@import '../echo.mixins.less';
+
+// This is only valid for the Special:Notifications page in no-JS mode,
+// where the formatting of the notifications include the following structure
+.mw-echo-state {
+	display: block;
+	box-sizing: border-box;
+	width: 100%;
+
+	.mw-echo-notification-primary-link {
+		display: none;
+	}
+
+	.mw-echo-icon {
+		width: 1.875rem;
+		height: 1.875em;
+		float: left;
+		margin-right: 0.625rem;
+		margin-left: 0.625rem;
+	}
+
+	.mw-echo-notification {
+		background-color: var(--sn-paper);
+		color: @grey-light;
+		clear: both;
+		display: block;
+		line-height: 90%;
+		margin: 0;
+		min-height: 1.875em;
+		position: relative;
+		padding-top: 0.9375em;
+		padding-bottom: 0.625em;
+		/* Force container to expand to height of floated contents */
+		overflow: hidden;
+
+		/* stylelint-disable-next-line selector-class-pattern */
+		span.autocomment {
+			color: inherit;
+			font-style: normal;
+		}
+	}
+
+	.mw-echo-content {
+		overflow: hidden;
+		display: block;
+
+		.mw-echo-title {
+			color: var(--sn-ink);
+		}
+
+		.mw-echo-payload {
+			color: @notification-body-color;
+			margin-top: 0.25em;
+			.text-overflow( @visible: false );
+		}
+
+		.mw-echo-title,
+		.mw-echo-payload {
+			font-size: 1em;
+			line-height: 1.4em;
+
+			/* stylelint-disable-next-line selector-class-pattern */
+			.plainlinks {
+				max-width: 100%;
+				display: inline-block;
+				.text-overflow( @visible: false );
+				vertical-align: top;
+			}
+		}
+
+		.mw-echo-notification-footer {
+			color: @grey-light;
+			font-size: var(--sn-fs-xs);
+			margin-top: 0.2em;
+
+			.mw-echo-notification-footer-element {
+				display: inline-block;
+				max-width: 15em;
+				margin-right: 0.5em;
+				.text-overflow( @visible: false );
+			}
+		}
+	}
+}
+
+/* archivo origen: modules/styles/LabelIconWidget.less */
+.oo-ui-labelIconWidget {
+	display: table;
+	padding-left: 1.5em;
+}
+
+.oo-ui-labelIconWidget-row {
+	display: table-row;
+
+	.oo-ui-iconElement-icon,
+	.oo-ui-labelElement-label {
+		display: table-cell;
+		vertical-align: middle;
+	}
+
+	.oo-ui-iconElement-icon {
+		left: 0.5em;
+	}
+}
+
+
+/* ─── Módulo: ext.echo.styles.alert ─── */
+/* archivo origen: modules/nojs/mw.echo.alert.less */
+@import 'mediawiki.skin.variables.less';
+@import '../echo.variables.less';
+
+.mw-echo-alert {
+	background-color: var(--sn-warn);
+	color: var(--sn-ink);
+	border-radius: var(--sn-radius);
+	padding: 0.25em 0.8em 0.2em 0.8em;
+	font-weight: normal;
+}
+
+
+/* ─── Módulo: ext.echo.special ─── */
+/* archivo origen: modules/styles/mw.echo.ui.PaginationWidget.less */
+.mw-echo-ui-paginationWidget {
+	&-row {
+		display: flex;
+		align-items: center;
+		flex-wrap: wrap;
+	}
+
+	&-label {
+		padding: 0 0.5em;
+	}
+}
+
+/* archivo origen: modules/styles/mw.echo.ui.DatedSubGroupListWidget.less */
+@import 'mediawiki.skin.variables.less';
+@import '../echo.variables.less';
+
+.mw-echo-ui-datedSubGroupListWidget {
+	.mw-body-content &-title {
+		// Since the title is <h2> we want to specifically
+		// change the styling to bring it back to mimic a
+		// content span. We also must override the h2 rules
+		// so specificity is important
+		font-weight: inherit;
+		font-size: inherit;
+		font-family: inherit;
+		border: 0;
+
+		&-primary {
+			font-size: 1.5em;
+			margin-right: 0.5em;
+			display: inline-block;
+
+			&::first-letter {
+				text-transform: uppercase;
+			}
+		}
+
+		&-secondary {
+			font-size: 1.5em;
+			color: @grey-light;
+		}
+	}
+
+	@media all and ( max-width: ( @specialpage-hd-width - 1 ) ) {
+		.mw-echo-ui-subGroupListWidget-header-row-markAllReadButton {
+			font-size: 0.8em;
+		}
+
+		&-title-primary {
+			font-size: 1.2em;
+		}
+
+		&-title-secondary {
+			display: none;
+		}
+	}
+}
+
+/* archivo origen: modules/styles/mw.echo.ui.DatedNotificationsWidget.less */
+@import 'mediawiki.skin.variables.less';
+@import '../echo.variables.less';
+
+.mw-echo-ui-datedNotificationsWidget {
+	min-height: 5em;
+
+	// We want everything inside the widget to be
+	// pending/transparent, but not the widget itself
+	// because otherwise, the background pending animation
+	// is also transparent.
+	&.oo-ui-pendingElement-pending > * {
+		opacity: 0.5;
+	}
+
+	.mw-echo-ui-subGroupListWidget {
+		// This is a hack to make sure that this widget
+		// is the nearest scrollable widget for the submenus
+		overflow-y: auto;
+
+		&-header {
+			margin-bottom: @specialpage-separation-unit;
+		}
+	}
+}
+
+/* archivo origen: modules/styles/mw.echo.ui.NotificationsInboxWidget.less */
+@import 'mediawiki.skin.variables.less';
+@import '../echo.variables.less';
+
+/* Flexbox gap not supported in all browsers */
+/* stylelint-disable-next-line plugin/no-unsupported-browser-features */
+.mw-echo-ui-notificationsInboxWidget {
+	width: 100%;
+	max-width: @specialpage-width;
+	position: relative;
+
+	/* Flexbox gap not supported in all browsers */
+	/* stylelint-disable-next-line plugin/no-unsupported-browser-features */
+	&-row {
+		display: flex;
+		align-items: start;
+		flex-wrap: wrap;
+		gap: 1em;
+	}
+
+	&-toolbarWrapper {
+		min-height: 3.5em;
+		position: -webkit-sticky;
+		position: sticky;
+		padding-bottom: 1em;
+		padding-top: 0.5em;
+		margin-top: -0.5em;
+		top: 0;
+		z-index: 2;
+		background-color: var(--sn-paper);
+		box-shadow: 0 2px 0 0 rgba( 0, 0, 0, 0.1 );
+	}
+
+	&-cell {
+		&-placeholder {
+			flex-grow: 1;
+		}
+	}
+
+	&-sidebar {
+		flex-basis: @specialpage-sidebar-width;
+		flex-grow: 1;
+		max-width: @specialpage-sidebar-max-width;
+	}
+
+	&-main {
+		flex-basis: @specialpage-main-width;
+		flex-grow: 2;
+
+		&-toolbar {
+			&-top {
+				.mw-echo-ui-notificationsInboxWidget-row {
+					display: flex;
+					align-items: center;
+					flex-wrap: wrap;
+				}
+			}
+		}
+	}
+
+	@media all and ( max-width: ( @specialpage-hd-width - 1 ) ) {
+		// Override for the top toolbar so we get
+		// filters and pagination under one another
+		&-main {
+			min-width: 0;
+
+			&-toolbar {
+				&-top {
+					.mw-echo-ui-notificationsInboxWidget-row {
+						text-align: center;
+						justify-content: center;
+					}
+				}
+
+				&-settings {
+					.oo-ui-popupWidget-popup {
+						text-align: left;
+					}
+				}
+			}
+		}
+
+		&-cell-placeholder {
+			width: 100%;
+		}
+
+		&-sidebar {
+			display: none;
+		}
+
+		&-toolbarWrapper {
+			min-height: 7em;
+		}
+	}
+}
+
+/* archivo origen: modules/styles/mw.echo.ui.PageNotificationsOptionWidget.less */
+@import 'mediawiki.skin.variables.less';
+@import 'mediawiki.mixins.less';
+@import '../echo.variables.less';
+
+.mw-echo-ui-pageNotificationsOptionWidget {
+	clear: both;
+	box-sizing: border-box;
+	width: 100%;
+
+	&.oo-ui-optionWidget {
+		transition: background-color 100ms, color 100ms;
+
+		&-highlighted {
+			background-color: var(--sn-sunk);
+			color: var(--sn-ink);
+		}
+
+		&-selected {
+			background-color: var(--sn-nova-wash);
+			color: var(--sn-link);
+		}
+
+		&-selected&-highlighted,
+		&-pressed&-highlighted {
+			background-color: rgba( 41, 98, 204, 0.1 );
+			color: var(--sn-link);
+		}
+	}
+
+	&-row {
+		display: flex;
+	}
+
+	&-cell {
+		display: table-cell;
+		vertical-align: middle;
+	}
+
+	&.oo-ui-iconElement &-icon {
+		min-width: 1em;
+
+		.oo-ui-iconElement-icon {
+			position: relative;
+		}
+	}
+
+	&-title {
+		align-items: center;
+		display: flex;
+		flex: 1;
+		line-height: 1em;
+		min-width: 0;
+		padding: 0;
+
+		&-label {
+			display: block;
+			// Truncate text with ellipsis.
+			.text-overflow( @visible: false );
+		}
+	}
+
+	&-count {
+		min-width: 1em;
+	}
+
+	&-label-count {
+		background-color: var(--sn-sunk);
+		color: var(--sn-ink-soft);
+		padding: 0.2em 0.5em;
+		margin-left: 0.5em;
+		border-radius: var(--sn-radius);
+		white-space: nowrap;
+
+		.oo-ui-optionWidget-selected & {
+			background-color: transparent;
+			color: var(--sn-link);
+		}
+	}
+}

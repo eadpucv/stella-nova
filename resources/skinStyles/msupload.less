@@ -1,0 +1,274 @@
+/* ============================================================
+ * skinStyles/msupload.css — Stella Nova
+ * 
+ * Snapshot inicial del CSS de la extensión MsUpload
+ * versión 14.2, licencia upstream: GPL-2.0-or-later.
+ * Capturado el 2026-05-19 desde MsUpload/extension.json para
+ * absorber los estilos dentro del sistema visual de Stella Nova.
+ * 
+ * Estos bloques se reescribirán gradualmente usando los tokens del
+ * skin (var(--sn-...)). Mientras tanto, sirven como referencia
+ * exacta de lo que la extensión inyecta hoy.
+ * 
+ * Cargado vía ResourceModuleSkinStyles en skin.json con prefijo `+`,
+ * lo que añade este CSS DESPUÉS del CSS original de la extensión
+ * sin reemplazarlo: la cascada hace que estas reglas ganen.
+ * ============================================================ */
+
+/* ─── Módulo: ext.MsUpload ─── */
+/* archivo origen: resources/MsUpload.less */
+@import 'mediawiki.skin.variables.less';
+
+#msupload-container {
+	display: inline-block;
+	padding: 0.1875rem;
+	line-height: normal;
+	vertical-align: middle;
+}
+
+#msupload-container.start-loading {
+	background: url(images/msu-loading.png) no-repeat 5px 5px;
+}
+
+#msupload-select {
+	background: url(images/msu-upload-button.png) no-repeat 0;
+	width: 1.25rem;
+	height: 1.25em;
+	cursor: pointer;
+
+	&:hover {
+		opacity: 1;
+	}
+}
+
+#msupload-div {
+	background: var(--sn-sunk);
+	border-top: 1px solid var(--sn-hairline);
+	padding: 0;
+	z-index: 0;
+}
+
+#msupload-div a {
+	color: var(--sn-link);
+	cursor: pointer;
+}
+
+#msupload-div.nodragdrop {
+	border: 0;
+}
+
+#msupload-dropzone {
+	margin: 0.1875rem;
+	padding: 0.3125rem;
+	border: 1px dashed var(--sn-field-border);
+	text-align: center;
+	height: 2.5em;
+	color: var(--sn-ink);
+}
+
+.drop-over {
+	background-color: var(--sn-ok-wash);
+}
+
+#msupload-list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+#msupload-list .file {
+	background: var(--sn-sunk);
+	border-top: 1px solid var(--sn-hairline);
+	margin: 0;
+	padding: 0.625rem;
+	position: relative;
+}
+
+#msupload-list .green {
+	background-color: var(--sn-ok-wash);
+}
+
+#msupload-list .yellow {
+	background-color: var(--sn-warn-wash);
+}
+
+#msupload-list .red {
+	background-color: var(--sn-danger-wash);
+}
+
+#msupload-list .file .file-type {
+	padding: 0.625rem;
+	background: url(images/msu-globe.png) no-repeat 0 0;
+	overflow: hidden;
+	position: absolute;
+}
+
+#msupload-list .file .image {
+	background: url(images/msu-thumb-image.png) no-repeat 0 0;
+}
+
+#msupload-list .file .video {
+	background: url(images/msu-thumb-video.png) no-repeat 0 0;
+}
+
+#msupload-list .file .pdf {
+	background: url(images/msu-thumb-pdf.png) no-repeat 0 0;
+}
+
+#msupload-list .file .document {
+	background: url(images/msu-thumb-document.png) no-repeat 0 0;
+}
+
+#msupload-list .file .ok {
+	background: url(images/msu-ok.png) no-repeat 0 0;
+}
+
+#msupload-list .file .error {
+	background: url(images/msu-error.png) no-repeat 0 0;
+}
+
+#msupload-list .file .file-load {
+	background: none;
+	cursor: pointer;
+	display: block;
+	margin: 0;
+	padding: 0;
+	top: 0.3125em;
+	left: 0.3125rem;
+}
+
+#msupload-list .file .file-load canvas {
+	display: block;
+	max-width: 1.875rem;
+	min-height: 1.875em;
+}
+
+#msupload-list .file .file-name {
+	font-weight: bold;
+	margin-left: 2.188rem;
+	padding: 0.1875rem;
+}
+
+#msupload-list .file .file-name:hover {
+	padding: 0.1875rem;
+	background-color: white;
+}
+
+#msupload-list .file .file-size {
+	color: var(--sn-ink-soft);
+	margin: 0 0.625rem;
+}
+
+
+#msupload-list .file-progress-state {
+	float: right;
+}
+
+#msupload-list .file .file-cancel {
+	background: url(images/msu-close.png) no-repeat 0 0;
+	cursor: pointer;
+	float: right;
+	height: 1.25em;
+	margin-left: 0.3125rem;
+	padding: 5px 10px; /* TODO tok: shorthand */
+
+	&:hover {
+		opacity: 1;
+	}
+}
+
+#msupload-list .file .file-loading {
+	background: url(images/msu-loading.png) no-repeat 0 0;
+	margin: 0 0.3125rem;
+	padding: 1px 8px; /* TODO tok: shorthand */
+}
+
+#msupload-list .file .file-warning {
+	color: var(--sn-ink);
+	font-size: 80%;
+	padding: 2px 5px; /* TODO tok: shorthand */
+	font-style: italic;
+	display: block;
+	margin-left: 2.188rem;
+}
+
+#msupload-list .file .file-warning p {
+	display: inline;
+}
+
+#msupload-list .file .file-warning figure,
+#msupload-list .file .file-warning div.thumb {
+	display: none;
+	position: absolute;
+	right: 0.625rem;
+	z-index: 10;
+}
+#msupload-list .file .file-warning div.thumbinner {
+	background: none;
+	border: 0;
+	overflow: visible;
+	padding: 0;
+}
+
+#msupload-list .file .file-name-input {
+	background: white;
+	border: 0;
+	display: inline;
+	font: inherit;
+	font-weight: bold;
+	line-height: normal;
+	margin-left: 2.188rem;
+	outline: none;
+	padding: 0.1875rem;
+}
+
+#msupload-list .file .file-extension {
+	font-weight: bold;
+}
+
+#msupload-list .file .file-size {
+	color: var(--sn-ink-soft);
+}
+
+#msupload-list .file .file-error {
+	color: var(--sn-ink);
+}
+
+.msupload-check-index {
+	float: right;
+	margin-top: 0.4375em;
+}
+
+.msupload-check-span {
+	float: right;
+	color: var(--sn-ink);
+}
+
+#msupload-bottom {
+	border-top: 1px solid var(--sn-hairline);
+	padding: var(--sn-s-2);
+	height: 1.375em;
+}
+
+#msupload-bottom a {
+	font-weight: bold;
+	margin-right: 1.25rem;
+}
+
+#msupload-bottom #msupload-files {
+	padding: 3px 0 3px 25px; /* TODO tok: shorthand */
+	background: url(images/msu-upload-icon.png) no-repeat 0 0;
+	height: 0.75em;
+}
+
+#msupload-bottom .spacer {
+	border-left: 1px solid var(--sn-field-border);
+	margin: 0 var(--sn-s-2);
+	width: 1px;
+	background-color: var(--sn-hairline);
+}
+
+#wikiEditor-section-advanced .options {
+	z-index: 1;
+}
+

@@ -1,0 +1,82 @@
+/* ============================================================
+ * skinStyles/replacetext.css — Stella Nova
+ * 
+ * Snapshot inicial del CSS de la extensión ReplaceText
+ * versión 1.8, licencia upstream: GPL-2.0-or-later.
+ * Capturado el 2026-05-19 desde ReplaceText/extension.json para
+ * absorber los estilos dentro del sistema visual de Stella Nova.
+ * 
+ * Estos bloques se reescribirán gradualmente usando los tokens del
+ * skin (var(--sn-...)). Mientras tanto, sirven como referencia
+ * exacta de lo que la extensión inyecta hoy.
+ * 
+ * Cargado vía ResourceModuleSkinStyles en skin.json con prefijo `+`,
+ * lo que añade este CSS DESPUÉS del CSS original de la extensión
+ * sin reemplazarlo: la cascada hace que estas reglas ganen.
+ * ============================================================ */
+
+/* ─── Módulo: ext.ReplaceTextStyles ─── */
+/* archivo origen: resources/ext.ReplaceTextStyles.less */
+@import 'mediawiki.skin.variables.less';
+
+.ext-replacetext-invert {
+	margin-top: 1.25em;
+}
+
+.ext-replacetext-searchmatch {
+	font-weight: bold;
+}
+
+.ext-replacetext-searchoptions {
+	// Support: Firefox, needs `clear: both` on `fieldset` when zoom level > 100%, see T176499
+	clear: both;
+	padding: 0.5em 0.75em 0.75em 0.75em;
+	background-color: var(--sn-paper);
+	margin: -1px 0 0;
+	border: 1px solid var(--sn-hairline);
+	border-radius: 0 0 2px 2px;
+
+	h4 {
+		padding: 0;
+		margin: 0;
+		float: left;
+	}
+
+	table {
+		float: left;
+		margin: 0 1em 0 0;
+		border-collapse: collapse;
+	}
+
+	td {
+		padding: 0 1em 0 0;
+		white-space: nowrap;
+	}
+
+	.ext-replacetext-divider {
+		clear: both;
+		border-bottom: 1px solid var(--sn-hairline-soft);
+		padding-top: 0.5em;
+		margin-bottom: 0.5em;
+	}
+}
+
+.ext-replacetext-search-togglebox {
+	float: right;
+
+	label {
+		margin-right: 0.25em;
+	}
+
+	input {
+		margin-left: 0.25em;
+	}
+}
+
+.client-nojs {
+	.ext-replacetext-search-togglebox,
+	.ext-replacetext-invert {
+		display: none;
+	}
+}
+

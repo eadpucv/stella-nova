@@ -1,0 +1,270 @@
+/* ============================================================
+ * skinStyles/inlinecomments.css — Stella Nova
+ * 
+ * Snapshot inicial del CSS de la extensión InlineComments
+ * versión 1.0, licencia upstream: GPL-2.0-or-later.
+ * Capturado el 2026-05-19 desde InlineComments/extension.json para
+ * absorber los estilos dentro del sistema visual de Stella Nova.
+ * 
+ * Estos bloques se reescribirán gradualmente usando los tokens del
+ * skin (var(--sn-...)). Mientras tanto, sirven como referencia
+ * exacta de lo que la extensión inyecta hoy.
+ * 
+ * Cargado vía ResourceModuleSkinStyles en skin.json con prefijo `+`,
+ * lo que añade este CSS DESPUÉS del CSS original de la extensión
+ * sin reemplazarlo: la cascada hace que estas reglas ganen.
+ * ============================================================ */
+
+/* ─── Módulo: ext.inlineComments.sidenotes.styles ─── */
+/* archivo origen: resources/sidenotes.css */
+html {
+	scroll-behavior: smooth;
+}
+
+@media screen and not ( min-width: 600px ) {
+	#mw-content-text #mw-inlinecomment-annotations .mw-inlinecomment-aside {
+		/* In mobile view, force JS not to absolutely position */
+		position: static !important;
+	}
+
+	#mw-content-text #mw-inlinecomments-precontainer {
+		width: 100% !important;
+	}
+
+	#mw-content-text #mw-inlinecomment-annotations .mw-inlinecomment-aside.mw-inlinecomment-selected {
+		margin-left: 0.3125rem;
+	}
+}
+
+#mw-content-text #mw-inlinecomment-annotations {
+	width: max-content;
+	margin-top: 1%;
+}
+
+#mw-inlinecomments-precontainer {
+	padding-right: 3rem;
+}
+
+#mw-inlinecomments-precontainer p {
+	width: 98%;
+}
+
+#mw-content-text #mw-inlinecomment-annotations .mw-inlinecomment-aside {
+	/* js sets position absolute to have good non-js fallback */
+	width: 16.25rem;
+	transition: all 300ms cubic-bezier( 0.655, 0.18, 0.3, 1.255 );
+	left: 0.625rem;
+	border: 1px var(--sn-ink-faint) solid;
+	border-radius: 2px;
+	padding: 3px 14px 0px 14px; /* TODO tok: shorthand */
+	margin-bottom: 0.625em;
+	background-color: var(--sn-sunk);
+}
+
+/* Prevent resizing textboxes greater than element size. */
+#mw-inlinecomment-annotations textarea {
+	max-width: 100%;
+}
+
+#mw-content-text #mw-inlinecomment-annotations .mw-inlinecomment-aside p {
+	text-align: left;
+}
+
+#mw-content-text #mw-inlinecomment-annotations .mw-inlinecomment-aside.mw-inlinecomment-selected {
+	left: -0.625rem;
+	opacity: 1;
+	z-index: 1;
+	background-color: var(--sn-sunk);
+	border: 1px var(--sn-hairline) solid;
+	box-shadow: 0 0 30px var(--sn-ink-faint);
+}
+
+.mw-inlinecomment-author:before {
+	content: '— ';
+}
+
+.mw-inlinecomment-author {
+	font-size: small;
+	padding-left: 1em;
+	margin-bottom: 0.9375em;
+}
+
+.mw-inlinecomment-tools {
+	display: none;
+}
+
+.mw-inlinecomment-inittools,
+.mw-inlinecomment-selected .mw-inlinecomment-tools {
+	display: block;
+	margin: 14px 0px 12px 0; /* TODO tok: shorthand */
+	padding: 7px 5px; /* TODO tok: shorthand */
+}
+
+.mw-inlinecomment-inittools .mw-inlinecomment-buttons,
+.mw-inlinecomment-selected .mw-inlinecomment-buttons {
+	margin-top: 0.9375em;
+}
+
+#mw-content-text .mw-annotation-highlight:hover,
+#mw-content-text .mw-annotation-highlight:hover .mw-annotation-highlight
+{
+	background-color: var( --sidenoteAnchorColorHover, rgba( 247, 207, 105, 0.7137254902 ) );
+}
+
+#mw-content-text .mw-annotation-highlight.mw-annotation-selected,
+#mw-content-text .mw-annotation-highlight.mw-annotation-selected .mw-annotation-highlight
+{
+	background-color: var( --sidenoteAnchorColorSelected, #f5c955 );
+}
+
+#mw-content-text .mw-annotation-highlight {
+	background-color: var( --sidenoteAnchorColor, #f8e4b1 );
+	/* context-menu isn't technically right, but it looks like a comment */
+	cursor: context-menu;
+}
+
+.userAutocompleteDropdown {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	border-style: solid;
+	border-width: 0.5px;
+}
+
+.userAutocompleteDropdownItem {
+	display: block;
+	padding: 0.1875rem;
+	text-decoration: none;
+	color: black;
+}
+
+.userAutocompleteDropdownItem:hover {
+	background-color: #2a4b8d;
+	color: white;
+	text-decoration: none;
+}
+
+.mw-inlinecomment-editlink {
+	all: unset;
+	cursor: pointer;
+	font-size: x-large;
+	padding: 0;
+	height: min-content;
+}
+
+.mw-inlinecomment-editlink:hover {
+	font-weight: bold;
+}
+
+.mw-inlinecomments-editedlabel {
+	color: gray;
+	margin-bottom: 1rem;
+	margin-right: 2.5rem;
+}
+
+.mw-inlinecomment-selected .mw-inlinecomment-comment.currentedit {
+	background: aliceblue;
+	border-style: solid;
+	border-width: 0.5px;
+	border-color: blue;
+	padding-left: 0.5rem;
+	padding-bottom: 0.5rem;
+}
+
+.mw-inlinecomment-selected .currentedit .mw-inlinecomment-editlink {
+	display: none !important;
+}
+
+.mw-inlinecomment-comment {
+	width: 100%;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+}
+
+
+/* ─── Módulo: ext.inlineComments.diff.styles ─── */
+/* archivo origen: resources/sidenotesDiff.css */
+.mw-inlinecomments-comment-added {
+	background-color: rgb(182, 215, 132);
+	float: right;
+	padding: 0.5rem;
+	margin-bottom: 1rem;
+	width: max-content;
+	border-radius: 0.5rem;
+	border-style: solid;
+	border-color: lightgray;
+	border-width: 1px;
+}
+
+.mw-inlinecomments-comment-removed {
+	background-color: rgb(241, 138, 138);
+	float: left;
+	padding: 0.5rem;
+	margin-bottom: 1rem;
+	width: max-content;
+	border-radius: 0.5rem;
+	border-style: solid;
+	border-color: lightgray;
+	border-width: 1px;
+}
+
+.mw-inlinecomments-comment-changed {
+	background-color: rgb(239, 243, 169);
+	float: right;
+	padding: 0.5rem;
+	margin-bottom: 1rem;
+	width: max-content;
+	border-radius: 0.5rem;
+	border-style: solid;
+	border-color: lightgray;
+	border-width: 1px;
+}
+
+.mw-inlinecomments-comment-changed-old {
+	text-decoration: line-through;
+	background-color: rgb(241, 138, 138);
+}
+
+.mw-inlinecomments-comment-unchanged {
+	background-color:gainsboro;
+	float: left;
+	padding: 0.5rem;
+	margin-bottom: 1rem;
+	width: max-content;
+	border-radius: 0.5rem;
+	border-style: solid;
+	border-color: lightgray;
+	border-width: 1px;
+}
+
+.mw-inlinecomments-diff {
+	display: flex;
+	flex-direction: column;
+}
+
+.mw-inlinecomments-diff-target-text {
+	background-color: rgb(183, 235, 244);
+	padding: 0.5rem;
+	border-style: solid;
+	border-width: 1px;
+}
+
+.mw-inlinecomments-diff-username {
+	font-size: smaller;
+	color: rgba(92, 89, 89, 0.875);
+	font-weight: bold;
+}
+
+.mw-inlinecomments-comment-diff {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+}
+
+.mw-inlinecomments-diff-sign {
+	font-size: 1.5rem;
+	margin-bottom: 1rem;
+	margin-right: 0.5rem;
+}
+

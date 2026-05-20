@@ -1,0 +1,25 @@
+/* ============================================================
+ * skinStyles/easytimeline.css — Stella Nova
+ * 
+ * Snapshot inicial del CSS de la extensión EasyTimeline (Timeline)
+ * versión ?, licencia upstream: GPL-2.0-only.
+ * Capturado el 2026-05-19 desde EasyTimeline/extension.json para
+ * absorber los estilos dentro del sistema visual de Stella Nova.
+ * 
+ * Estos bloques se reescribirán gradualmente usando los tokens del
+ * skin (var(--sn-...)). Mientras tanto, sirven como referencia
+ * exacta de lo que la extensión inyecta hoy.
+ * 
+ * Cargado vía ResourceModuleSkinStyles en skin.json con prefijo `+`,
+ * lo que añade este CSS DESPUÉS del CSS original de la extensión
+ * sin reemplazarlo: la cascada hace que estas reglas ganen.
+ * ============================================================ */
+
+/* ─── Módulo: ext.timeline.styles ─── */
+/* archivo origen: resources/ext.timeline.styles/timeline.css */
+/* Timelines can be very long and huge, like tables, so they should be scrollable. */
+.timeline-wrapper {
+	max-width: 100%;
+	overflow: auto;
+}
+

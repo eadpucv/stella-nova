@@ -1,0 +1,61 @@
+/* ============================================================
+ * skinStyles/wikieditor.css — Stella Nova
+ * 
+ * Snapshot inicial del CSS de la extensión WikiEditor
+ * versión 0.5.4, licencia upstream: GPL-2.0-or-later.
+ * Capturado el 2026-05-19 desde WikiEditor/extension.json para
+ * absorber los estilos dentro del sistema visual de Stella Nova.
+ * 
+ * Estos bloques se reescribirán gradualmente usando los tokens del
+ * skin (var(--sn-...)). Mientras tanto, sirven como referencia
+ * exacta de lo que la extensión inyecta hoy.
+ * 
+ * Cargado vía ResourceModuleSkinStyles en skin.json con prefijo `+`,
+ * lo que añade este CSS DESPUÉS del CSS original de la extensión
+ * sin reemplazarlo: la cascada hace que estas reglas ganen.
+ * ============================================================ */
+
+/* ─── Módulo: ext.wikiEditor.styles ─── */
+/* archivo origen: modules/ext.wikiEditor.toolbar.styles.less */
+/**
+ * CSS for WikiEditor
+ */
+
+/* Hide vanilla MediaWiki's "Editing help" link, as we provide it in the toolbar */
+.client-js .editButtons {
+	.editHelp {
+		display: none;
+	}
+}
+
+/* stylelint-disable selector-max-id */
+
+form#editform {
+	margin: 0;
+	padding: 0;
+}
+
+#wpTextbox1 {
+	line-height: 1.5em;
+	resize: vertical;
+}
+
+/* Hide the WikiEditor toolbar until its css has loaded */
+.wikiEditor-ui-toolbar {
+	display: none;
+}
+
+/* This disables margin collapse for the children */
+.client-js #editform::before,
+.client-js #editform::after {
+	content: ' ';
+	display: table;
+}
+/* Set a margin on the textarea while we load, matching the height,
+ * of the wikieditor toolbar to prevent reflow. After the wikieditor ui is loaded,
+ * the textarea is wrapped inside wikieditor-ui div and no longer matches */
+.client-js .mw-editform > #wpTextbox1 {
+	/* Toolbar height + padding + bottom border = 26 + 2*3 + 1 */
+	margin-top: 33px;
+}
+

@@ -1,0 +1,83 @@
+/* ============================================================
+ * skinStyles/templatedata.css — Stella Nova
+ * 
+ * Snapshot inicial del CSS de la extensión TemplateData
+ * versión 0.1.2, licencia upstream: GPL-2.0-or-later.
+ * Capturado el 2026-05-19 desde TemplateData/extension.json para
+ * absorber los estilos dentro del sistema visual de Stella Nova.
+ * 
+ * Estos bloques se reescribirán gradualmente usando los tokens del
+ * skin (var(--sn-...)). Mientras tanto, sirven como referencia
+ * exacta de lo que la extensión inyecta hoy.
+ * 
+ * Cargado vía ResourceModuleSkinStyles en skin.json con prefijo `+`,
+ * lo que añade este CSS DESPUÉS del CSS original de la extensión
+ * sin reemplazarlo: la cascada hace que estas reglas ganen.
+ * ============================================================ */
+
+/* ─── Módulo: ext.templateData ─── */
+/* archivo origen: modules/ext.templateData/templateData.less */
+.mw-templatedata-doc-params {
+	caption {
+		text-align: left;
+	}
+
+	.mw-templatedata-caption {
+		font-size: 1.2em;
+	}
+
+	tbody > tr > th {
+		text-align: left;
+		font-weight: normal;
+	}
+}
+
+.mw-templatedata-doc-param-alias {
+	color: var(--sn-ink-soft); /* required to pass WCAG AAA */
+}
+
+.mw-templatedata-doc-muted {
+	font-style: italic;
+	color: var(--sn-ink-soft); /* required to pass WCAG AAA */
+}
+
+.mw-templatedata-doc-param-status-required {
+	font-weight: bold;
+}
+
+.mw-templatedata-format {
+	font-weight: normal;
+	font-size: 0.85em;
+	margin-left: 0.25em;
+}
+
+.mw-templateData-maps-panel-button {
+	margin-bottom: 0.5em;
+}
+
+.mw-templateData-template-map-list-menu-panel {
+	border-right: 1px solid var(--sn-hairline);
+}
+
+.mw-templateData-template-remove-map-button {
+	margin-bottom: 0.8em;
+}
+
+.oo-ui-menuLayout.oo-ui-menuLayout-showMenu.oo-ui-menuLayout-top > .oo-ui-menuLayout-menu {
+	height: 4em;
+	text-align: center;
+	box-shadow: 0 5px 16px -8px #0000001f;
+}
+
+.tdg-templateDataDialog-addingNewMap .oo-ui-menuLayout.oo-ui-menuLayout-showMenu.oo-ui-menuLayout-top > .oo-ui-menuLayout-menu {
+	height: 6.6em;
+}
+
+.tdg-templateDataDialog-editMapsPanel .oo-ui-menuLayout > .oo-ui-menuLayout-content {
+	top: 4em;
+}
+
+.tdg-templateDataDialog-addingNewMap .oo-ui-menuLayout > .oo-ui-menuLayout-content {
+	top: 6.6em;
+}
+

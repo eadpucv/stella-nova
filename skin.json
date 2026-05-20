@@ -2,13 +2,17 @@
 	"manifest_version": 2,
 	"name": "StellaNova",
 	"namemsg": "skinname-stellanova",
-	"version": "0.0.3",
-	"author": [ "Herbert Spencer" ],
+	"version": "0.0.4",
+	"author": [
+		"Herbert Spencer"
+	],
 	"url": "https://github.com/eadpucv/stella-nova",
 	"descriptionmsg": "stellanova-desc",
 	"license-name": "GPL-2.0-or-later",
 	"type": "skin",
-	"requires": { "MediaWiki": ">= 1.43.0" },
+	"requires": {
+		"MediaWiki": ">= 1.43.0"
+	},
 	"AutoloadNamespaces": {
 		"MediaWiki\\Skins\\StellaNova\\": "includes/"
 	},
@@ -20,8 +24,12 @@
 					"name": "stellanova",
 					"responsive": true,
 					"templateDirectory": "includes/templates",
-					"styles": [ "skins.stellanova.styles" ],
-					"scripts": [ "skins.stellanova.scripts" ],
+					"styles": [
+						"skins.stellanova.styles"
+					],
+					"scripts": [
+						"skins.stellanova.scripts"
+					],
 					"messages": [
 						"sitetitle",
 						"searchbutton",
@@ -80,7 +88,11 @@
 			]
 		}
 	},
-	"MessagesDirs": { "StellaNova": [ "i18n" ] },
+	"MessagesDirs": {
+		"StellaNova": [
+			"i18n"
+		]
+	},
 	"ExtensionMessagesFiles": {
 		"StellaNovaMagic": "StellaNova.i18n.magic.php"
 	},
@@ -109,34 +121,68 @@
 				"fonts.css": {},
 				"tokens.css": {},
 				"stella-nova.css": {},
-				"print.css": { "media": "print" }
+				"print.css": {
+					"media": "print"
+				}
 			}
 		},
 		"skins.stellanova.scripts": {
-			"scripts": [ "skin.js" ],
-			"dependencies": [ "mediawiki.api" ]
+			"scripts": [
+				"skin.js"
+			],
+			"dependencies": [
+				"mediawiki.api"
+			]
 		}
 	},
 	"ResourceModuleSkinStyles": {
 		"stellanova": {
 			"localBasePath": "resources",
 			"remoteSkinPath": "StellaNova/resources",
-			"+ext.smw.styles": "skinStyles/smw.css",
+			"+ext.3DAlloy": "skinStyles/3dalloy.css",
+			"+ext.MsUpload": "skinStyles/msupload.less",
+			"+ext.ReplaceTextStyles": "skinStyles/replacetext.less",
+			"+ext.SimpleBatchUpload": "skinStyles/simplebatchupload.css",
+			"+ext.SimpleBatchUpload.jquery-file-upload": "skinStyles/simplebatchupload.css",
+			"+ext.categoryTree.styles": "skinStyles/categorytree.less",
+			"+ext.cite.styles": "skinStyles/cite.less",
+			"+ext.cite.ux-enhancements": "skinStyles/cite.less",
+			"+ext.confirmEdit.editPreview.ipwhitelist.styles": "skinStyles/confirmedit.css",
+			"+ext.confirmEdit.simpleCaptcha": "skinStyles/confirmedit.css",
+			"+ext.echo.special": "skinStyles/echo.base.less",
+			"+ext.echo.styles.alert": "skinStyles/echo.base.less",
+			"+ext.echo.styles.badge": "skinStyles/echo.base.less",
+			"+ext.echo.styles.notifications": "skinStyles/echo.base.less",
+			"+ext.echo.styles.special": "skinStyles/echo.base.less",
+			"+ext.imagemap.styles": "skinStyles/imagemap.css",
+			"+ext.inlineComments.diff.styles": "skinStyles/inlinecomments.css",
+			"+ext.inlineComments.sidenotes.styles": "skinStyles/inlinecomments.css",
+			"+ext.maps.leaflet.fullscreen": "skinStyles/maps.base.css",
+			"+ext.maps.leaflet.library": "skinStyles/maps.base.css",
+			"+ext.maps.leaflet.markercluster": "skinStyles/maps.base.css",
+			"+ext.math.styles": "skinStyles/math.css",
+			"+ext.mermaid": "skinStyles/mermaid.css",
+			"+ext.nuke.styles": "skinStyles/nuke.css",
+			"+ext.pageNotice": "skinStyles/pagenotice.css",
+			"+ext.pageforms.checkboxes.styles": "skinStyles/pageforms.css",
+			"+ext.pageforms.forminput.styles": "skinStyles/pageforms.css",
+			"+ext.pageforms.main.styles": "skinStyles/pageforms.css",
+			"+ext.pageforms.rating.styles": "skinStyles/pageforms.css",
+			"+ext.pageforms.submit.styles": "skinStyles/pageforms.css",
+			"+ext.smw.ask.styles": "skinStyles/smw.css",
+			"+ext.smw.browse.styles": "skinStyles/smw.css",
+			"+ext.smw.deferred.styles": "skinStyles/smw.css",
 			"+ext.smw.factbox.styles": "skinStyles/smw.css",
 			"+ext.smw.page.styles": "skinStyles/smw.css",
-			"+ext.smw.table.styles": "skinStyles/smw.css",
-			"+ext.smw.browse.styles": "skinStyles/smw.css",
-			"+ext.smw.ask.styles": "skinStyles/smw.css",
-			"+ext.smw.tooltip.styles": "skinStyles/smw.css",
 			"+ext.smw.special.styles": "skinStyles/smw.css",
-			"+ext.smw.deferred.styles": "skinStyles/smw.css",
+			"+ext.smw.styles": "skinStyles/smw.css",
+			"+ext.smw.table.styles": "skinStyles/smw.css",
+			"+ext.smw.tooltip.styles": "skinStyles/smw.css",
 			"+ext.srf": "skinStyles/srf.css",
 			"+ext.srf.datatables.v": "skinStyles/srf.css",
-			"+ext.pageforms.main.styles": "skinStyles/pageforms.css",
-			"+ext.pageforms.forminput.styles": "skinStyles/pageforms.css",
-			"+ext.pageforms.submit.styles": "skinStyles/pageforms.css",
-			"+ext.pageforms.checkboxes.styles": "skinStyles/pageforms.css",
-			"+ext.pageforms.rating.styles": "skinStyles/pageforms.css",
+			"+ext.templateData": "skinStyles/templatedata.css",
+			"+ext.timeline.styles": "skinStyles/easytimeline.css",
+			"+ext.wikiEditor.styles": "skinStyles/wikieditor.css",
 			"+oojs-ui-core.styles": "skinStyles/oojs-ui.css",
 			"+oojs-ui-widgets.styles": "skinStyles/oojs-ui.css",
 			"+oojs-ui-windows.styles": "skinStyles/oojs-ui.css"
