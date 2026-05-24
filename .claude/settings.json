@@ -1,9 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(curl -s \"http://casiopea.local/load.php?modules=skins.stellanova.scripts&only=scripts&skin=stellanova&debug=true\")",
-      "Bash(curl -s \"http://casiopea.local/?debug=true\")",
-      "Bash(python3 scripts/build-specimen.py)"
-    ]
-  }
-}
