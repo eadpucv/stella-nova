@@ -150,8 +150,11 @@ a:visited { color: var(--sn-link-visited); }
 	flex: 0 1 24rem; max-width: 32rem; min-width: 0;
 	display: flex; align-items: center;
 }
-.sn-search-trigger { display: none; }              /* sólo en compact */
-.sn-search-close   { display: none; }              /* sólo en compact-modal */
+/* Trigger y close: especificidad bumpeada (.sn-searchbox …) para ganarle
+   a .sn-iconbtn { display: inline-grid }, que aparece más abajo en la
+   cascada y los re-mostraría en desktop si fueran solo .sn-search-trigger. */
+.sn-searchbox .sn-search-trigger { display: none; }   /* sólo en compact */
+.sn-searchbox .sn-search-close   { display: none; }   /* sólo en compact-modal */
 .sn-search {
 	flex: 1; min-width: 0;
 	height: var(--sn-ctl); box-sizing: border-box;
@@ -241,6 +244,7 @@ a:visited { color: var(--sn-link-visited); }
 	width: var(--sn-ctl); height: var(--sn-ctl); flex: none;
 	box-sizing: border-box;
 	color: var(--sn-ink); text-decoration: none;
+	background: transparent;
 	border: 1px solid transparent; border-radius: var(--sn-radius);
 	transition: background var(--sn-dur-1), border-color var(--sn-dur-1), color var(--sn-dur-1);
 }
@@ -510,29 +514,29 @@ a:visited { color: var(--sn-link-visited); }
    a una medida de lectura: el ancho lo gobierna la preferencia
    ContentWidth a nivel de la HOJA (.sn-paper-wrap), no por elemento. */
 
-/* Títulos en Work Sans (serif en títulos: aún no). h2 es la sección
-   sobria con filete; h3 es la subsección en kicker (mayúsculas + nova);
-   h4–h6 son labels secundarios. Cada uno con su bloque propio para que
-   el ritmo tipográfico sea legible de un vistazo. */
+/* Títulos en Work Sans. h2 es la sección sobria; h3 es la subsección en
+   kicker (mayúsculas + nova); h4–h6 son labels secundarios. Interlineado
+   homologado a --sn-leading-tight (1.22), igual que el firstHeading: ritmo
+   vertical coherente entre todos los niveles. Sin filetes ni reglas
+   horizontales — la jerarquía la hacen tamaño, peso y color. */
 .sn-body h2 {
 	font-family: var(--sn-font-text);
-	font-weight: 680; line-height: 1.25;
+	font-weight: 680; line-height: var(--sn-leading-tight);
 	letter-spacing: -.012em; color: var(--sn-ink);
 	font-size: var(--sn-fs-lg);
 	margin: var(--sn-s-6) 0 var(--sn-s-3);
-	padding-bottom: var(--sn-s-2);
-	border-bottom: 1px solid var(--sn-hairline-soft);
 }
 .sn-body h3 {
 	font-family: var(--sn-font-text);
-	font-weight: 470; line-height: 1.25;
+	font-weight: 470; line-height: var(--sn-leading-tight);
 	letter-spacing: .035ex; color: var(--sn-nova);
 	text-transform: uppercase;
 	font-size: var(--sn-fs-md);
 	margin: var(--sn-s-5) 0 var(--sn-s-2);
 }
 .sn-body :is(h4, h5, h6) {
-	font-family: var(--sn-font-text); line-height: 1.3; color: var(--sn-ink);
+	font-family: var(--sn-font-text); line-height: var(--sn-leading-tight);
+	color: var(--sn-ink);
 }
 .sn-body h4 { font-size: calc(var(--sn-fs-base) * 1.02);
 	margin: var(--sn-s-5) 0 var(--sn-s-2); font-weight: 620;
@@ -856,8 +860,13 @@ canvas, iframe,
 	font-size: var(--sn-fs-sm); color: var(--sn-ink-soft);
 	margin-top: var(--sn-s-7);
 }
+/* El ancho del pie se alinea con la HOJA (--sn-measure), no con la chrome
+   (--sn-shell), para que las 3 columnas queden bajo la columna de lectura
+   y no exhiban espacio muerto a los lados. Las columnas van a 1fr puro,
+   estiradas: contenido anclado al borde izquierdo de cada pista, sin
+   centrados artificiales que volvían el rejuntado irregular. */
 .sn-footer-inner {
-	max-width: var(--sn-shell); margin-inline: auto;
+	max-width: var(--sn-measure); margin-inline: auto;
 	padding: var(--sn-s-6) var(--sn-s-4);
 	display: grid; gap: var(--sn-s-6) var(--sn-s-7);
 	grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1032,36 +1041,31 @@ canvas, iframe,
 }
 
 /* ─────────────────────── Responsive ─────────────────────── */
-/* Cabecera despejada: marca + usuario en la fila superior; buscador a lo
-   ancho; los menús Navegación/Página debajo. */
+/* Cabecera: por arriba de 48rem (tablet vertical) la barra es una sola
+   línea con el form de búsqueda inline. Por debajo entra el modo COMPACT
+   completo (ver bloque @48rem más abajo): el form se colapsa, aparece el
+   trigger-lupa y todos los paneles se presentan como modal a pantalla
+   completa. No hay estado intermedio de cabecera envuelta a 2 líneas. */
 @media (max-width: 64rem) {
 	.sn-footer-inner { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
-@media (max-width: 56rem) {
-	.sn-header-bar { flex-wrap: wrap; row-gap: var(--sn-s-3); }
-	.sn-brandnav   { order: 1; }
-	.sn-usertools  { order: 2; margin-left: auto; }
-	.sn-searchbox  { order: 3; flex-basis: 100%; max-width: none; }
-	.sn-pagecluster { order: 4; }
-}
 @media (max-width: 40rem) {
-	.sn-paper {
-		border-radius: 0;
-		margin-inline: calc(-1 * var(--sn-s-4));
-		border-left: 0; border-right: 0;
-	}
 	.sn-footer-inner { grid-template-columns: 1fr; gap: var(--sn-s-5); }
 }
 
-/* ─── COMPACT (teléfono): una línea de íconos · modales fullscreen ───
-   La barra superior queda como una sola línea de íconos accionables,
-   espaciados uniformemente. CADA panel emergente (Navegación · Página ·
-   Usuario · Búsqueda · Preferencias) se presenta con EL MISMO patrón:
-   modal a pantalla completa, fondo papel, cabecera sticky con título +
-   botón cerrar (X), cuerpo con scroll propio, una sola columna. No hay
-   scrim — el modal cubre todo. Cumple TransientPanel (DismissableByEscape,
-   FocusContained, SelfContainedScroll y descarte por X). */
-@media (max-width: 36rem) {
+/* ─── COMPACT (tablet vertical y menos): una línea de íconos · modales
+   fullscreen ─── Punto de quiebre 48rem (≈ 768 px, iPad portrait) elegido
+   para que el form de búsqueda nunca llegue a envolverse en 2 líneas: por
+   encima cabe inline; por debajo se colapsa y aparece la lupa. La barra
+   superior queda como una sola línea de íconos accionables, espaciados
+   uniformemente. CADA panel emergente (Navegación · Página · Usuario ·
+   Búsqueda · Preferencias) se presenta con EL MISMO patrón: modal a
+   pantalla completa, fondo papel, cabecera sticky con título + botón
+   cerrar (X), cuerpo con scroll propio, una sola columna. No hay scrim —
+   el modal cubre todo. Cumple TransientPanel (DismissableByEscape,
+   FocusContained, SelfContainedScroll y descarte por X). El JS sincroniza
+   el mismo umbral en COMPACT_MQ. */
+@media (max-width: 48rem) {
 	/* — La barra: una línea, reparto homogéneo, sin envolver — */
 	.sn-header-bar {
 		flex-wrap: nowrap;
@@ -1075,15 +1079,32 @@ canvas, iframe,
 	.sn-brandnav, .sn-pagecluster, .sn-usertools { gap: var(--sn-s-1); }
 	.sn-usertools { margin-left: 0; }
 
+	/* Layout sin márgenes: la hoja va borde-a-borde y se pega contra la
+	   barra superior arriba y contra el pie abajo — sin padding ambient en
+	   el shell, sin radius, sin bordes laterales, sin sombra (la hoja ES la
+	   pantalla). Se mantiene sólo la línea inferior, que coincide con el
+	   border-top del pie — al colapsarse con margin-top:0 forman un único
+	   filete entre hoja y pie, no doble. */
+	.sn-shell { padding: 0; }
+	.sn-paper {
+		border-radius: 0;
+		border-left: 0; border-right: 0; border-top: 0;
+		box-shadow: none;
+		margin-inline: 0;
+	}
+	.sn-footer { margin-top: 0; }
+
 	/* Isotipo: glifo cuadrado en lugar del wordmark. */
 	.sn-isotype .sn-isotype-full    { display: none; }
 	.sn-isotype .sn-isotype-compact { display: contents; }
 
 	/* Búsqueda: form colapsado, trigger (lupa) visible — sin fondo
-	   propio (igual al resto de íconos de la barra). */
-	.sn-searchbox      { flex: 0 0 auto; }
-	.sn-search         { display: none; }
-	.sn-search-trigger { display: inline-grid; background: transparent; }
+	   propio (igual al resto de íconos de la barra). Especificidad
+	   .sn-searchbox … para alinear con la regla base de más arriba y
+	   no quedar pisada por .sn-iconbtn. */
+	.sn-searchbox                       { flex: 0 0 auto; }
+	.sn-searchbox .sn-search            { display: none; }
+	.sn-searchbox .sn-search-trigger    { display: inline-grid; background: transparent; }
 
 	/* Triggers de menú: ícono-cuadrado del mismo tamaño que el resto, sin
 	   chevron (la abierta = modal). */
@@ -1161,7 +1182,7 @@ canvas, iframe,
 
 	/* — Búsqueda modal — el form ocupa toda la pantalla; el input es
 	   visible sobre papel (no transparente sobre fondo oscuro). — */
-	html[data-sn-search-open] .sn-search-close { display: inline-grid; }
+	html[data-sn-search-open] .sn-searchbox .sn-search-close { display: inline-grid; }
 	.sn-search-close {
 		background: transparent; border: 0; padding: 0;
 		width: 2.25rem; height: 2.25rem; flex: none;

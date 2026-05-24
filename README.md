@@ -1,8 +1,10 @@
 # Stella Nova
 
-Skin para MediaWiki, especialmente diseñado y desarrollado para la wiki de la e[ad] PUCV desde `SkinMustache` + `skin.json` desde cero. Este skin está deliberadamente dedicado a [Casiopea](https://wiki.ead.pucv.cl) pero es fácilmente extendible a cualquier wiki con poco esfuerzo.
+Skin para MediaWiki, especialmente diseñado y desarrollado para la wiki de la e[ad] PUCV desde cero (con `SkinMustache` + `skin.json`). 
 
-Mobile-first, CSS moderno (Grid/Flexbox, custom properties, claro/oscuro), foco en ccesibilidad WCAG 2.1 AA y compatibilidad con Semantic MediaWiki.
+Este skin está deliberadamente dedicado a **[Casiopea](https://wiki.ead.pucv.cl)** pero es fácilmente extendible a cualquier wiki con poco esfuerzo.
+
+Está pensado desde la pantalla pequeña del teléfono en mente, con CSS moderno (que usa Grid/Flexbox, parámetros centralizados y variación de tema claro/oscuro), y con foco en accesibilidad WCAG 2.1 AA y con compatibilidad con Semantic MediaWiki.
 
 ![De nova stella](resources/img/Tycho_Cas_SN1572.jpg)
 
@@ -40,12 +42,14 @@ Probar sin cambiar el default: añadir `?useskin=stellanova` a cualquier URL.
   ([fuente](docs/specimen/)). Ver sección [Para diseñadoras y
   diseñadores](#para-diseñadoras-y-diseñadores) para el flujo de iteración.
 
-## Para diseñadoras y diseñadores
+## Para el Taller de Diseño
 
-Dónde tocar los elementos gráficos (todo en `resources/`, salvo plantillas e
-i18n). En desarrollo, recarga con `?debug=true` en la URL o pon
-`$wgResourceLoaderDebug = true;` en `LocalSettings.php` para ver los
-cambios al instante (ResourceLoader cachea agresivamente).
+Dónde tocar los elementos gráficos:
+
+ - Todo está en `resources/`, salvo plantillas e
+i18n). 
+ - Si estás modificando la CCS y quieres ver los cambios reflejados, recarga con `?debug=true` en la URL o pon
+`$wgResourceLoaderDebug = true;` en `LocalSettings.php` para ver los cambios al instante (ResourceLoader cachea agresivamente).
 
 | Quiero cambiar… | Archivo |
 |---|---|

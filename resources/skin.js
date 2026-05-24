@@ -176,10 +176,11 @@
 		}
 	}
 
-	/* ── Modo compact (teléfono): paneles emergentes como modales.
-	 *    Detecta el viewport igual que la media query CSS (36rem).
+	/* ── Modo compact (tablet vertical y menos): paneles emergentes como
+	 *    modales. Detecta el viewport igual que la media query CSS (48rem,
+	 *    ≈ 768 px). Si cambia este umbral, sincronizar con stella-nova.css.
 	 *    El estado se refresca on-resize para responder a rotación. */
-	var COMPACT_MQ = ( window.matchMedia && window.matchMedia( '(max-width: 36rem)' ) ) || null;
+	var COMPACT_MQ = ( window.matchMedia && window.matchMedia( '(max-width: 48rem)' ) ) || null;
 	function isCompact() { return !!( COMPACT_MQ && COMPACT_MQ.matches ); }
 
 	/* ── Conteo global de modales abiertos: marca <html> con data-sn-modal
