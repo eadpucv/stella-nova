@@ -2,7 +2,7 @@
 # Stella Nova — generador del espécimen gráfico.
 #
 # Lee resources/tokens.css y produce un mini-sitio estático autocontenido en
-# docs/specimen/ (más un zip versionado para enviar al equipo de diseño).
+# docs/specimen/ (más un zip versionado para enviar al taller de diseño).
 # El sitio sirve igual como GitHub Pages source (carpeta /docs en main).
 #
 # Tres páginas:
@@ -198,6 +198,28 @@ def load_icons_sprite():
     return re.sub(r"\{\{!.*?\}\}", "", src, flags=re.DOTALL).strip()
 
 
+# ── isotipo de marca inline ─────────────────────────────────────────────
+# Antes íbamos por <img src="…casiopea-icon.svg">: el SVG queda en su propio
+# documento → no hereda los tokens del host (`currentColor`, `--sn-paper`),
+# así que el isotipo aparece como cuadrado negro fijo y no acompaña al cambio
+# de tema. Solución: inlinear el archivo en el HTML para que los var(--…)
+# resuelvan contra el tema activo. Se elimina el prólogo XML y los
+# comentarios; se añade width/height/class para limitar tamaño en la chrome.
+def load_brand_icon(size=28):
+    raw = (RESOURCES / "casiopea-icon.svg").read_text()
+    # Quitar declaración XML y comentarios <!-- … -->.
+    raw = re.sub(r"<\?xml[^?]*\?>", "", raw)
+    raw = re.sub(r"<!--.*?-->", "", raw, flags=re.DOTALL)
+    raw = raw.strip()
+    # Inyectar width/height/class en la etiqueta <svg …> de apertura.
+    return re.sub(
+        r"<svg\b",
+        f'<svg class="spec-brand-icon" width="{size}" height="{size}"',
+        raw,
+        count=1,
+    )
+
+
 # ── page shell ─────────────────────────────────────────────────────────────
 def page_shell(title, body, version, current_page):
     nav_items = [
@@ -210,6 +232,7 @@ def page_shell(title, body, version, current_page):
         for href, label in nav_items
     )
     icons_sprite = load_icons_sprite()
+    brand_icon = load_brand_icon()
     return f"""<!DOCTYPE html>
 <html lang="es" data-sn-theme="light">
 <head>
@@ -222,7 +245,7 @@ def page_shell(title, body, version, current_page):
 <link rel="stylesheet" href="assets/stella-nova.css">
 <link rel="stylesheet" href="assets/specimen.css">
 <!-- ── overrides ────────────────────────────────────────────────────────────
-     El equipo de diseño pega aquí redefiniciones de tokens para proponer
+     El taller de diseño pega aquí redefiniciones de tokens para proponer
      cambios. Sobreescriben tokens.css sin tocar el archivo fuente. Ejemplo:
        :root {{ --sn-nova: #c33; --sn-fs-display: 2.4rem; }}
      ─────────────────────────────────────────────────────────────────── -->
@@ -234,7 +257,7 @@ def page_shell(title, body, version, current_page):
 {icons_sprite}
 <header class="spec-top">
   <a class="spec-brand" href="index.html" aria-label="Stella Nova — Inicio">
-    <img src="assets/icons/casiopea-icon.svg" alt="" width="28" height="28">
+    {brand_icon}
     <span class="spec-brand-name">Stella Nova</span>
     <span class="spec-brand-ver">v{esc(version)}</span>
   </a>
@@ -261,7 +284,7 @@ def page_shell(title, body, version, current_page):
   <p>
     Espécimen generado por <code>scripts/build-specimen.py</code> ·
     Stella Nova v{esc(version)} ·
-    <a href="notes.md">notes.md</a> (notas del equipo de diseño) ·
+    <a href="notes.md">notes.md</a> (notas del taller de diseño) ·
     <a href="https://wiki.ead.pucv.cl">wiki.ead.pucv.cl</a>
   </p>
 </footer>
@@ -547,19 +570,30 @@ Filete horizontal: cuatro guiones al inicio de línea: ----</pre>
   <h2>Cita y poema</h2>
   <p class="meta"><code>blockquote</code> · <code>--sn-font-display</code> ·
   sin filete, sólo sangría izquierda (<code>--sn-s-5</code>).<br>
-  <code>&lt;poem&gt;</code> · misma familia · respeta los saltos del
-  wikitexto vía <code>white-space: pre-wrap</code> (los <code>&lt;br&gt;</code>
-  que la extensión inserta quedan neutralizados en el skin).</p>
+  <code>&lt;poem&gt;</code> · misma familia · <code>white-space: pre-wrap</code>
+  preserva los blancos del wikitexto como materia significante. Demostrado
+  con el fragmento-eje de <em>Un coup de dés jamais n'abolira le hasard</em>
+  (Mallarmé, 1897), donde la página es partitura y el espacio en blanco,
+  silencio tipográfico.</p>
   <div class="sn-paper sn-body demo">
     <blockquote>
-      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-      eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-      <footer>— Autoría · <cite>Obra de referencia</cite> (año)</footer>
+      <p>El verso no debe componerse de palabras, sino de intenciones, y
+      todas las palabras deben borrarse ante la sensación.</p>
+      <footer>— Stéphane Mallarmé · <cite>Crisis de verso</cite> (1897)</footer>
     </blockquote>
-    <div class="poem"><p>Verso simulado, primera línea<br />
-verso simulado, segunda línea<br />
-verso simulado, tercera línea —<br />
-sangría heredada del bloque.</p></div>
+    <div class="poem"><p>              UN GOLPE DE DADOS
+
+                                        JAMÁS
+
+      AUN LANZADO EN CIRCUNSTANCIAS
+
+                                        ETERNAS
+
+      DESDE EL FONDO DE UN NAUFRAGIO
+
+              ABOLIRÁ
+
+                                        EL AZAR</p></div>
   </div>
   <details class="howto">
     <summary>Cómo escribirlo en wikitexto</summary>
@@ -569,18 +603,27 @@ Texto de la cita en uno o más párrafos.
 &lt;/blockquote&gt;
 
 &lt;poem&gt;
-Cada salto de línea del código
-se respeta tal cual en el render.
-Sangría con dos puntos al inicio:
-:: como en el wikitexto estándar.
+              UN GOLPE DE DADOS
+
+                                        JAMÁS
+
+      AUN LANZADO EN CIRCUNSTANCIAS
+
+                                        ETERNAS
+
+              ABOLIRÁ
+
+                                        EL AZAR
 &lt;/poem&gt;</pre>
     <p>Para la cita: <code>&lt;blockquote&gt;…&lt;/blockquote&gt;</code>
     envuelve uno o varios párrafos. La atribución va como texto al final
     (no hay marcado específico).</p>
-    <p>Para el poema: cada línea del wikitexto produce una línea visual.
-    Para sangría, comenzá la línea con <code>:</code> (un nivel),
-    <code>::</code> (dos), etc. Una línea de exactamente <code>----</code>
-    produce un filete horizontal.</p>
+    <p>Para el poema: cada línea del wikitexto produce una línea visual y
+    <strong>los espacios al inicio se preservan literalmente</strong> —
+    así se reconstruye la espacialidad del original mallarmeano. También
+    funcionan los dos puntos al inicio (<code>:</code>, <code>::</code>)
+    como sangrías estándar del wikitexto, y <code>----</code> produce un
+    filete horizontal.</p>
   </details>
 </section>
 
@@ -1063,7 +1106,10 @@ body.spec { display: flex; flex-direction: column; min-height: 100vh; }
 }
 .spec-brand { display: inline-flex; align-items: baseline; gap: var(--sn-s-2);
               text-decoration: none; color: var(--sn-ink); }
-.spec-brand img { align-self: center; }
+.spec-brand-icon { align-self: center; flex: none;
+                   /* Sigue el tema: el <rect> es currentColor (tinta) y la
+                      constelación var(--sn-paper) — al inlinear el SVG estos
+                      tokens cambian con data-sn-theme. */ }
 .spec-brand-name { font-family: var(--sn-font-display); font-size: var(--sn-fs-md);
                    font-weight: 500; letter-spacing: -0.01em; }
 .spec-brand-ver { color: var(--sn-ink-faint); font-size: var(--sn-fs-xs);
@@ -1456,7 +1502,7 @@ preguntas y propuestas. Los cambios de tokens van en el bloque
 README_TEMPLATE = """# Stella Nova — espécimen gráfico v{version}
 
 Mini-sitio estático con todos los tokens, componentes y un layout simulado del
-skin **Stella Nova** para iteración con el equipo de diseño.
+skin **Stella Nova** para iteración con el taller de diseño.
 
 ## Cómo verlo
 
@@ -1494,7 +1540,7 @@ python3 scripts/build-specimen.py
 
 El script borra y recompone `docs/specimen/` y empaqueta un zip nuevo
 `stella-nova-specimen-v<version>.zip`. **`notes.md` se preserva** entre
-rebuilds, así que las anotaciones del equipo de diseño no se pierden. Las
+rebuilds, así que las anotaciones del taller de diseño no se pierden. Las
 `overrides` que hayas escrito en los HTML **sí se pierden** (los HTML se
 reescriben); copialas a `notes.md` o a un parche antes de regenerar si querés
 conservarlas.

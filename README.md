@@ -86,7 +86,7 @@ resuelven en [`tokens.css`](resources/tokens.css) (`prefers-color-scheme`+ `[dat
 sistema visual sin levantar la wiki ni tocar PHP — navegable en línea en
 **[hspencer.github.io/stella-nova/specimen/](https://hspencer.github.io/stella-nova/specimen/)**
 o localmente en [`docs/specimen/`](docs/specimen/) (también empaquetado como
-`stella-nova-specimen-v<version>.zip` listo para enviar al equipo de diseño).
+`stella-nova-specimen-v<version>.zip` listo para enviar al taller de diseño).
 Tres páginas — `index.html` (tokens, escalas, sombras, auto-generadas desde
 `tokens.css`), `components.html` (botones, inputs, toolbar, washes, TOC…) y
 `layout.html` (página simulada completa) — cargan los CSS reales del skin,

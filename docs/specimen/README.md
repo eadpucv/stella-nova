@@ -1,7 +1,7 @@
 # Stella Nova — espécimen gráfico v0.0.6
 
 Mini-sitio estático con todos los tokens, componentes y un layout simulado del
-skin **Stella Nova** para iteración con el equipo de diseño.
+skin **Stella Nova** para iteración con el taller de diseño.
 
 ## Cómo verlo
 
@@ -39,7 +39,7 @@ python3 scripts/build-specimen.py
 
 El script borra y recompone `docs/specimen/` y empaqueta un zip nuevo
 `stella-nova-specimen-v<version>.zip`. **`notes.md` se preserva** entre
-rebuilds, así que las anotaciones del equipo de diseño no se pierden. Las
+rebuilds, así que las anotaciones del taller de diseño no se pierden. Las
 `overrides` que hayas escrito en los HTML **sí se pierden** (los HTML se
 reescriben); copialas a `notes.md` o a un parche antes de regenerar si querés
 conservarlas.

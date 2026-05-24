@@ -23,7 +23,10 @@ body.spec { display: flex; flex-direction: column; min-height: 100vh; }
 }
 .spec-brand { display: inline-flex; align-items: baseline; gap: var(--sn-s-2);
               text-decoration: none; color: var(--sn-ink); }
-.spec-brand img { align-self: center; }
+.spec-brand-icon { align-self: center; flex: none;
+                   /* Sigue el tema: el <rect> es currentColor (tinta) y la
+                      constelación var(--sn-paper) — al inlinear el SVG estos
+                      tokens cambian con data-sn-theme. */ }
 .spec-brand-name { font-family: var(--sn-font-display); font-size: var(--sn-fs-md);
                    font-weight: 500; letter-spacing: -0.01em; }
 .spec-brand-ver { color: var(--sn-ink-faint); font-size: var(--sn-fs-xs);

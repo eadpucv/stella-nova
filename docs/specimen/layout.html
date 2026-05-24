@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="assets/stella-nova.css">
 <link rel="stylesheet" href="assets/specimen.css">
 <!-- ── overrides ────────────────────────────────────────────────────────────
-     El equipo de diseño pega aquí redefiniciones de tokens para proponer
+     El taller de diseño pega aquí redefiniciones de tokens para proponer
      cambios. Sobreescriben tokens.css sin tocar el archivo fuente. Ejemplo:
        :root { --sn-nova: #c33; --sn-fs-display: 2.4rem; }
      ─────────────────────────────────────────────────────────────────── -->
@@ -39,7 +39,24 @@
 </svg>
 <header class="spec-top">
   <a class="spec-brand" href="index.html" aria-label="Stella Nova — Inicio">
-    <img src="assets/icons/casiopea-icon.svg" alt="" width="28" height="28">
+    <svg class="spec-brand-icon" width="28" height="28" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 148 148" fill="currentColor" aria-hidden="true" focusable="false">
+	<style>
+		.sn-i-bg   { fill: currentColor; }
+		.sn-i-line { stroke: var(--sn-paper, #fff); fill: none; stroke-width: 2.8; stroke-linecap: round; stroke-linejoin: round; }
+		.sn-i-star { fill: var(--sn-paper, #fff); }
+	</style>
+	<rect class="sn-i-bg" x="0" y="0" width="148" height="148" rx="16"/>
+	<g transform="matrix(0.892, 0, 0, 0.892, 7.41, 23.33)">
+		<g transform="matrix(1.1172, 0, 0, 1.1172, -8.92, -3.72)">
+			<path class="sn-i-line" d="M 22.676 21.837 L 45.501 59.142 L 77.973 52.747 C 77.973 52.747 98.206 93.357 97.975 93.357 C 97.744 93.357 130.013 63.639 130.013 63.639"/>
+			<circle class="sn-i-star" cx="22.613" cy="21.911" r="6"/>
+			<circle class="sn-i-star" cx="45.826" cy="57.671" r="6"/>
+			<circle class="sn-i-star" cx="77.438" cy="52.751" r="6"/>
+			<circle class="sn-i-star" cx="97.134" cy="92.888" r="6"/>
+			<circle class="sn-i-star" cx="129.396" cy="63.714" r="6"/>
+		</g>
+	</g>
+</svg>
     <span class="spec-brand-name">Stella Nova</span>
     <span class="spec-brand-ver">v0.0.6</span>
   </a>
@@ -206,7 +223,7 @@ function loremIpsum(arg1, arg2) {
   <p>
     Espécimen generado por <code>scripts/build-specimen.py</code> ·
     Stella Nova v0.0.6 ·
-    <a href="notes.md">notes.md</a> (notas del equipo de diseño) ·
+    <a href="notes.md">notes.md</a> (notas del taller de diseño) ·
     <a href="https://wiki.ead.pucv.cl">wiki.ead.pucv.cl</a>
   </p>
 </footer>
