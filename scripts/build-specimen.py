@@ -370,6 +370,23 @@ def body_components():
     <h5>Heading 5 · apostilla</h5>
     <h6>Heading 6 · referencia inline</h6>
   </div>
+  <details class="howto">
+    <summary>Cómo escribirlo en wikitexto</summary>
+<pre class="howto-code">== Sección principal ==
+=== Sub-sección ===
+==== Agrupación menor ====
+===== Apostilla =====
+====== Referencia inline ======</pre>
+    <p>El <strong>H1</strong> del artículo se genera automáticamente desde
+    el título de la página — no se escribe en el cuerpo. La jerarquía
+    editable empieza en <code>==</code> (dos signos igual a cada lado).
+    Sumá un signo por cada nivel. No saltes niveles (no pongas
+    <code>====</code> después de <code>==</code> sin un <code>===</code>
+    intermedio).</p>
+    <p>Con tres o más cabeceras, MediaWiki inserta automáticamente la
+    tabla de contenidos. Se puede forzar con <code>__TOC__</code> o
+    desactivar con <code>__NOTOC__</code>.</p>
+  </details>
 </section>
 
 <section class="comp">
@@ -396,6 +413,25 @@ def body_components():
     (con ícono <code>--sn-ext-icon</code>) · rojo (página inexistente,
     <code>--sn-link</code> con clase <code>.new</code>).</p>
   </div>
+  <details class="howto">
+    <summary>Cómo escribirlo en wikitexto</summary>
+<pre class="howto-code">Texto corrido con '''negrita''', ''cursiva'' y '''''ambas'''''.
+
+Enlace interno: [[Página]] o [[Página|texto a mostrar]].
+Enlace externo: [https://wiki.ead.pucv.cl texto] (con etiqueta) o
+[https://wiki.ead.pucv.cl] (numérico) o simplemente https://wiki.ead.pucv.cl.
+
+Salto de párrafo: una línea en blanco.
+Salto de línea forzado: &lt;br&gt; (usar con moderación).
+Filete horizontal: cuatro guiones al inicio de línea: ----</pre>
+    <p>Los enlaces internos a páginas inexistentes aparecen en rojo
+    (clase <code>.new</code> automática). Los enlaces externos llevan
+    un pequeño ícono al final, salvo que envuelvan una imagen.</p>
+    <p>Para citar texto inline usá <code>&lt;cite&gt;…&lt;/cite&gt;</code>
+    (no hay sintaxis wiki dedicada). Para énfasis semántico fuerte,
+    <code>&lt;strong&gt;</code> y <code>&lt;em&gt;</code> equivalen a
+    <code>'''</code> y <code>''</code> pero son más explícitas.</p>
+  </details>
 </section>
 
 <section class="comp">
@@ -434,6 +470,31 @@ def body_components():
       </dl>
     </div>
   </div>
+  <details class="howto">
+    <summary>Cómo escribirlo en wikitexto</summary>
+<pre class="howto-code">* Ítem de lista no ordenada
+* Otro ítem
+** Sub-ítem (dos asteriscos)
+*** Sub-sub-ítem
+
+# Ítem de lista ordenada
+# Segundo
+## Sub-ítem ordenado
+
+; Término primario
+: Definición del término
+; Término secundario
+: Definición.
+
+: Texto sangrado (sin término)
+:: Doble sangría</pre>
+    <p>Cada ítem ocupa una línea. La sangría se controla repitiendo el
+    marcador (<code>**</code>, <code>##</code>). Las listas se cortan al
+    encontrar una línea en blanco o un marcador distinto.</p>
+    <p>Las listas de definición (<code>;</code> y <code>:</code>)
+    también sirven para sangrar texto suelto: una línea iniciada con
+    <code>:</code> sin <code>;</code> previo produce sólo la sangría.</p>
+  </details>
 </section>
 
 <section class="comp">
@@ -459,28 +520,68 @@ def body_components():
       </tbody>
     </table>
   </div>
+  <details class="howto">
+    <summary>Cómo escribirlo en wikitexto</summary>
+<pre class="howto-code">{| class="wikitable"
+|+ Título descriptivo de la tabla
+! Encabezado A !! Encabezado B !! Año
+|-
+| Celda A1 || Celda B1 || 2024
+|-
+| Celda A2 || Celda B2 || 2025
+|-
+| Celda A3 || Celda B3 || 2026
+|}</pre>
+    <p>Estructura: <code>{|</code> abre la tabla y va con la clase
+    <code>wikitable</code> para heredar los estilos del skin.
+    <code>|+</code> es el título (<code>&lt;caption&gt;</code>).
+    <code>!</code> son celdas de encabezado, <code>|</code> son celdas
+    de datos. <code>|-</code> separa filas. <code>|}</code> cierra.</p>
+    <p>Atajos: <code>!!</code> y <code>||</code> permiten poner varias
+    celdas en una sola línea (en lugar de una línea por celda con
+    <code>!</code> o <code>|</code> al inicio).</p>
+  </details>
 </section>
 
 <section class="comp">
   <h2>Cita y poema</h2>
-  <p class="meta"><code>blockquote</code> · <code>--sn-font-display</code>
-  italic · filete carmín izquierdo (3 px · <code>--sn-nova</code>) · padding
-  <code>--sn-s-3</code> / <code>--sn-s-5</code>.<br>
-  <code>&lt;poem&gt;</code> · misma familia, sin filete,
-  <code>white-space: pre-line</code>.</p>
+  <p class="meta"><code>blockquote</code> · <code>--sn-font-display</code> ·
+  sin filete, sólo sangría izquierda (<code>--sn-s-5</code>).<br>
+  <code>&lt;poem&gt;</code> · misma familia · respeta los saltos del
+  wikitexto vía <code>white-space: pre-wrap</code> (los <code>&lt;br&gt;</code>
+  que la extensión inserta quedan neutralizados en el skin).</p>
   <div class="sn-paper sn-body demo">
     <blockquote>
       <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
       eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
       <footer>— Autoría · <cite>Obra de referencia</cite> (año)</footer>
     </blockquote>
-    <pre class="poem"><poem>
-Verso simulado, primera línea
-verso simulado, segunda línea
-verso simulado, tercera línea —
-sangría heredada del bloque.
-</poem></pre>
+    <div class="poem"><p>Verso simulado, primera línea<br />
+verso simulado, segunda línea<br />
+verso simulado, tercera línea —<br />
+sangría heredada del bloque.</p></div>
   </div>
+  <details class="howto">
+    <summary>Cómo escribirlo en wikitexto</summary>
+<pre class="howto-code">&lt;blockquote&gt;
+Texto de la cita en uno o más párrafos.
+— Autoría, &lt;cite&gt;Obra&lt;/cite&gt; (año)
+&lt;/blockquote&gt;
+
+&lt;poem&gt;
+Cada salto de línea del código
+se respeta tal cual en el render.
+Sangría con dos puntos al inicio:
+:: como en el wikitexto estándar.
+&lt;/poem&gt;</pre>
+    <p>Para la cita: <code>&lt;blockquote&gt;…&lt;/blockquote&gt;</code>
+    envuelve uno o varios párrafos. La atribución va como texto al final
+    (no hay marcado específico).</p>
+    <p>Para el poema: cada línea del wikitexto produce una línea visual.
+    Para sangría, comenzá la línea con <code>:</code> (un nivel),
+    <code>::</code> (dos), etc. Una línea de exactamente <code>----</code>
+    produce un filete horizontal.</p>
+  </details>
 </section>
 
 <section class="comp">
@@ -498,6 +599,34 @@ function loremIpsum(dolor, sit) {
     return amet + sit;
 }</code></pre>
   </div>
+  <details class="howto">
+    <summary>Cómo escribirlo en wikitexto</summary>
+<pre class="howto-code">Código inline: &lt;code&gt;const x = 1&lt;/code&gt;.
+
+Bloque indentado (lo más simple): empezar la línea con un espacio.
+ function ejemplo() {
+   return 42;
+ }
+
+Bloque preformateado explícito:
+&lt;pre&gt;
+texto monoespaciado, conserva
+saltos de línea y espacios.
+&lt;/pre&gt;
+
+Con resaltado de sintaxis (extensión SyntaxHighlight):
+&lt;syntaxhighlight lang="javascript"&gt;
+function ejemplo() {
+  return 42;
+}
+&lt;/syntaxhighlight&gt;</pre>
+    <p>Para citar nombres de variables, comandos o identificadores en
+    medio de un párrafo, usá <code>&lt;code&gt;</code>. Para mostrar
+    fragmentos largos, preferí <code>&lt;syntaxhighlight&gt;</code> si
+    aplica (con <code>lang="…"</code>) — colorea según el lenguaje.</p>
+    <p>El bloque preformateado por sangrado (línea iniciada con un
+    espacio) es el más rápido pero no soporta resaltado ni metadatos.</p>
+  </details>
 </section>
 
 <section class="comp">
@@ -538,6 +667,18 @@ function loremIpsum(dolor, sit) {
       </button>
     </div>
   </div>
+  <details class="howto">
+    <summary>Dónde aparecen</summary>
+    <p>Los botones son parte de la <strong>interfaz del skin</strong>,
+    no se escriben en el wikitexto del artículo. Aparecen
+    automáticamente en formularios (editar, mover, subir archivo), en
+    diálogos de extensiones (PageForms, ReplaceText) y en barras de
+    acción. Los botones de ícono pueblan el cluster a la derecha del
+    título cuando la usuaria tiene permisos sobre la página.</p>
+    <p>Si una plantilla necesita un botón propio, lo mejor es envolver
+    un enlace con la clase <code>sn-btn</code>:
+    <code>&lt;span class="sn-btn"&gt;[[Página|Texto]]&lt;/span&gt;</code>.</p>
+  </details>
 </section>
 
 <section class="comp">
@@ -583,6 +724,17 @@ function loremIpsum(dolor, sit) {
       </p>
     </form>
   </div>
+  <details class="howto">
+    <summary>Dónde aparecen</summary>
+    <p>Los formularios estándar de MediaWiki (preferencias, búsqueda
+    avanzada, mover página) los provee el core y heredan estos estilos
+    automáticamente. Para crear formularios editoriales (fichas de
+    proyecto, observaciones, etapas, travesías) la wiki usa la
+    extensión <strong>PageForms</strong>: el formulario se define en
+    una página <code>Plantilla:Formulario/Nombre</code> con la sintaxis
+    de PageForms (<code>{{{field|nombre|input type=…}}}</code>) y el
+    skin lo renderiza con estos primitivos.</p>
+  </details>
 </section>
 
 <section class="comp">
@@ -601,6 +753,14 @@ function loremIpsum(dolor, sit) {
       </ul>
     </nav>
   </div>
+  <details class="howto">
+    <summary>Dónde aparecen</summary>
+    <p>Las pestañas las genera el skin a partir de los namespaces y
+    permisos: <em>Artículo · Discusión · Editar · Historial · Más</em>.
+    No se escriben en el wikitexto. Para añadir pestañas propias, las
+    extensiones usan el hook <code>SkinTemplateNavigation</code>; el
+    skin las recibe y las renderiza en la misma bandeja.</p>
+  </details>
 </section>
 
 <section class="comp">
@@ -626,6 +786,19 @@ function loremIpsum(dolor, sit) {
       voluptate velit esse cillum.
     </aside>
   </div>
+  <details class="howto">
+    <summary>Cómo usarlos desde una plantilla</summary>
+<pre class="howto-code">&lt;div class="sn-wash sn-wash-info"&gt;
+'''Información.''' Texto del aviso, con [[enlaces]] o '''énfasis'''.
+&lt;/div&gt;</pre>
+    <p>Variantes disponibles: <code>sn-wash-ok</code> (confirmación) ·
+    <code>sn-wash-info</code> (aviso neutro) ·
+    <code>sn-wash-warn</code> (precaución) ·
+    <code>sn-wash-danger</code> (error o bloqueo). Estos avisos los
+    inserta el skin en respuesta a acciones del sistema, pero también
+    se pueden emitir desde una plantilla envolviendo el contenido en
+    un <code>&lt;div&gt;</code> con la clase correspondiente.</p>
+  </details>
 </section>
 
 <section class="comp">
@@ -642,6 +815,17 @@ function loremIpsum(dolor, sit) {
     <span class="sn-pill">000 ítems</span>
     <span class="sn-pill">000 ítems</span>
   </div>
+  <details class="howto">
+    <summary>Cómo usarlos desde una plantilla</summary>
+<pre class="howto-code">&lt;span class="sn-badge sn-badge-ok"&gt;Activo&lt;/span&gt;
+&lt;span class="sn-badge sn-badge-warn"&gt;En revisión&lt;/span&gt;
+&lt;span class="sn-pill"&gt;42 ítems&lt;/span&gt;</pre>
+    <p>Badges para estados cortos (palabras); pills para contadores
+    numéricos (familia mono). Variantes:
+    <code>sn-badge-nova</code> · <code>-ok</code> · <code>-warn</code>
+    · <code>-danger</code>. Útiles para marcar el estado de una etapa,
+    un proyecto o una observación dentro de fichas y plantillas.</p>
+  </details>
 </section>
 
 <section class="comp">
@@ -666,6 +850,18 @@ function loremIpsum(dolor, sit) {
       </ol>
     </nav>
   </div>
+  <details class="howto">
+    <summary>Cómo controlarla en wikitexto</summary>
+<pre class="howto-code">__TOC__       Inserta la tabla de contenidos en este punto exacto.
+__NOTOC__     Desactiva la tabla de contenidos del artículo.
+__FORCETOC__  Fuerza la tabla aunque haya menos de 4 cabeceras.</pre>
+    <p>Por defecto la tabla aparece automáticamente cuando hay 4 o más
+    cabeceras (<code>==</code>, <code>===</code>, etc.), justo antes de
+    la primera. Las palabras mágicas anteriores (con doble guion bajo
+    a cada lado) la sobrescriben.</p>
+    <p>El skin la renderiza con numeración en monoespaciada y un filete
+    carmín marcando la sección activa al hacer scroll.</p>
+  </details>
 </section>
 
 <section class="comp">
@@ -681,6 +877,16 @@ function loremIpsum(dolor, sit) {
     <p>El cuerpo del artículo continúa debajo del aviso, manteniendo el
     flujo de lectura sin saltos visuales bruscos.</p>
   </div>
+  <details class="howto">
+    <summary>Cómo usarla desde una plantilla</summary>
+<pre class="howto-code">&lt;aside class="sn-notice" role="note"&gt;
+'''Nota.''' Texto del aviso, con [[enlaces]] si hace falta.
+&lt;/aside&gt;</pre>
+    <p>A diferencia de los washes (que codifican una severidad), la
+    nota al margen es información meta del artículo: redirecciones,
+    banners de plantilla, advertencias editoriales. Va dentro del
+    cuerpo y rompe sutilmente el flujo sin alarmar.</p>
+  </details>
 </section>
 """
 
@@ -1164,7 +1370,6 @@ body.spec { display: flex; flex-direction: column; min-height: 100vh; }
 }
 .demo-app .sn-paper blockquote {
   margin: var(--sn-s-5) 0; padding: var(--sn-s-3) var(--sn-s-5);
-  border-inline-start: 3px solid var(--sn-nova);
   font-family: var(--sn-font-display); font-size: var(--sn-fs-md);
   color: var(--sn-ink); font-style: italic;
 }
@@ -1185,9 +1390,32 @@ code { background: var(--sn-sunk); padding: 1px 4px; border-radius: 2px;
        font-size: 0.9em; }
 pre code { background: transparent; padding: 0; }
 
-.poem { font-family: var(--sn-font-display); font-style: italic;
-        background: transparent; padding: 0; margin: var(--sn-s-4) 0; }
-.poem poem { white-space: pre-line; }
+/* `.poem` ya está estilada por stella-nova.css (familia display,
+   white-space: pre-wrap, `.poem br { display: none }`). No redefinir aquí. */
+
+/* — Bloque "Cómo escribirlo en wikitexto": tutorial para el editor — */
+.howto { margin-top: var(--sn-s-3); padding: var(--sn-s-4);
+         background: var(--sn-sunk); border-radius: var(--sn-radius);
+         font-size: var(--sn-fs-sm); }
+.howto > summary { cursor: pointer; font-family: var(--sn-font-mono);
+                   font-size: var(--sn-fs-xs); text-transform: uppercase;
+                   letter-spacing: 0.05em; color: var(--sn-ink-soft);
+                   list-style: none; padding: 0; user-select: none; }
+.howto > summary::-webkit-details-marker { display: none; }
+.howto > summary::before { content: '+ '; font-weight: 600;
+                           color: var(--sn-ink-faint); }
+.howto[open] > summary::before { content: '− '; }
+.howto > summary:hover { color: var(--sn-ink); }
+.howto .howto-code, .howto pre.howto-code {
+  margin: var(--sn-s-3) 0 0; padding: var(--sn-s-3) var(--sn-s-4);
+  background: var(--sn-paper); border: 1px solid var(--sn-hairline-soft);
+  border-radius: var(--sn-radius-s); overflow-x: auto;
+  font-family: var(--sn-font-mono); font-size: var(--sn-fs-xs);
+  color: var(--sn-ink); line-height: 1.55;
+}
+.howto p { margin: var(--sn-s-3) 0 0; color: var(--sn-ink-soft);
+           font-size: var(--sn-fs-sm); line-height: 1.55; }
+.howto p code { font-size: 0.92em; }
 
 /* Iconbutton mínimo (el stella-nova.css real lo cubre, pero el demo aislado
    no siempre está dentro de los selectores anclados al chrome) */

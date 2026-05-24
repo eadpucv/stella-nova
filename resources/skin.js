@@ -107,6 +107,7 @@
 				if ( scrim ) { scrim.classList.add( 'is-open' ); }
 			} );
 			openBtn.setAttribute( 'aria-expanded', 'true' );
+			modalOpened();
 			syncControls( form );
 			var f = focusables(); if ( f.length ) { f[ 0 ].focus(); }
 			doc.addEventListener( 'keydown', onKey );
@@ -115,10 +116,18 @@
 			panel.classList.remove( 'is-open' );
 			if ( scrim ) { scrim.classList.remove( 'is-open' ); }
 			openBtn.setAttribute( 'aria-expanded', 'false' );
+			modalClosed();
 			doc.removeEventListener( 'keydown', onKey );
-			window.setTimeout( function () {
+			// En desktop el panel anima con transform: translateX → espera el
+			// fin del transition para hidden=true. En compact no hay
+			// transición (el modal es fullscreen) y queremos cierre inmediato.
+			if ( isCompact() ) {
 				panel.hidden = true; if ( scrim ) { scrim.hidden = true; }
-			}, 420 );
+			} else {
+				window.setTimeout( function () {
+					panel.hidden = true; if ( scrim ) { scrim.hidden = true; }
+				}, 420 );
+			}
 			if ( lastFocus ) { lastFocus.focus(); }
 		}
 		function onKey( e ) {
@@ -167,28 +176,167 @@
 		}
 	}
 
-	/* ── Popovers (menú de usuario, "más" acciones, variantes) ── */
+	/* ── Modo compact (teléfono): paneles emergentes como modales.
+	 *    Detecta el viewport igual que la media query CSS (36rem).
+	 *    El estado se refresca on-resize para responder a rotación. */
+	var COMPACT_MQ = ( window.matchMedia && window.matchMedia( '(max-width: 36rem)' ) ) || null;
+	function isCompact() { return !!( COMPACT_MQ && COMPACT_MQ.matches ); }
+
+	/* ── Conteo global de modales abiertos: marca <html> con data-sn-modal
+	 *    para que el CSS pinte el scrim y bloquee el scroll subyacente.
+	 *    El cierre por click en el scrim lo expone como botón sobre <body>. */
+	var openModals = 0;
+	function modalOpened() {
+		openModals++;
+		if ( openModals === 1 ) { root.setAttribute( 'data-sn-modal', '' ); }
+	}
+	function modalClosed() {
+		openModals = Math.max( 0, openModals - 1 );
+		if ( openModals === 0 ) { root.removeAttribute( 'data-sn-modal' ); }
+	}
+
+	function focusablesIn( el ) {
+		return el.querySelectorAll(
+			'button:not([disabled]), [href], input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])'
+		);
+	}
+	function trapTab( panel, e ) {
+		var f = focusablesIn( panel ); if ( !f.length ) { return; }
+		var first = f[ 0 ], last = f[ f.length - 1 ];
+		if ( e.shiftKey && doc.activeElement === first ) { e.preventDefault(); last.focus(); }
+		else if ( !e.shiftKey && doc.activeElement === last ) { e.preventDefault(); first.focus(); }
+	}
+
+	/* ── Popovers (Navegación · Página · Usuario). En desktop: dropdown
+	 *    posicionado con la regla CSS aria-expanded. En compact: el
+	 *    contenedor .sn-md recibe data-sn-open para que el CSS lo presente
+	 *    como modal-bottom-sheet, y aquí montamos focus trap + ESC + scrim. */
 	function bindMenus() {
 		var triggers = doc.querySelectorAll( '[data-sn-menu]' );
+		var activeMenu = null;
+		var lastFocus = null;
+
+		function panelOf( t ) {
+			var md = t.closest( '.sn-md' );
+			if ( !md ) { return null; }
+			return md.querySelector( '.sn-menu-list, .sn-megamenu' );
+		}
+		function closeAll( opts ) {
+			opts = opts || {};
+			triggers.forEach( function ( o ) {
+				o.setAttribute( 'aria-expanded', 'false' );
+				var md = o.closest( '.sn-md' );
+				if ( md && md.hasAttribute( 'data-sn-open' ) ) {
+					md.removeAttribute( 'data-sn-open' );
+					modalClosed();
+				}
+			} );
+			if ( activeMenu ) {
+				doc.removeEventListener( 'keydown', onKey );
+				activeMenu = null;
+				if ( opts.restoreFocus !== false && lastFocus ) { lastFocus.focus(); }
+				lastFocus = null;
+			}
+		}
+		function onKey( e ) {
+			if ( e.key === 'Escape' ) { e.preventDefault(); closeAll(); return; }
+			if ( e.key === 'Tab' && activeMenu && isCompact() ) {
+				var md = activeMenu.closest( '.sn-md' );
+				if ( md ) { trapTab( md, e ); }
+			}
+		}
+
 		triggers.forEach( function ( t ) {
 			t.addEventListener( 'click', function ( e ) {
 				e.stopPropagation();
-				var open = t.getAttribute( 'aria-expanded' ) === 'true';
-				triggers.forEach( function ( o ) { o.setAttribute( 'aria-expanded', 'false' ); } );
-				t.setAttribute( 'aria-expanded', open ? 'false' : 'true' );
+				var alreadyOpen = t.getAttribute( 'aria-expanded' ) === 'true';
+				closeAll( { restoreFocus: false } );
+				if ( alreadyOpen ) { return; }
+				t.setAttribute( 'aria-expanded', 'true' );
+				var md = t.closest( '.sn-md' );
+				var panel = panelOf( t );
+				if ( !md || !panel ) { return; }
+				activeMenu = panel;
+				if ( isCompact() ) {
+					md.setAttribute( 'data-sn-open', '' );
+					modalOpened();
+					lastFocus = t;
+					// El primer focusable suele ser el botón X (cabecera);
+					// salta al SEGUNDO para que el foco caiga en el primer
+					// ítem del menú, no en cerrar.
+					var f = focusablesIn( md );
+					if ( f.length > 1 ) { f[ 1 ].focus(); }
+					else if ( f.length ) { f[ 0 ].focus(); }
+				}
+				doc.addEventListener( 'keydown', onKey );
 			} );
 		} );
-		doc.addEventListener( 'click', function () {
-			triggers.forEach( function ( t ) { t.setAttribute( 'aria-expanded', 'false' ); } );
-		} );
-		doc.addEventListener( 'keydown', function ( e ) {
-			if ( e.key === 'Escape' ) {
-				triggers.forEach( function ( t ) { t.setAttribute( 'aria-expanded', 'false' ); } );
+		// Botón X dentro de cualquier menú modal → cerrar.
+		doc.addEventListener( 'click', function ( e ) {
+			if ( !e.target.closest ) { return; }
+			if ( e.target.closest( '[data-sn-menu-close]' ) ) {
+				e.preventDefault(); e.stopPropagation();
+				closeAll();
 			}
+		} );
+		// Click fuera del panel (sólo aplica en desktop, donde es popover;
+		// en compact el modal es fullscreen y no hay "fuera"). En compact
+		// el cierre se hace por X o por ESC.
+		doc.addEventListener( 'click', function ( e ) {
+			if ( !activeMenu ) { return; }
+			if ( isCompact() ) { return; }
+			if ( activeMenu.contains( e.target ) ) { return; }
+			if ( e.target.closest && e.target.closest( '[data-sn-menu]' ) ) { return; }
+			closeAll();
 		} );
 	}
 
-	function init() { bindPanel(); bindMenus(); }
+	/* ── Búsqueda como modal en compact viewport. El form es el MISMO,
+	 *    sólo cambia su presentación (CSS responde a data-sn-search-open
+	 *    en <html>). En desktop el trigger no es visible y este binding
+	 *    queda inerte. */
+	function bindSearch() {
+		var trigger = doc.querySelector( '[data-sn-search-open]' );
+		var closeBtn = doc.querySelector( '[data-sn-search-close]' );
+		var form = doc.getElementById( 'searchform' );
+		if ( !trigger || !form ) { return; }
+		var input = form.querySelector( 'input[type="search"], #searchInput, .mw-searchInput' );
+		var lastFocus = null;
+
+		function open() {
+			if ( !isCompact() ) { return; }
+			lastFocus = doc.activeElement;
+			root.setAttribute( 'data-sn-search-open', '' );
+			trigger.setAttribute( 'aria-expanded', 'true' );
+			modalOpened();
+			window.setTimeout( function () { if ( input ) { input.focus(); } }, 30 );
+			doc.addEventListener( 'keydown', onKey );
+		}
+		function close() {
+			if ( !root.hasAttribute( 'data-sn-search-open' ) ) { return; }
+			root.removeAttribute( 'data-sn-search-open' );
+			trigger.setAttribute( 'aria-expanded', 'false' );
+			modalClosed();
+			doc.removeEventListener( 'keydown', onKey );
+			if ( lastFocus ) { lastFocus.focus(); }
+			lastFocus = null;
+		}
+		function onKey( e ) {
+			if ( e.key === 'Escape' ) { e.preventDefault(); close(); return; }
+			if ( e.key === 'Tab' ) { trapTab( form, e ); }
+		}
+
+		trigger.addEventListener( 'click', open );
+		if ( closeBtn ) { closeBtn.addEventListener( 'click', close ); }
+		// Al pasar a desktop, cerrar el modo modal por si quedó abierto.
+		if ( COMPACT_MQ && COMPACT_MQ.addEventListener ) {
+			COMPACT_MQ.addEventListener( 'change', function ( ev ) {
+				if ( !ev.matches ) { close(); }
+			} );
+		}
+	}
+
+	function init() { bindPanel(); bindMenus(); bindSearch(); }
 	if ( doc.readyState === 'loading' ) {
 		doc.addEventListener( 'DOMContentLoaded', init );
 	} else { init(); }

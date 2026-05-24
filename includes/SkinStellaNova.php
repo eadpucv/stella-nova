@@ -28,6 +28,8 @@ class SkinStellaNova extends SkinMustache {
 
 	/** Cache por-request del SVG del isotipo (recurso editable). */
 	private static ?string $isotypeSvgCache = null;
+	/** Cache por-request del isotipo compacto (viewport estrecho). */
+	private static ?string $iconSvgCache = null;
 
 	/**
 	 * Isotipo: logotipo "Casiopea" + constelación. Asset EDITABLE
@@ -44,13 +46,43 @@ class SkinStellaNova extends SkinMustache {
 	 */
 	private static function isotypeSvg(): string {
 		if ( self::$isotypeSvgCache === null ) {
-			$path = __DIR__ . '/../resources/casiopea.svg';
-			$raw = is_readable( $path ) ? (string)file_get_contents( $path ) : '';
-			// El asset trae una nota de cabecera <!-- … -->; fuera del HTML.
-			$raw = (string)preg_replace( '/<!--.*?-->/s', '', $raw );
-			self::$isotypeSvgCache = trim( $raw );
+			self::$isotypeSvgCache = self::readSvg( __DIR__ . '/../resources/casiopea.svg' );
 		}
 		return self::$isotypeSvgCache;
+	}
+
+	/**
+	 * Isotipo compacto (viewport estrecho): glifo cuadrado de la
+	 * constelación, sin wordmark. Adapta a tema vía `currentColor` para
+	 * el fondo y `var(--sn-paper)` para las líneas/estrellas — el SVG
+	 * trae sus propias clases (.sn-i-bg/.sn-i-line/.sn-i-star) y se
+	 * inyecta inline para que herede las variables CSS del padre. CSS
+	 * decide cuál de los dos (wordmark vs. icono) se muestra según el
+	 * viewport (spec ChromeAccessibility — la realización compacta la
+	 * presentación, ambas alcanzables).
+	 *
+	 * @return string
+	 */
+	private static function iconSvg(): string {
+		if ( self::$iconSvgCache === null ) {
+			self::$iconSvgCache = self::readSvg( __DIR__ . '/../resources/casiopea-icon.svg' );
+		}
+		return self::$iconSvgCache;
+	}
+
+	/**
+	 * Lee un asset SVG, quita comentarios HTML y la declaración XML
+	 * (innecesaria al inyectar inline en el documento), defensivo.
+	 *
+	 * @param string $path
+	 * @return string
+	 */
+	private static function readSvg( string $path ): string {
+		$raw = is_readable( $path ) ? (string)file_get_contents( $path ) : '';
+		// Quitar declaración XML (sólo para top-level docs) y comentarios.
+		$raw = (string)preg_replace( '/<\?xml[^?]*\?>/s', '', $raw );
+		$raw = (string)preg_replace( '/<!--.*?-->/s', '', $raw );
+		return trim( $raw );
 	}
 
 	/**
@@ -95,6 +127,7 @@ class SkinStellaNova extends SkinMustache {
 			'is-override' => $override !== '',
 			'html-override' => $override,
 			'svg' => self::isotypeSvg(),
+			'svg-icon' => self::iconSvg(),
 		];
 
 		// — Navegación del sitio vs. caja de herramientas —

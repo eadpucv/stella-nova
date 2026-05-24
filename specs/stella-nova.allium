@@ -35,6 +35,18 @@
 --   6. Contrato de fidelidad estructural: el skin emite todas las data
 --      keys de SkinMustache y respeta los puntos de inyección de las
 --      extensiones de Casiopea (SMW/SRF/PageForms/Widgets/…).
+--   7. Contrato de accesibilidad del chrome: todo control interactivo
+--      expone un nombre accesible discoverable; cada surface de chrome
+--      es alcanzable y operable en cualquier viewport (la realización
+--      puede compactar la presentación pero no suprimir surfaces por
+--      estrechez). Decisión de producto 2026-05-24 a raíz de la pasada
+--      de responsiveness mobile.
+--   8. Contrato de panel emergente: cuando una surface se presenta como
+--      overlay temporal (preferencias siempre; navegación, herramientas
+--      de página, menú de usuario o búsqueda cuando la realización los
+--      colapsa así), el panel es descartable por Escape y por activación
+--      fuera, atrapa el foco mientras esté abierto y contiene su propio
+--      scroll para contenido desbordante.
 
 ------------------------------------------------------------
 -- External Entities
@@ -137,6 +149,76 @@ contract SkinRenderFidelity {
         -- ARCHITECTURE.md §3 y CLAUDE.md (Fase 4): SMW, SCQ, SRF,
         -- PageForms, ParserFunctions, WikiEditor, TemplateStyles, Maps,
         -- Widgets, Mermaid, Cite, Poem, Math, ImageMap, CategoryTree.
+}
+
+-- Obligaciones de accesibilidad del chrome. Direccionalidad: el skin las
+-- CUMPLE. No condicionan en viewport: el skin puede compactar la
+-- presentación en pantallas estrechas, pero la operabilidad y el etiquetado
+-- son universales. Decisión de producto 2026-05-24 (pasada mobile).
+contract ChromeAccessibility {
+    render_chrome: (page: WikiPage, viewer: User) -> RenderedDocument
+
+    @invariant InteractiveChromeControlsLabelled
+        -- Cada elemento interactivo del chrome (botón, enlace, control de
+        -- formulario, disparador de menú) expone un nombre accesible
+        -- discoverable por hover (atributo title o tooltip equivalente)
+        -- Y por tecnologías asistivas (aria-label, aria-labelledby o
+        -- texto perceptible del propio elemento). Aplica al chrome
+        -- COMPLETO (barra superior, pie, paneles, indicadores), no sólo
+        -- a la barra. Los controles con texto visible legible pueden
+        -- valerse de su propio texto como nombre accesible; los
+        -- ÍCONO-ONLY DEBEN proveer label explícito.
+
+    @invariant ChromeReachableInAnyViewport
+        -- Cada surface de chrome (PreferencesPanel, UserTools,
+        -- ManagedChrome en sus tres slots, SiteIsotype, la búsqueda y
+        -- la navegación expuestas vía portlets y vía ManagedChrome.sidebar)
+        -- es alcanzable y operable en CUALQUIER viewport, incluyendo
+        -- los más estrechos. La realización puede COMPACTAR la
+        -- presentación (colapso a icon-only, paso a overlay, recombinación
+        -- de afordancias), pero NO puede suprimir la surface ni recortar
+        -- sus operaciones por estrechez de viewport. La única supresión
+        -- legítima del chrome es LayoutMode.fullscreen (ver
+        -- SuppressedInFullscreen en cada surface afectada).
+
+    @guidance
+        -- "Compactar" incluye, p. ej., reemplazar el input de búsqueda
+        -- por una afordancia que lo expone bajo demanda, o sustituir un
+        -- menú inline por un panel emergente. Todas estas son decisiones
+        -- de presentación; el contrato sólo prohíbe que se pierda
+        -- alcance u operabilidad.
+}
+
+-- Obligaciones de comportamiento de un panel emergente. Se invoca cuando
+-- una surface del chrome se presenta como overlay temporal (modal, dropdown
+-- con scrim, drawer dismissable). PreferencesPanel lo cumple siempre; el
+-- resto (UserTools, presentación de ManagedChrome.sidebar, portlets de
+-- página, búsqueda) cuando la realización los colapsa así — típicamente
+-- en viewports estrechos. Decisión de producto 2026-05-24.
+contract TransientPanel {
+    present: (viewer: User) -> RenderedDocument
+
+    @invariant DismissableByEscape
+        -- La tecla Escape cierra el panel emergente más reciente sin
+        -- confirmación intermedia. No usar este contrato en paneles que
+        -- recogen datos no guardables que el descarte por Escape pueda
+        -- perder.
+
+    @invariant DismissableByOutsideActivation
+        -- Una activación (click o tap) fuera del cuerpo del panel lo
+        -- cierra. Compatible con el patrón "scrim" típico de mobile.
+
+    @invariant FocusContained
+        -- Mientras el panel está abierto, la navegación por teclado
+        -- (Tab/Shift-Tab) se mantiene dentro del panel: el foco no
+        -- escapa al body subyacente. Implementa el patrón ARIA dialog.
+
+    @invariant SelfContainedScroll
+        -- Cuando el contenido del panel excede el alto disponible, el
+        -- propio panel scrollea internamente. El scroll del panel NO
+        -- requiere ni dispara scroll de la página subyacente. Garantiza
+        -- que ningún ítem del panel quede inalcanzable en pantallas
+        -- pequeñas.
 }
 
 ------------------------------------------------------------
@@ -271,7 +353,7 @@ entity PageRender {
 ------------------------------------------------------------
 
 config {
-    skin_version: String = "0.0.3"      -- debe coincidir con skin.json
+    skin_version: String = "0.0.6"      -- debe coincidir con skin.json
     chrome_namespace: String = "Stella-Nova"
     interface_editor_group: String = "editores-de-interfaz"
 }
@@ -387,6 +469,9 @@ surface PreferencesPanel {
     @guarantee SuppressedInFullscreen
         -- No se renderiza cuando la página vista está en
         -- LayoutMode.fullscreen (ver surface ExperimentalCanvas).
+
+    contracts:
+        fulfils TransientPanel
 }
 
 -- Regiones de chrome administradas desde páginas wiki. Una instancia de
@@ -530,6 +615,7 @@ surface MediaWikiIntegration {
 
     contracts:
         fulfils SkinRenderFidelity
+        fulfils ChromeAccessibility
 }
 
 ------------------------------------------------------------
@@ -541,3 +627,5 @@ open question "Semántica exacta de 'en blanco' para una página de chrome (¿s�
 open question "Mecanismo definitivo de inyección de JS interactivo (p5.js) en páginas fullscreen: hoy es MediaWiki:Common.js global, subóptimo. Evaluar Widget curado, módulo ResourceLoader cargado sólo en páginas fullscreen, o assets por-página — sin habilitar JS arbitrario por editor."
 
 open question "Fallback de fuente de chrome a main ns cuando el namespace dedicado no está realizado (InterfaceFragment.source_page / ManagedChrome.SourceResolution): ¿se mantiene como conveniencia permanente asumiendo que el contenido es de baja sensibilidad, o se retira una vez que declarar el namespace sea obligatorio en la instalación? Mientras exista, source_protected=false ⇒ RestrictChromeNamespaceWrites no aplica y la escritura del fragmento no está protegida."
+
+open question "Devolución de foco al cerrar un panel emergente (TransientPanel): el patrón ARIA dialog canónico devuelve el foco al control que abrió el panel. La elicitación de 2026-05-24 dejó este punto fuera del contrato (se priorizaron Escape, scrim y trap). ¿Se añade como quinto invariante FocusReturnsToOpener, o se deja como responsabilidad opcional de la realización?"

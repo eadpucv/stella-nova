@@ -2,11 +2,11 @@
 	"manifest_version": 2,
 	"name": "StellaNova",
 	"namemsg": "skinname-stellanova",
-	"version": "0.0.4",
+	"version": "0.0.6",
 	"author": [
 		"Herbert Spencer"
 	],
-	"url": "https://github.com/eadpucv/stella-nova",
+	"url": "https://github.com/hspencer/stella-nova",
 	"descriptionmsg": "stellanova-desc",
 	"license-name": "GPL-2.0-or-later",
 	"type": "skin",

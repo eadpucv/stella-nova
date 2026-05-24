@@ -134,12 +134,26 @@ a:visited { color: var(--sn-link-visited); }
 	color: inherit;
 }
 .sn-isotype :is(img, .sn-isotype-img) { display: block; height: 2rem; width: auto; max-width: 12em; }
+/* Doble variante inline: wordmark (desktop) + glifo cuadrado (mobile).
+   El swap por viewport está al final del archivo, sección Responsive. */
+.sn-isotype :is(.sn-isotype-full, .sn-isotype-compact) { display: contents; }
+.sn-isotype .sn-isotype-compact { display: none; }
+.sn-isotype .sn-isotype-compact svg { height: 2rem; width: 2rem; border-radius: var(--sn-radius); }
 
 /* — Búsqueda — En reposo: fondo transparente, sin borde visible (borde
    transparente para no descuadrar al enfocar). Al enfocar: fondo papel
-   + borde del filete normal (sin rojo, sin halo). */
+   + borde del filete normal (sin rojo, sin halo). En desktop el form
+   se muestra inline; en compact viewport el form se colapsa y el
+   trigger (.sn-search-trigger) lo abre como modal — ver media query
+   al final del archivo, sección Responsive. */
+.sn-searchbox {
+	flex: 0 1 24rem; max-width: 32rem; min-width: 0;
+	display: flex; align-items: center;
+}
+.sn-search-trigger { display: none; }              /* sólo en compact */
+.sn-search-close   { display: none; }              /* sólo en compact-modal */
 .sn-search {
-	flex: 0 1 24rem; max-width: 32rem;
+	flex: 1; min-width: 0;
 	height: var(--sn-ctl); box-sizing: border-box;
 	display: flex; align-items: center; gap: var(--sn-s-1);
 	background: transparent;
@@ -430,14 +444,15 @@ a:visited { color: var(--sn-link-visited); }
 	font-size: var(--sn-fs-sm);
 }
 
-/* — firstHeading: titular en Work Sans (serif en títulos: aún no) — */
+/* — firstHeading: titular en Work Sans, ligero y en carmín nova (el
+   título de la página es la "voz" editorial del documento). — */
 .sn-paper :is(h1#firstHeading, .firstHeading, .mw-first-heading) {
 	font-family: var(--sn-font-text);
-	font-weight: 680;
+	font-weight: 300;
 	font-size: var(--sn-fs-display);
 	line-height: var(--sn-leading-tight);
 	letter-spacing: -.018em;
-	color: var(--sn-ink);
+	color: var(--sn-nova);
 	margin: 0 0 var(--sn-s-2);
 	max-width: 34ch;
 	text-wrap: balance;
@@ -495,24 +510,32 @@ a:visited { color: var(--sn-link-visited); }
    a una medida de lectura: el ancho lo gobierna la preferencia
    ContentWidth a nivel de la HOJA (.sn-paper-wrap), no por elemento. */
 
-/* Títulos en Work Sans (serif en títulos: aún no). */
-.sn-body :is(h2, h3) {
+/* Títulos en Work Sans (serif en títulos: aún no). h2 es la sección
+   sobria con filete; h3 es la subsección en kicker (mayúsculas + nova);
+   h4–h6 son labels secundarios. Cada uno con su bloque propio para que
+   el ritmo tipográfico sea legible de un vistazo. */
+.sn-body h2 {
 	font-family: var(--sn-font-text);
 	font-weight: 680; line-height: 1.25;
 	letter-spacing: -.012em; color: var(--sn-ink);
-}
-.sn-body :is(h4, h5, h6) {
-	font-family: var(--sn-font-text); line-height: 1.3; color: var(--sn-ink);
-}
-.sn-body h2 {
 	font-size: var(--sn-fs-lg);
 	margin: var(--sn-s-6) 0 var(--sn-s-3);
 	padding-bottom: var(--sn-s-2);
 	border-bottom: 1px solid var(--sn-hairline-soft);
 }
-.sn-body h3 { font-size: var(--sn-fs-md); margin: var(--sn-s-5) 0 var(--sn-s-2); }
+.sn-body h3 {
+	font-family: var(--sn-font-text);
+	font-weight: 470; line-height: 1.25;
+	letter-spacing: .035ex; color: var(--sn-nova);
+	text-transform: uppercase;
+	font-size: var(--sn-fs-md);
+	margin: var(--sn-s-5) 0 var(--sn-s-2);
+}
+.sn-body :is(h4, h5, h6) {
+	font-family: var(--sn-font-text); line-height: 1.3; color: var(--sn-ink);
+}
 .sn-body h4 { font-size: calc(var(--sn-fs-base) * 1.02);
-	margin: var(--sn-s-5) 0 var(--sn-s-2); font-weight: 700;
+	margin: var(--sn-s-5) 0 var(--sn-s-2); font-weight: 620;
 	letter-spacing: 0; }
 .sn-body h5, .sn-body h6 {
 	font-size: var(--sn-fs-sm); text-transform: uppercase;
@@ -532,14 +555,23 @@ a:visited { color: var(--sn-link-visited); }
 .sn-body a:visited { color: var(--sn-link-visited); }
 .sn-body a:visited:hover { color: var(--sn-link-hover); }
 
-/* Enlaces externos: el ÍCONO lo define el skin (Feather external-link),
-   no el de core. Se anula el background de la feature content-links y se
-   pinta el glifo como ::after con mask → hereda el color del enlace
-   (tinta/azul, carmín al hover; coherente en claro/oscuro). */
+/* Enlaces externos: mismos tokens que los internos (carmín) — el ícono
+   `external-link` basta como señal de "sale del sitio". Hay que sobrescribir
+   el azul que impone la feature `content-links` de core
+   (`.mw-parser-output a.external`, especificidad 0,0,2,1). El ÍCONO lo
+   define el skin (Feather external-link) y se pinta como ::after con mask,
+   así que hereda currentColor automáticamente. */
 .sn-body a.external,
 .sn-body .mw-parser-output a.external {
+	color: var(--sn-link);
 	background: none !important; padding-right: 0 !important;
 }
+.sn-body a.external:hover,
+.sn-body .mw-parser-output a.external:hover { color: var(--sn-link-hover); }
+.sn-body a.external:visited,
+.sn-body .mw-parser-output a.external:visited { color: var(--sn-link-visited); }
+.sn-body a.external:visited:hover,
+.sn-body .mw-parser-output a.external:visited:hover { color: var(--sn-link-hover); }
 .sn-body a.external::after {
 	content: ""; display: inline-block;
 	width: .68em; height: .68em; margin-left: .28em;
@@ -558,7 +590,6 @@ a:visited { color: var(--sn-link-visited); }
 .sn-body blockquote {
 	margin: var(--sn-s-5) 0;
 	padding: var(--sn-s-1) 0 var(--sn-s-1) var(--sn-s-5);
-	border-left: 2px solid var(--sn-nova);
 	font-family: var(--sn-font-display); font-optical-sizing: auto;
 	font-size: var(--sn-fs-md);
 	color: var(--sn-ink-soft); line-height: 1.55;
@@ -568,8 +599,13 @@ a:visited { color: var(--sn-link-visited); }
 	font-family: var(--sn-font-display); font-optical-sizing: auto;
 	font-size: var(--sn-fs-md); line-height: 1.7;
 	color: var(--sn-ink);
+	white-space: pre-wrap;
 }
 .sn-body .poem p { margin: 0 0 var(--sn-s-4); }
+/* La extensión Poem inserta <br/> tras cada línea (Poem.php). Con
+   white-space: pre-wrap el \n del código ya da el salto, así que el
+   <br/> sobra y produciría doble línea. Lo neutralizamos. */
+.sn-body .poem br { display: none; }
 .sn-body :is(code, kbd, samp) {
 	font-family: var(--sn-font-mono); font-size: .9em;
 	background: var(--sn-sunk); padding: .12em .38em;
@@ -1005,7 +1041,7 @@ canvas, iframe,
 	.sn-header-bar { flex-wrap: wrap; row-gap: var(--sn-s-3); }
 	.sn-brandnav   { order: 1; }
 	.sn-usertools  { order: 2; margin-left: auto; }
-	.sn-search     { order: 3; flex-basis: 100%; max-width: none; }
+	.sn-searchbox  { order: 3; flex-basis: 100%; max-width: none; }
 	.sn-pagecluster { order: 4; }
 }
 @media (max-width: 40rem) {
@@ -1016,6 +1052,192 @@ canvas, iframe,
 	}
 	.sn-footer-inner { grid-template-columns: 1fr; gap: var(--sn-s-5); }
 }
+
+/* ─── COMPACT (teléfono): una línea de íconos · modales fullscreen ───
+   La barra superior queda como una sola línea de íconos accionables,
+   espaciados uniformemente. CADA panel emergente (Navegación · Página ·
+   Usuario · Búsqueda · Preferencias) se presenta con EL MISMO patrón:
+   modal a pantalla completa, fondo papel, cabecera sticky con título +
+   botón cerrar (X), cuerpo con scroll propio, una sola columna. No hay
+   scrim — el modal cubre todo. Cumple TransientPanel (DismissableByEscape,
+   FocusContained, SelfContainedScroll y descarte por X). */
+@media (max-width: 36rem) {
+	/* — La barra: una línea, reparto homogéneo, sin envolver — */
+	.sn-header-bar {
+		flex-wrap: nowrap;
+		justify-content: space-between;
+		gap: var(--sn-s-2);
+		padding-inline: var(--sn-s-3);
+	}
+	.sn-brandnav, .sn-usertools, .sn-pagecluster, .sn-searchbox {
+		order: initial; flex: 0 0 auto;
+	}
+	.sn-brandnav, .sn-pagecluster, .sn-usertools { gap: var(--sn-s-1); }
+	.sn-usertools { margin-left: 0; }
+
+	/* Isotipo: glifo cuadrado en lugar del wordmark. */
+	.sn-isotype .sn-isotype-full    { display: none; }
+	.sn-isotype .sn-isotype-compact { display: contents; }
+
+	/* Búsqueda: form colapsado, trigger (lupa) visible — sin fondo
+	   propio (igual al resto de íconos de la barra). */
+	.sn-searchbox      { flex: 0 0 auto; }
+	.sn-search         { display: none; }
+	.sn-search-trigger { display: inline-grid; background: transparent; }
+
+	/* Triggers de menú: ícono-cuadrado del mismo tamaño que el resto, sin
+	   chevron (la abierta = modal). */
+	.sn-md-icononly { padding: 0; width: var(--sn-ctl); justify-content: center; }
+	.sn-md-icononly .sn-md-caret { display: none; }
+
+	.sn-notif { display: none; }   /* notif vive dentro del menú-usuario */
+
+	/* ───────────── PATRÓN MODAL UNIFICADO ─────────────
+	   Aplica a:
+	     · .sn-md[data-sn-open] .sn-menu-list — Navegación / Página / Usuario
+	     · .sn-prefs                          — Preferencias
+	     · html[data-sn-search-open] .sn-search — Búsqueda
+	   Mismo tamaño, mismo fondo, misma posición, misma transición. */
+	.sn-md[data-sn-open] .sn-menu-list,
+	.sn-prefs,
+	html[data-sn-search-open] .sn-search {
+		position: fixed;
+		inset: 0;
+		width: 100%; height: 100dvh;
+		max-width: none; min-width: 0;
+		display: flex; flex-direction: column;
+		background: var(--sn-paper); color: var(--sn-ink);
+		border: 0; border-radius: 0;
+		box-shadow: none;
+		margin: 0; padding: 0;
+		z-index: 1000;
+		overflow: hidden;       /* el scroll vive en .sn-modal-body */
+		animation: sn-modal-in var(--sn-dur-2) var(--sn-ease) both;
+	}
+
+	/* Anula los estilos de popover desktop dentro del modal. */
+	.sn-md[data-sn-open] .sn-menu-list {
+		opacity: 1; visibility: visible; transform: none;
+		top: 0; right: auto; bottom: auto; left: 0;
+	}
+
+	/* — Cabecera modal: sticky arriba, título + X. — */
+	.sn-modal-head {
+		flex: none;
+		display: flex; align-items: center; justify-content: space-between;
+		gap: var(--sn-s-3);
+		padding: var(--sn-s-3) var(--sn-s-4);
+		border-bottom: 1px solid var(--sn-hairline-soft);
+		background: var(--sn-paper);
+		min-height: var(--sn-ctl);
+	}
+	.sn-modal-title {
+		margin: 0; font-family: var(--sn-font-text);
+		font-size: var(--sn-fs-md); font-weight: 600;
+		color: var(--sn-ink); letter-spacing: -.008em;
+	}
+	.sn-modal-x {
+		background: transparent; border: 0; padding: 0;
+		width: 2.25rem; height: 2.25rem; flex: none;
+		display: grid; place-items: center;
+		color: var(--sn-ink-soft); cursor: pointer;
+		border-radius: var(--sn-radius);
+	}
+	.sn-modal-x:hover, .sn-modal-x:focus-visible {
+		background: var(--sn-sunk); color: var(--sn-ink);
+	}
+
+	/* — Cuerpo del modal: scrollable, una sola columna. — */
+	.sn-modal-body {
+		flex: 1; min-height: 0;
+		overflow-y: auto; overscroll-behavior: contain;
+		padding: var(--sn-s-4) var(--sn-s-4) calc(var(--sn-s-5) + env(safe-area-inset-bottom));
+		display: flex; flex-direction: column; gap: var(--sn-s-4);
+	}
+	/* Megamenu: anula columns:2 del desktop dentro del modal. */
+	.sn-megamenu { columns: auto; column-gap: 0; max-height: none; min-width: 0; }
+	.sn-megamenu .sn-modal-body { columns: auto; }
+	.sn-mm-sec { margin: 0; }
+
+	/* — Búsqueda modal — el form ocupa toda la pantalla; el input es
+	   visible sobre papel (no transparente sobre fondo oscuro). — */
+	html[data-sn-search-open] .sn-search-close { display: inline-grid; }
+	.sn-search-close {
+		background: transparent; border: 0; padding: 0;
+		width: 2.25rem; height: 2.25rem; flex: none;
+		display: grid; place-items: center;
+		color: var(--sn-ink-soft); cursor: pointer;
+		border-radius: var(--sn-radius);
+	}
+	.sn-search-close:hover, .sn-search-close:focus-visible {
+		background: var(--sn-sunk); color: var(--sn-ink);
+	}
+	html[data-sn-search-open] .sn-search {
+		flex-direction: row; align-items: center;
+		gap: var(--sn-s-3);
+		padding: var(--sn-s-3) var(--sn-s-4);
+		border-bottom: 1px solid var(--sn-hairline-soft);
+		height: auto; min-height: var(--sn-ctl);
+	}
+	html[data-sn-search-open] .sn-search :is(input[type="search"], #searchInput, .mw-searchInput) {
+		flex: 1; min-width: 0;
+		background: var(--sn-sunk); color: var(--sn-ink);
+		border: 1px solid var(--sn-hairline);
+		border-radius: var(--sn-radius);
+		padding: var(--sn-s-3) var(--sn-s-4);
+		font-size: var(--sn-fs-md);
+		height: auto; line-height: 1.4;
+	}
+	html[data-sn-search-open] .sn-search :is(input):focus {
+		background: var(--sn-paper);
+		border-color: var(--sn-ink-faint);
+		outline: none;
+	}
+	html[data-sn-search-open] .sn-search-go {
+		color: var(--sn-ink-soft); background: transparent;
+	}
+
+	/* — Preferencias modal — su markup propio (.sn-prefs-head/body/foot)
+	   se ajusta al mismo patrón visual del modal unificado. — */
+	.sn-prefs        { transform: none; }
+	.sn-prefs.is-open { transform: none; }
+	.sn-prefs-scrim  { display: none; }      /* sin scrim: el modal es fullscreen */
+	/* IMPORTANTE: en desktop `.sn-prefs[hidden] { display: flex }` mantiene
+	   el panel en flow (el truco que permite animar el drawer con
+	   `transform: translateX(101%)`). En compact ese transform es `none`,
+	   así que sin esta sobreescritura el panel quedaría VISIBLE desde el
+	   page-load tapando toda la UI — y los clicks sobre la barra superior
+	   (incluido el botón X del propio modal cuando se "abre") caerían
+	   sobre el panel siempre-encendido y parecerían no hacer nada.
+	   Aquí `hidden=true` oculta de verdad. */
+	.sn-prefs[hidden] { display: none; }
+	.sn-prefs-head {
+		flex: none; padding: var(--sn-s-3) var(--sn-s-4);
+		border-bottom: 1px solid var(--sn-hairline-soft);
+		min-height: var(--sn-ctl);
+	}
+	.sn-prefs-head h2 {
+		font-size: var(--sn-fs-md); font-weight: 600;
+		font-family: var(--sn-font-text); letter-spacing: -.008em;
+	}
+	.sn-prefs-body { padding: var(--sn-s-4); gap: var(--sn-s-4); }
+	.sn-prefs-foot { flex: none; padding: var(--sn-s-3) var(--sn-s-4); }
+
+	/* Bloqueo de scroll del body cuando hay cualquier modal abierto. */
+	html[data-sn-modal] { overflow: hidden; }
+	html[data-sn-modal] body { overflow: hidden; }
+}
+
+/* En DESKTOP la cabecera modal no debe verse (el dropdown popover se
+   posiciona junto al trigger; los hijos directos viven en su contenedor
+   sin envoltura). */
+@media (min-width: 36.01rem) {
+	.sn-modal-head { display: none; }
+	.sn-modal-body { display: contents; }
+	.sn-modal-x    { display: none; }
+}
+
+@keyframes sn-modal-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
 /* ─────────────── Entrada orquestada (una sola) ─────────────── */
 @media (prefers-reduced-motion: no-preference) {
