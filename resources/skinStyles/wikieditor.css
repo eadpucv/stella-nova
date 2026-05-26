@@ -59,3 +59,133 @@ form#editform {
 	margin-top: 2.062em;
 }
 
+/* ─── Tema Stella Nova para el WikiEditor ───────────────────────────
+ * El módulo `ext.wikiEditor` hardcodea superficies claras (#fff, #ccc,
+ * #f9f9f9, #222, #0645ad) en el frame, la toolbar, las tabs y los
+ * tool-selects. En modo oscuro esa cromática NO voltea (no usa
+ * --codex-* ni tokens) y el editor queda como un islote claro sobre
+ * la chrome oscura. Reemplazamos esas superficies por tokens del skin
+ * para que voltee con `--sn-paper`/`--sn-sunk`/`--sn-ink`. Como este
+ * archivo se carga con prefijo `+` en skin.json, llega DESPUÉS del
+ * CSS de la extensión y gana por orden de fuente sin necesidad de
+ * `!important`. */
+
+/* Frame del editor: borde exterior y filete entre toolbar y textarea. */
+.wikiEditor-ui .wikiEditor-ui-view {
+	border-color: var(--sn-hairline);
+}
+.wikiEditor-ui .wikiEditor-ui-top {
+	border-bottom-color: var(--sn-hairline);
+}
+.wikiEditor-ui .wikiEditor-ui-right {
+	background: var(--sn-sunk);
+}
+
+/* Cinta inferior con controles + barra de tabs/buttons del wikitexto. */
+.wikiEditor-ui-controls,
+.wikiEditor-ui-tabs,
+.wikiEditor-ui-tabs div.current,
+.wikiEditor-ui-buttons {
+	background-color: var(--sn-paper);
+}
+.wikiEditor-ui-tabs {
+	border-left-color: var(--sn-hairline);
+	border-top-color: var(--sn-hairline);
+}
+.wikiEditor-ui-tabs div {
+	background-color: var(--sn-sunk);
+	border-right-color: var(--sn-hairline);
+	border-bottom-color: var(--sn-hairline);
+}
+.wikiEditor-ui-tabs div a { color: var(--sn-link); }
+.wikiEditor-ui-tabs div.current {
+	border-bottom-color: var(--sn-paper);
+}
+.wikiEditor-ui-tabs div.current a { color: var(--sn-ink); }
+.wikiEditor-ui-buttons { border-top-color: var(--sn-paper); }
+
+/* Toolbar: secciones, tabs expandibles, grupos. */
+.wikiEditor-ui-toolbar .sections .section {
+	border-top-color: var(--sn-hairline);
+}
+.wikiEditor-ui-toolbar .tabs span.tab a,
+.wikiEditor-ui-toolbar .tabs span.tab a:visited {
+	color: var(--sn-link);
+}
+.wikiEditor-ui-toolbar .tabs span.tab a.current,
+.wikiEditor-ui-toolbar .tabs span.tab a.current:visited {
+	color: var(--sn-ink);
+}
+.wikiEditor-ui-toolbar .section-secondary .group,
+.wikiEditor-ui-toolbar .group-search {
+	border-left-color: var(--sn-hairline);
+}
+.wikiEditor-ui-toolbar .group {
+	border-right-color: var(--sn-hairline);
+}
+.wikiEditor-ui-toolbar .group .label,
+.wikiEditor-ui-toolbar .page-table th {
+	color: var(--sn-ink-soft);
+}
+
+/* Tool-select (desplegable "Avanzado": estilo de párrafo, encabezados). */
+.wikiEditor-ui-toolbar .group .tool-select {
+	border-color: var(--sn-hairline);
+	background-color: var(--sn-paper);
+}
+.wikiEditor-ui-toolbar .group .tool-select .label { color: var(--sn-ink); }
+.wikiEditor-ui-toolbar .group .tool-select .options {
+	border-color: var(--sn-hairline);
+	background-color: var(--sn-paper);
+	box-shadow: var(--sn-lift-soft);
+}
+.wikiEditor-ui-toolbar .group .tool-select .options .option {
+	color: var(--sn-ink);
+}
+.wikiEditor-ui-toolbar .group .tool-select .options .option:hover {
+	background-color: var(--sn-opt-hover-bg);
+}
+
+/* Booklet — pestaña "Ayuda" y panel de caracteres especiales. */
+.wikiEditor-ui-toolbar .booklet > .index .wikiEditor-character-highlighted {
+	background-color: var(--sn-nova-wash);
+	color: var(--sn-ink);
+}
+.wikiEditor-ui-toolbar .page-table td {
+	color: var(--sn-ink);
+	border-top-color: var(--sn-hairline-soft);
+}
+.wikiEditor-ui-toolbar .page-characters div span {
+	border-color: var(--sn-hairline);
+	color: var(--sn-ink);
+}
+.wikiEditor-ui-toolbar .page-characters div span:hover {
+	background-color: var(--sn-sunk);
+	border-color: var(--sn-ink-faint);
+}
+.wikiEditor-ui-toolbar .page-characters div .wikiEditor-character-highlighted {
+	background-color: var(--sn-nova-wash);
+	color: var(--sn-ink);
+}
+
+/* Diálogo "Insertar tabla" — preview embebido. */
+.ui-widget table td.wikieditor-toolbar-table-preview-wrapper {
+	background: var(--sn-sunk);
+}
+.ui-widget table .wikieditor-toolbar-table-preview-frame {
+	background: var(--sn-paper);
+}
+
+/* Textarea — venciendo a MediaWiki:Common.css.
+ * Common.css trae `.mw-body #wpTextbox1 { background-color: rgb(132 150 117 / 8%) }`
+ * con especificidad (1,1,0): pisaba al `#wpTextbox1` (1,0,0) de
+ * stella-nova.css en modo oscuro y dejaba un tinte verdoso sobre el
+ * papel oscuro. Subimos especificidad agregando `.mw-body` al selector
+ * y fijamos también el textarea ya wrapped por WikiEditor
+ * (`.wikiEditor-ui .wikiEditor-ui-text textarea`). */
+.mw-body #wpTextbox1,
+.mw-body .mw-editfont-monospace,
+.mw-body .wikiEditor-ui-text textarea {
+	background: var(--sn-paper);
+	color: var(--sn-ink);
+}
