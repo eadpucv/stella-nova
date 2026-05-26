@@ -100,13 +100,43 @@ Decidir herramienta (pendiente del PLAN del proyecto).
 - Remoto: **GitHub `eadpucv/stella-nova`** (`origin` configurado, **sin push**
   aún — empujar cuando M1+ esté presentable).
 - Testing/CI: herramienta por definir (M7).
-- **Tipografía** (rev. 2026-05-18): **solo Work Sans** (cuerpo/UI/títulos)
-  + monospace del sistema para código. Fraunces **descartado por ahora**
-  (no convencía en titulares); sus woff2 siguen vendoreados en
-  `resources/fonts/` pero `fonts.css` ya no los declara. Titulares
-  sobrios (sin escala exagerada). `--sn-font-display` es alias de Work
-  Sans: reintroducir un display luego es una línea. Sin `font-variation-
-  settings` (rompía el peso variable de Work Sans).
+- **Tipografía** (rev. 2026-05-25): **Alegreya Sans** (cuerpo · UI · todas
+  las cabeceras h1–h6, pesos discretos 300/400/500/700/900) + **Alegreya**
+  (variable wght 400–900, único uso editorial: citas y `<poem>`) + **IBM
+  Plex Mono** (código). Auto-alojadas en `resources/fonts/` (sin CDN en
+  runtime). Subset latin: U+0000-00FF cubre el español sin necesidad de
+  latin-ext. `--sn-font-display` queda como alias de `--sn-font-text`
+  para que la doctrina "todo sans en cabeceras" se exprese en un solo
+  token (reintroducir un display distinto = cambiar la línea del alias).
+  Historial: Work Sans + Newsreader → Anthropic Sans + Anthropic Serif →
+  Alegreya Sans + Alegreya (todos el 2026-05-25 en la rama `fonts`).
+- **Sin `text-transform: uppercase` en cabeceras del cuerpo** (rev.
+  2026-05-25): h3 (subsección en nova) y h5/h6 (labels secundarios)
+  perdieron el uppercase; ahora la jerarquía visual la hacen tamaño,
+  peso y color, no transformación de caja. Las labels de UI chrome
+  (`.sn-mm-h`, `.sn-portlet-h`, `.sn-footer-h`, `.sn-fs-h`) sí mantienen
+  el patrón uppercase + letter-spacing porque son decoración, no
+  cabeceras de documento. El reset `text-transform: lowercase` en
+  `.mw-editsection` quedó retirado por innecesario.
+- **Ritmo vertical = baseline grid sobre la interlínea del cuerpo** (rev.
+  2026-05-25): la unidad es `--sn-baseline = fs-base × leading`, calculada
+  en `tokens.css` y reactiva a las preferencias `FontSize` y `LineHeight`
+  del usuario (compact 1.45 / normal 1.65 / relaxed 1.9). Cabeceras, p,
+  ul/ol, blockquote y `.poem` usan line-heights y márgenes verticales en
+  múltiplos enteros de `--sn-baseline` (1× o 2× o 3×). Cabeceras del
+  cuerpo: h1 = 2 baselines, h2 = 2 baselines, h3 = 1 baseline, h4-h6 =
+  1 baseline. Page title (h1#firstHeading) = 3 baselines de line-height
+  con un tamaño dedicado (`--sn-fs-page-title`, mayor que `--sn-fs-
+  display`): el título de la página se lee mayor que cualquier h1 del
+  cuerpo, marcando la voz editorial del documento. Se eligió la versión
+  "rítmica" (reglas 2+3 del informe baseline-grid): line-heights y
+  márgenes en grilla, sin offsets `padding-top:(lh-1cap)/2` por elemento.
+  Los offsets cap rompen el colapso de márgenes del que MediaWiki depende
+  (`:first-child`, headings adyacentes a párrafos) y agregan dependencia
+  de las métricas de cada fuente; con la versión rítmica, las alturas de
+  bloque son siempre múltiplos enteros, los párrafos calzan en arreglos
+  multicolumna y el cambio de familia tipográfica no requiere recalibrar
+  offsets. El token `--sn-leading-tight` quedó retirado.
 - **Navegación: cabecera despejada + mapa del sitio en el pie** (rev.
   2026-05-18, decisión del usuario): la barra superior queda *centrada en
   la página actual* — isotipo · pestañas de página (espacios + Leer/
