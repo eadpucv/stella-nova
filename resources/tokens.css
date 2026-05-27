@@ -252,14 +252,25 @@
 	--color-error:    var(--sn-danger);
 	--color-success:  var(--sn-ok);
 
-	/* Fondos */
+	/* Fondos.
+	   La pareja `neutral` / `neutral-subtle` la usan diálogos y formularios
+	   de core para distinguir un contenedor "atenuado" del fondo base. En
+	   Stella Nova ambos caen a `--sn-sunk` (la única gradación que la hoja
+	   sostiene sin perder ritmo); si el día de mañana queremos un tercer
+	   tono, conviene introducir `--sn-sunk-soft` y diferenciarlos aquí. */
 	--background-color-base:                 var(--sn-paper);
 	--background-color-base-fixed:           var(--sn-paper);
+	--background-color-base-print:           var(--sn-paper);
 	--background-color-interactive:          var(--sn-sunk);
 	--background-color-interactive-subtle:   var(--sn-sunk);
+	--background-color-neutral:              var(--sn-sunk);
 	--background-color-neutral-subtle:       var(--sn-sunk);
 	--background-color-disabled:             var(--sn-sunk);
 	--background-color-disabled-subtle:      var(--sn-sunk);
+	--background-color-inverted:             var(--sn-ink);
+	--background-color-page-container:       var(--sn-field);
+	--background-color-secondary:            var(--sn-sunk);
+	--background-color-transparent:          transparent;
 
 	--background-color-progressive:           var(--sn-link);
 	--background-color-progressive--hover:    color-mix(in oklab, var(--sn-link) 80%, var(--sn-ink));
@@ -268,12 +279,26 @@
 	--background-color-progressive-subtle:    var(--sn-nova-wash);
 
 	--background-color-error:              var(--sn-danger);
+	--background-color-error--hover:       color-mix(in oklab, var(--sn-danger) 80%, var(--sn-ink));
+	--background-color-error--active:      color-mix(in oklab, var(--sn-danger) 65%, var(--sn-ink));
 	--background-color-error-subtle:       var(--sn-danger-wash);
+	--background-color-destructive:           var(--sn-danger);
+	--background-color-destructive--hover:    color-mix(in oklab, var(--sn-danger) 80%, var(--sn-ink));
+	--background-color-destructive--active:   color-mix(in oklab, var(--sn-danger) 65%, var(--sn-ink));
+	--background-color-destructive--focus:    var(--sn-danger);
 	--background-color-destructive-subtle: var(--sn-danger-wash);
 	--background-color-warning-subtle:     var(--sn-warn-wash);
 	--background-color-success-subtle:     var(--sn-ok-wash);
 	--background-color-notice-subtle:      var(--sn-sunk);
 	--background-color-backdrop-light:     var(--sn-scrim);
+	--background-color-backdrop-dark:      color-mix(in oklab, var(--sn-ink) 70%, transparent);
+	/* Diff: añadido = wash verde tenue, removido = wash carmín tenue. */
+	--background-color-content-added:      var(--sn-ok-wash);
+	--background-color-content-removed:    var(--sn-danger-wash);
+	/* Tab framed (variante con borde — usada por Vector y algunas
+	   extensiones que reusan ese estilo). */
+	--background-color-tab-list-item-framed--hover:  var(--sn-sunk);
+	--background-color-tab-list-item-framed--active: var(--sn-paper);
 
 	/* "Quiet" buttons: lavados de tinta translúcidos — voltean con el
 	   tema porque --sn-ink lo hace. */
