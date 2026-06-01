@@ -43,17 +43,29 @@ wfLoadSkin( 'StellaNova' );
 Probar sin cambiar el default: añadir `?useskin=stellanova` a cualquier
 URL.
 
+**Nombre de carpeta:** `wfLoadSkin( 'X' )` carga `skins/X/skin.json`, así
+que el argumento debe coincidir con la carpeta. Las **URLs de los assets
+(fuentes incluidas) se calculan de la carpeta real** donde el wiki sirve el
+skin (`Hooks::onResourceLoaderRegisterModules`), no de un nombre fijo: por
+eso da igual clonar en `StellaNova`, `stella-nova` o vía symlink — basta que
+el `wfLoadSkin` apunte a esa carpeta y los woff2 resuelven solos. (Antes,
+`remoteSkinPath` estaba hardcodeado y las fuentes daban 404 si la carpeta no
+se llamaba exactamente `StellaNova`.)
+
 ## Fundamentos y enfoque
 
 Stella Nova sigue el camino oficial de MediaWiki para skins modernos:
 **`SkinMustache` + `skin.json`**, separando datos (PHP) de presentación
 (Mustache + CSS) y declarando todo en JSON.
 
-- **[`skin.json`](skin.json)** declara absolutamente todo: el nombre
-  del skin, los `ResourceModules` (CSS/JS), los `ResourceModuleSkinStyles`
-  (estilos para extensiones), los `Hooks`, los `MessagesDirs`. **No hay
-  archivo de bootstrap PHP** que llame a `wfLoadSkin` o registre cosas
-  imperativamente — todo viene de aquí.
+- **[`skin.json`](skin.json)** declara el grueso: el nombre del skin, los
+  `ResourceModuleSkinStyles` (estilos para extensiones), los `Hooks`, los
+  `MessagesDirs`. **No hay archivo de bootstrap PHP** que llame a
+  `wfLoadSkin`. La única salvedad: los `ResourceModules` del skin
+  (`skins.stellanova.styles` / `.scripts`) se registran en PHP
+  (`Hooks::onResourceLoaderRegisterModules`) en vez de declararse aquí, para
+  calcular su `remoteSkinPath` de la carpeta real y que las fuentes resuelvan
+  sin importar cómo se llame el directorio al clonar (ver *Instalación*).
 - **[`includes/SkinStellaNova.php`](includes/SkinStellaNova.php)**
   extiende `SkinMustache`. Es la **única** clase PHP del skin (aparte
   de los hooks): el resto del trabajo lo hace la plantilla. Su única

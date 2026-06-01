@@ -28,7 +28,12 @@ casi sin PHP y favorece código testeable. Es la dirección oficial.
 ## 2. Arquitectura base
 
 - Declarar todo en `skin.json` (`ValidSkinNames`, `MessagesDirs`,
-  `ResourceModules`, `AutoloadNamespaces`), no inicialización en PHP.
+  `ResourceModuleSkinStyles`, `AutoloadNamespaces`), no inicialización en PHP.
+  Excepción deliberada: los `ResourceModules` del skin se registran en PHP
+  (`Hooks::onResourceLoaderRegisterModules`) para derivar su `remoteSkinPath`
+  de la carpeta real — única forma robusta al nombre del directorio, ya que
+  el `remoteSkinPath` de `skin.json` es un literal estático y rompería las
+  URLs de las fuentes si la carpeta no se llama `StellaNova`.
 - Clase base `SkinMustache` (en MW 1.43 es **clase global** `SkinMustache`,
   no `MediaWiki\Skin\SkinMustache`). PHP al mínimo (config, wiring, hooks).
 - Hooks en clase separada (`…Hooks.php`), no mezclados con layout.

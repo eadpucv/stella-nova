@@ -33,10 +33,11 @@ Plan accionable. Principios en [`ARCHITECTURE.md`](ARCHITECTURE.md).
   todas las data keys de SkinMustache 1.43 (`SkinRenderFidelity`).
 - [x] **M3 — Tokens + tema**: `tokens.css` definitivo; **default claro**,
   oscuro solo por elección explícita / `auto`+SO (ver Decisiones); fuentes
-  auto-alojadas (Work Sans + Fraunces, `fonts.css`, sin CDN runtime).
+  auto-alojadas (IBM Plex, `fonts.css`, sin CDN runtime).
 - [~] **M4 — Responsive + navegación**: mobile-first; dropdown colapsable;
-  panel de preferencias (5, modal accesible) con persistencia híbrida
-  (cuenta/`localStorage`) + pre-pintado sin FOUC. Falta ronda móvil real.
+  preferencias (tema + tamaño de letra) en el menú de usuario, con
+  persistencia híbrida (cuenta/`localStorage`) + pre-pintado sin FOUC. Falta
+  ronda móvil real.
 - [ ] M5 — Accesibilidad WCAG 2.1 AA (auditoría axe/WAVE + lector pantalla)
 - [~] M6 — JS progresivo (panel/dropdown/menús hechos; degradación sin JS ok)
 - [ ] M7 — Testing + CI
@@ -100,21 +101,27 @@ Decidir herramienta (pendiente del PLAN del proyecto).
 - Remoto: **GitHub `eadpucv/stella-nova`** (`origin` configurado, **sin push**
   aún — empujar cuando M1+ esté presentable).
 - Testing/CI: herramienta por definir (M7).
-- **Tipografía** (rev. 2026-05-29): familia única **IBM Plex**. **IBM Plex
-  Sans** (cuerpo · UI · todas las cabeceras h1–h6) — **variable**, un único
-  woff2 por estilo (normal/italic) cubre el eje wght 100–700, así cualquier
-  peso del diseño interpola de verdad en vez de cargar 5 archivos discretos.
+- **Tipografía** (rev. 2026-06-01): familia única **IBM Plex**. **IBM Plex
+  Sans** (cuerpo · UI · todas las cabeceras h1–h6) — **variable de DOS ejes**:
+  un único woff2 por estilo (normal/italic) cubre el eje **wght 100–700** Y el
+  eje **wdth 75–100** (`plexsans-latin-wdthwght-*.woff2`, build de dos ejes de
+  Google Fonts). Así cualquier peso Y cualquier ancho interpolan de verdad; el
+  cuerpo se condensa vía `font-stretch` (eje wdth) sin variantes extra. (La
+  build `@fontsource-variable` antigua solo exponía wght — esos
+  `plexsans-latin-wght-*.woff2` ignoraban `font-stretch` y se retiraron.)
   **IBM Plex Serif** (estática, pesos 400/700 normal+italic; único uso
   editorial: citas y `<poem>`) + **IBM Plex Mono** (código). Auto-alojadas
-  en `resources/fonts/` (sin CDN en runtime). Subset latin: U+0000-00FF
-  cubre el español sin necesidad de latin-ext. `--sn-font-display` queda
-  como alias de `--sn-font-text` para que la doctrina "todo sans en
-  cabeceras" se exprese en un solo token (reintroducir un display distinto
-  = cambiar la línea del alias). IBM Plex Sans tope en 700: pesos > 700
-  (un único `font-weight: 800` en un badge de Echo) se recortan al máximo
-  del eje. Historial: Work Sans + Newsreader → Anthropic Sans + Anthropic
-  Serif → Alegreya Sans + Alegreya (2026-05-25, rama `fonts`) → IBM Plex
-  Sans (variable) + IBM Plex Serif (2026-05-29).
+  en `resources/fonts/` (sin CDN en runtime; **versionadas en git** — su
+  ausencia rompía el tema). Las URLs las calcula
+  `Hooks::onResourceLoaderRegisterModules` de la carpeta real (robusto al
+  nombre del directorio). Subset latin: U+0000-00FF cubre el español sin
+  latin-ext. `--sn-font-display` queda como alias de `--sn-font-text` para que
+  la doctrina "todo sans en cabeceras" se exprese en un solo token. IBM Plex
+  Sans tope en 700: pesos > 700 se recortan al máximo del eje. Historial:
+  Work Sans + Newsreader → Anthropic Sans + Anthropic Serif → Alegreya Sans +
+  Alegreya (2026-05-25, rama `fonts`) → IBM Plex Sans (variable wght) + IBM
+  Plex Serif (2026-05-29) → IBM Plex Sans variable de dos ejes wght+wdth
+  (2026-05-31).
 - **Sin `text-transform: uppercase` en cabeceras del cuerpo** (rev.
   2026-05-25): h3 (subsección en nova) y h5/h6 (labels secundarios)
   perdieron el uppercase; ahora la jerarquía visual la hacen tamaño,
