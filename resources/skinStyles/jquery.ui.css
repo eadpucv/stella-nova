@@ -1,0 +1,171 @@
+/* ============================================================
+ * skinStyles/jquery.ui.css — Stella Nova
+ *
+ * Re-tematiza los diálogos de jQuery UI (módulo `jquery.ui`, tema
+ * "smoothness") para que hablen el lenguaje del skin. Los usa WikiEditor
+ * para "Buscar y reemplazar", "Insertar tabla", "Insertar archivo/enlace"
+ * (todos con dialogClass `wikiEditor-toolbar-dialog`).
+ *
+ * Por qué hace falta y por qué aquí:
+ *  · El tema smoothness hardcodea Verdana 1.1em, fondos #fff/#ccc con
+ *    TEXTURAS PNG (ui-bg_*.png), bordes #aaa y botones con degradados PNG
+ *    (ui-bg_glass_*.png). Nada de eso usa var() → no voltea en oscuro y
+ *    choca con la voz editorial del skin.
+ *  · El diálogo lo levanta JS (`$(...).dialog()`) y se APPENDEA a
+ *    `document.body` (jquery.wikiEditor.dialogs.js), FUERA de `.sn-app`
+ *    y `.mw-body`. Por eso las reglas scopeadas a esos contenedores no lo
+ *    alcanzan. El gancho correcto es `.skin-stellanova` (clase que MW pone
+ *    en <body>): el diálogo es hijo de <body>, así que sí matchea.
+ *  · Registrado con `+jquery.ui` en skin.json → este CSS se añade DESPUÉS
+ *    del skinStyle `default` (smoothness) sin reemplazarlo: conservamos la
+ *    maquetación/posicionamiento de jQuery UI y solo repintamos la piel.
+ *    `.skin-stellanova` además sube especificidad y gana siempre.
+ *
+ * Los íconos (cerrar ✕, asa de resize) SÍ son sprites PNG (#222222) — en
+ * claro se ven bien sobre papel claro; en oscuro se invierten con filter
+ * (mismo recurso que en la toolbar, ver wikieditor.css).
+ * ============================================================ */
+
+/* ─── Tipografía: fuera Verdana, dentro la familia del skin ─── */
+.skin-stellanova .ui-dialog,
+.skin-stellanova .ui-dialog.ui-widget,
+.skin-stellanova .ui-dialog .ui-widget,
+.skin-stellanova .ui-dialog input,
+.skin-stellanova .ui-dialog select,
+.skin-stellanova .ui-dialog textarea,
+.skin-stellanova .ui-dialog button {
+	font-family: var(--sn-font-text);
+	font-size: var(--sn-fs-sm);
+}
+
+/* ─── La ventana: papel del skin, filete hairline, sombra elevada ─── */
+.skin-stellanova .ui-dialog {
+	padding: 0;
+	background: var(--sn-paper);
+	border: 1px solid var(--sn-hairline);
+	border-radius: var(--sn-radius);
+	box-shadow: var(--sn-lift);
+	color: var(--sn-ink);
+}
+/* `.ui-widget-content` la lleva tanto la ventana como el cuerpo: matamos
+   la textura PNG y homologamos al papel. */
+.skin-stellanova .ui-dialog.ui-widget-content,
+.skin-stellanova .ui-dialog .ui-widget-content {
+	background: var(--sn-paper);
+	background-image: none;
+	border-color: var(--sn-hairline);
+	color: var(--sn-ink);
+}
+
+/* ─── Barra de título: cinta hundida, sin textura ni Verdana negrita ─── */
+.skin-stellanova .ui-dialog .ui-dialog-titlebar,
+.skin-stellanova .ui-dialog .ui-widget-header {
+	background: var(--sn-sunk);
+	background-image: none;
+	border: 0;
+	border-bottom: 1px solid var(--sn-hairline);
+	border-radius: var(--sn-radius) var(--sn-radius) 0 0;
+	color: var(--sn-ink);
+	padding: var(--sn-s-3) var(--sn-s-4);
+}
+.skin-stellanova .ui-dialog .ui-dialog-title {
+	font-weight: 600;
+	color: var(--sn-ink);
+}
+
+/* ─── Botón de cerrar: caja transparente con hover del skin ─── */
+.skin-stellanova .ui-dialog .ui-dialog-titlebar-close,
+.skin-stellanova .ui-dialog .ui-dialog-titlebar-close.ui-state-default,
+.skin-stellanova .ui-dialog .ui-dialog-titlebar-close.ui-state-hover {
+	background: transparent;
+	background-image: none;
+	border: 0;
+}
+.skin-stellanova .ui-dialog .ui-dialog-titlebar-close:hover,
+.skin-stellanova .ui-dialog .ui-dialog-titlebar-close:focus {
+	background: var(--sn-opt-hover-bg);
+	border-radius: var(--sn-radius);
+}
+
+/* ─── Cuerpo y campos del formulario ─── */
+.skin-stellanova .ui-dialog .ui-dialog-content {
+	background: var(--sn-paper);
+	color: var(--sn-ink);
+	padding: var(--sn-s-4);
+}
+.skin-stellanova .ui-dialog .wikiEditor-toolbar-field-wrapper {
+	margin-bottom: var(--sn-s-3);
+}
+.skin-stellanova .ui-dialog label {
+	color: var(--sn-ink);
+}
+.skin-stellanova .ui-dialog input[type="text"],
+.skin-stellanova .ui-dialog input[type="search"],
+.skin-stellanova .ui-dialog textarea {
+	background: var(--sn-field-bg);
+	color: var(--sn-field-fg);
+	border: 1px solid var(--sn-field-border);
+	border-radius: var(--sn-radius);
+	padding: var(--sn-s-2) var(--sn-s-3);
+}
+.skin-stellanova .ui-dialog input[type="text"]:focus,
+.skin-stellanova .ui-dialog input[type="search"]:focus,
+.skin-stellanova .ui-dialog textarea:focus {
+	border-color: var(--sn-focus-border);
+	box-shadow: var(--sn-focus-ring);
+	outline: 0;
+}
+
+/* ─── Pie de botones: separador hairline + botones del skin ─── */
+.skin-stellanova .ui-dialog .ui-dialog-buttonpane {
+	background: var(--sn-paper);
+	background-image: none;
+	border-top: 1px solid var(--sn-hairline);
+	padding: var(--sn-s-3) var(--sn-s-4);
+}
+.skin-stellanova .ui-dialog .ui-dialog-buttonpane button,
+.skin-stellanova .ui-dialog .ui-dialog-buttonpane button.ui-state-default,
+.skin-stellanova .ui-dialog .ui-button.ui-state-default {
+	background: var(--sn-btn-bg);
+	background-image: none;
+	border: 1px solid var(--sn-btn-border);
+	border-radius: var(--sn-radius);
+	color: var(--sn-btn-fg);
+	padding: var(--sn-s-2) var(--sn-s-4);
+	font-weight: 600;
+	transition: background-color var(--sn-dur-1), border-color var(--sn-dur-1);
+}
+.skin-stellanova .ui-dialog .ui-dialog-buttonpane button:hover,
+.skin-stellanova .ui-dialog .ui-dialog-buttonpane button.ui-state-hover,
+.skin-stellanova .ui-dialog .ui-button.ui-state-hover {
+	background: var(--sn-btn-bg-hover);
+	border-color: var(--sn-btn-border-hover);
+	color: var(--sn-btn-fg);
+}
+.skin-stellanova .ui-dialog .ui-dialog-buttonpane button:focus,
+.skin-stellanova .ui-dialog .ui-button.ui-state-focus {
+	border-color: var(--sn-focus-border);
+	box-shadow: var(--sn-focus-ring);
+	outline: 0;
+}
+
+/* ─── Backdrop modal (cuando el diálogo es modal) ─── */
+.skin-stellanova .ui-widget-overlay {
+	background: rgba(0, 0, 0, .35);
+	background-image: none;
+	opacity: 1;
+}
+
+/* ─── Íconos PNG (cerrar ✕, asa de resize): invertir en oscuro ─────
+ * El sprite es `ui-icons_222222_*.png` (gris oscuro): legible sobre papel
+ * claro, invisible/sucio sobre papel oscuro. `:root` (html) lleva el
+ * data-sn-theme; `.skin-stellanova` (body) es descendiente y alcanza el
+ * diálogo appendeado a <body>. */
+:root[data-sn-theme="dark"] .skin-stellanova .ui-dialog .ui-icon {
+	filter: invert(1) brightness(1.1);
+}
+@media (prefers-color-scheme: dark) {
+	:root[data-sn-theme="auto"] .skin-stellanova .ui-dialog .ui-icon {
+		filter: invert(1) brightness(1.1);
+	}
+}

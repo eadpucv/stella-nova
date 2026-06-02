@@ -87,6 +87,15 @@ class SkinStellaNova extends SkinMustache {
 		't-print'               => 'printer',
 		't-permalink'           => 'link',
 		't-info'                => 'info',
+		// Herramientas que el core sólo emite en páginas de usuario / con
+		// permisos de admin (ver Skin::buildNavUrls): no aparecían en páginas
+		// de contenido, por eso faltaban.
+		't-contributions'       => 'user-plus',
+		't-log'                 => 'file-text',
+		't-blockip'             => 'user-x',
+		't-userrights'          => 'users',
+		// SMW: "Explorar propiedades" (antes degradaba a texto).
+		't-smwbrowselink'       => 'book-open',
 	];
 
 	/**

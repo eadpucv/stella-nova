@@ -2,7 +2,7 @@
 	"manifest_version": 2,
 	"name": "StellaNova",
 	"namemsg": "skinname-stellanova",
-	"version": "0.2.0",
+	"version": "0.2.1",
 	"author": [
 		"Herbert Spencer"
 	],
@@ -109,6 +109,7 @@
 			"+ext.echo.styles.notifications": "skinStyles/echo.base.less",
 			"+ext.echo.styles.special": "skinStyles/echo.base.less",
 			"+ext.imagemap.styles": "skinStyles/imagemap.css",
+			"+jquery.ui": "skinStyles/jquery.ui.css",
 			"+ext.inlineComments.diff.styles": "skinStyles/inlinecomments.css",
 			"+ext.inlineComments.sidenotes.styles": "skinStyles/inlinecomments.css",
 			"+ext.maps.leaflet.fullscreen": "skinStyles/maps.base.css",

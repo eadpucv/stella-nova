@@ -70,88 +70,140 @@ form#editform {
  * CSS de la extensión y gana por orden de fuente sin necesidad de
  * `!important`. */
 
+/* ╔═ NOTA DE CASCADA — aplica a TODA esta sección ═══════════════════╗
+   Casi todo el cromo del editor lo pinta el módulo grande `ext.wikiEditor`
+   (jquery.wikiEditor.less + toolbar.less), que carga DESPUÉS de nuestro
+   `+ext.wikiEditor.styles`. Con la MISMA especificidad, core ganaba por
+   orden de fuente → por eso sobrevivían en oscuro sus azules `#0645ad`,
+   sus negros `#222` y sus bordes `#ccc`. Prefijamos cada regla con
+   `.skin-stellanova` (clase del <body> con el skin activo) para subir +1
+   clase y ganar SIEMPRE, sin depender del orden de carga.
+   Convenciones de esta sección:
+     · bordes  → --sn-hairline (el filete coherente de .editOptions)
+     · acentos/links → --sn-nova (decisión 2026-06-02: el azul de
+       --sn-link queda para enlaces de CONTENIDO; el cromo del editor
+       habla con la nova).
+   ╚══════════════════════════════════════════════════════════════════╝ */
+
 /* Frame del editor: borde exterior y filete entre toolbar y textarea. */
-.wikiEditor-ui .wikiEditor-ui-view {
+.skin-stellanova .wikiEditor-ui .wikiEditor-ui-view {
 	border-color: var(--sn-hairline);
 }
-.wikiEditor-ui .wikiEditor-ui-top {
+.skin-stellanova .wikiEditor-ui .wikiEditor-ui-top {
 	border-bottom-color: var(--sn-hairline);
 }
-.wikiEditor-ui .wikiEditor-ui-right {
+.skin-stellanova .wikiEditor-ui .wikiEditor-ui-right {
 	background: var(--sn-sunk);
 }
 
 /* Cinta inferior con controles + barra de tabs/buttons del wikitexto. */
-.wikiEditor-ui-controls,
-.wikiEditor-ui-tabs,
-.wikiEditor-ui-tabs div.current,
-.wikiEditor-ui-buttons {
+.skin-stellanova .wikiEditor-ui-controls,
+.skin-stellanova .wikiEditor-ui-tabs,
+.skin-stellanova .wikiEditor-ui-tabs div.current,
+.skin-stellanova .wikiEditor-ui-buttons {
 	background-color: var(--sn-paper);
 }
-.wikiEditor-ui-tabs {
+.skin-stellanova .wikiEditor-ui-tabs {
 	border-left-color: var(--sn-hairline);
 	border-top-color: var(--sn-hairline);
 }
-.wikiEditor-ui-tabs div {
+.skin-stellanova .wikiEditor-ui-tabs div {
 	background-color: var(--sn-sunk);
 	border-right-color: var(--sn-hairline);
 	border-bottom-color: var(--sn-hairline);
 }
-.wikiEditor-ui-tabs div a { color: var(--sn-link); }
-.wikiEditor-ui-tabs div.current {
+.skin-stellanova .wikiEditor-ui-tabs div a { color: var(--sn-nova); }
+.skin-stellanova .wikiEditor-ui-tabs div.current {
 	border-bottom-color: var(--sn-paper);
 }
-.wikiEditor-ui-tabs div.current a { color: var(--sn-ink); }
-.wikiEditor-ui-buttons { border-top-color: var(--sn-paper); }
+.skin-stellanova .wikiEditor-ui-tabs div.current a { color: var(--sn-ink); }
+.skin-stellanova .wikiEditor-ui-buttons { border-top-color: var(--sn-paper); }
+
+/* Superficie de la barra: el tema `wikimedia` la fija con
+   `@background-color-neutral-subtle` (compilado a #f8f9fa, NO voltea).
+   La atamos a --sn-sunk para que sea la misma "cinta hundida" del resto
+   del skin y voltee claro/oscuro. La sombra negra de core se mantiene en
+   claro pero se neutraliza en oscuro (invisible/sucia sobre papel oscuro).
+
+   `.skin-stellanova` (+1 clase) es OBLIGATORIO aquí: la regla de core
+   vive en `jquery.wikiEditor.toolbar-wikimedia.less`, skinStyle `default`
+   del módulo `ext.wikiEditor` (el grande), que carga DESPUÉS de nuestro
+   `+ext.wikiEditor.styles` → con misma especificidad (0,1,0) ganaba core
+   por orden de fuente. Mismo patrón que `.page-characters` más abajo. */
+.skin-stellanova .wikiEditor-ui-toolbar {
+	background-color: var(--sn-sunk);
+}
+:root[data-sn-theme="dark"] .wikiEditor-ui-toolbar {
+	box-shadow: none;
+}
+
+/* Hover/activo de los botones de herramienta. Core usa rgba azules fijos
+   (#eaecf0 / #eaf3ff) que no combinan con el skin ni voltean. Los pasamos
+   a tokens: hover neutro, activo con lavado nova. Cubre ambas formas — el
+   `.tool-button` legacy y el botón OOUI frameless. */
+.wikiEditor-ui-toolbar .tool-button:hover,
+.wikiEditor-ui-toolbar .tool.oo-ui-buttonElement-frameless.oo-ui-iconElement > .oo-ui-buttonElement-button:hover {
+	background-color: var(--sn-opt-hover-bg);
+}
+.wikiEditor-ui-toolbar .tool-button.tool-active,
+.wikiEditor-ui-toolbar .tool.oo-ui-buttonElement-frameless.oo-ui-iconElement.oo-ui-toggleWidget-on > .oo-ui-buttonElement-button {
+	background-color: var(--sn-nova-wash);
+}
 
 /* Toolbar: secciones, tabs expandibles, grupos. */
-.wikiEditor-ui-toolbar .sections .section {
+.skin-stellanova .wikiEditor-ui-toolbar .sections .section {
 	border-top-color: var(--sn-hairline);
 }
-.wikiEditor-ui-toolbar .tabs span.tab a,
-.wikiEditor-ui-toolbar .tabs span.tab a:visited {
-	color: var(--sn-link);
+.skin-stellanova .wikiEditor-ui-toolbar .tabs span.tab a,
+.skin-stellanova .wikiEditor-ui-toolbar .tabs span.tab a:visited {
+	color: var(--sn-nova);
 }
-.wikiEditor-ui-toolbar .tabs span.tab a.current,
-.wikiEditor-ui-toolbar .tabs span.tab a.current:visited {
+.skin-stellanova .wikiEditor-ui-toolbar .tabs span.tab a.current,
+.skin-stellanova .wikiEditor-ui-toolbar .tabs span.tab a.current:visited {
 	color: var(--sn-ink);
 }
-.wikiEditor-ui-toolbar .section-secondary .group,
-.wikiEditor-ui-toolbar .group-search {
+.skin-stellanova .wikiEditor-ui-toolbar .section-secondary .group,
+.skin-stellanova .wikiEditor-ui-toolbar .group-search {
 	border-left-color: var(--sn-hairline);
 }
-.wikiEditor-ui-toolbar .group {
+.skin-stellanova .wikiEditor-ui-toolbar .group {
 	border-right-color: var(--sn-hairline);
 }
-.wikiEditor-ui-toolbar .group .label,
-.wikiEditor-ui-toolbar .page-table th {
+.skin-stellanova .wikiEditor-ui-toolbar .group .label,
+.skin-stellanova .wikiEditor-ui-toolbar .page-table th {
 	color: var(--sn-ink-soft);
 }
 
 /* Tool-select (desplegable "Avanzado": estilo de párrafo, encabezados). */
-.wikiEditor-ui-toolbar .group .tool-select {
+.skin-stellanova .wikiEditor-ui-toolbar .group .tool-select {
 	border-color: var(--sn-hairline);
 	background-color: var(--sn-paper);
 }
-.wikiEditor-ui-toolbar .group .tool-select .label { color: var(--sn-ink); }
-.wikiEditor-ui-toolbar .group .tool-select .options {
+.skin-stellanova .wikiEditor-ui-toolbar .group .tool-select .label { color: var(--sn-ink); }
+.skin-stellanova .wikiEditor-ui-toolbar .group .tool-select .options {
 	border-color: var(--sn-hairline);
 	background-color: var(--sn-paper);
 	box-shadow: var(--sn-lift-soft);
 }
-.wikiEditor-ui-toolbar .group .tool-select .options .option {
+.skin-stellanova .wikiEditor-ui-toolbar .group .tool-select .options .option {
 	color: var(--sn-ink);
 }
-.wikiEditor-ui-toolbar .group .tool-select .options .option:hover {
+.skin-stellanova .wikiEditor-ui-toolbar .group .tool-select .options .option:hover {
 	background-color: var(--sn-opt-hover-bg);
 }
 
 /* Booklet — pestaña "Ayuda" y panel de caracteres especiales. */
-.wikiEditor-ui-toolbar .booklet > .index .wikiEditor-character-highlighted {
+/* Pestaña/índice ACTIVO: core lo pinta `#eaf3ff` + texto `#0645ad` (azul).
+   A lavado nova + tinta nova (nada azul en el cromo del editor). */
+.skin-stellanova .wikiEditor-ui-toolbar .booklet > .index > .current {
+	background-color: var(--sn-nova-wash);
+	color: var(--sn-nova);
+}
+.skin-stellanova .wikiEditor-ui-toolbar .booklet > .index .wikiEditor-character-highlighted {
 	background-color: var(--sn-nova-wash);
 	color: var(--sn-ink);
 }
-.wikiEditor-ui-toolbar .page-table td {
+.skin-stellanova .wikiEditor-ui-toolbar .page-table td {
 	color: var(--sn-ink);
 	border-top-color: var(--sn-hairline-soft);
 }
@@ -190,6 +242,41 @@ form#editform {
 	color: var(--sn-ink);
 }
 
+/* ─── Íconos de la toolbar en MODO OSCURO ──────────────────────────
+ * Los botones de WikiEditor 1.43 son widgets OOUI; sus íconos NO son
+ * bitmap sino SVG monocromos NEGROS incrustados como `background-image`
+ * (data:image/svg+xml). Al ir por background-image (no mask-image),
+ * `color`/`fill` no los recolorea. Pero son negro puro → `filter:
+ * invert(1)` los vuelve blancos limpiamente (sin tono que distorsionar).
+ *
+ * OOUI ya trae versiones coloreadas vía clases que pone el JS:
+ *   .oo-ui-image-invert      → blanco  (estados activos/flagged)
+ *   .oo-ui-image-progressive → azul #36c
+ *   .oo-ui-image-destructive → rojo #d73333
+ * Excluimos esas tres del invert: la blanca ya está bien, y azul/rojo
+ * son semánticos (no deben volverse cian/verde). El resto (la inmensa
+ * mayoría: negrita, cursiva, enlace, lista…) sí se invierte.
+ *
+ * Se invierten también las dos flechas ▾ de los desplegables, que son
+ * otro `background-image` negro (images/toolbar/arrow-down.svg):
+ *   · `.tabs span.tab a::before`  → toggle de "Avanzado/Especial/Ayuda"
+ *   · `.tool-select .label::after` → selector "Estilo de párrafo"
+ *
+ * Scopeado a la toolbar y al tema oscuro (selector explícito + el modo
+ * `auto` bajo prefers-color-scheme). En claro no se toca nada. */
+:root[data-sn-theme="dark"] .wikiEditor-ui-toolbar .oo-ui-iconElement-icon:not( .oo-ui-image-invert ):not( .oo-ui-image-progressive ):not( .oo-ui-image-destructive ),
+:root[data-sn-theme="dark"] .wikiEditor-ui-toolbar .tabs span.tab a::before,
+:root[data-sn-theme="dark"] .wikiEditor-ui-toolbar .tool-select .label::after {
+	filter: invert( 1 ) brightness( 1.1 );
+}
+@media ( prefers-color-scheme: dark ) {
+	:root[data-sn-theme="auto"] .wikiEditor-ui-toolbar .oo-ui-iconElement-icon:not( .oo-ui-image-invert ):not( .oo-ui-image-progressive ):not( .oo-ui-image-destructive ),
+	:root[data-sn-theme="auto"] .wikiEditor-ui-toolbar .tabs span.tab a::before,
+	:root[data-sn-theme="auto"] .wikiEditor-ui-toolbar .tool-select .label::after {
+		filter: invert( 1 ) brightness( 1.1 );
+	}
+}
+
 /* Diálogo "Insertar tabla" — preview embebido. */
 .ui-widget table td.wikieditor-toolbar-table-preview-wrapper {
 	background: var(--sn-sunk);
@@ -210,6 +297,33 @@ form#editform {
 .mw-body .wikiEditor-ui-text textarea {
 	background: var(--sn-paper);
 	color: var(--sn-ink);
+}
+
+/* ─── Acento del editor: familia `progressive` → nova ──────────────
+ * Decisión 2026-06-02. Los botones OOUI del pie (Guardar = primary
+ * progressive, Previsualizar = progressive) y el foco de los campos usan
+ * la familia de variables `--*-progressive*`, aliasada globalmente a
+ * --sn-link (azul en oscuro). En el CROMO del editor eso se sale del
+ * esquema. En vez de pelear con los selectores internos de OOUI,
+ * REDEFINIMOS la familia progressive a la nova en el contenedor del
+ * editor: como son custom properties, todo widget OOUI descendiente
+ * recalcula a nova sin tocar su CSS. Cubre claro (nova carmín) y oscuro
+ * (nova coral) por igual. El botón Cancelar es `destructive`
+ * (--sn-danger), no progressive → no se ve afectado. */
+.skin-stellanova .mw-editform {
+	--color-progressive:                    var(--sn-nova);
+	--color-progressive--hover:             color-mix(in oklab, var(--sn-nova) 80%, var(--sn-ink));
+	--color-progressive--active:            color-mix(in oklab, var(--sn-nova) 65%, var(--sn-ink));
+	--color-progressive--focus:             var(--sn-nova);
+	--background-color-progressive:         var(--sn-nova);
+	--background-color-progressive--hover:   color-mix(in oklab, var(--sn-nova) 80%, var(--sn-ink));
+	--background-color-progressive--active:  color-mix(in oklab, var(--sn-nova) 65%, var(--sn-ink));
+	--background-color-progressive--focus:   var(--sn-nova);
+	--background-color-progressive-subtle:   var(--sn-nova-wash);
+	--border-color-progressive--hover:       color-mix(in oklab, var(--sn-nova) 80%, var(--sn-ink));
+	--border-color-progressive--focus:       var(--sn-nova);
+	--box-shadow-color-progressive--focus:   var(--sn-nova);
+	--box-shadow-color-progressive--active:  color-mix(in oklab, var(--sn-nova) 65%, var(--sn-ink));
 }
 
 /* ─── Caja .editOptions: cromo del CORE de MediaWiki, NO OOUI ───────
@@ -263,7 +377,7 @@ form#editform {
 	color: var(--sn-ink-soft);
 	font-size: var(--sn-fs-sm);
 }
-#editpage-copywarn a { color: var(--sn-link); }
+#editpage-copywarn a { color: var(--sn-nova); }
 
 /* ─── Lista "Plantillas usadas en esta página" ─────────────────────
  * `.templatesUsed` aparece bajo los botones de guardar cuando la página
@@ -276,7 +390,7 @@ form#editform {
 .templatesUsed h6 { color: var(--sn-ink); margin: 0 0 var(--sn-s-2); }
 .templatesUsed ul { margin: 0; padding-left: var(--sn-s-5); }
 .templatesUsed li { margin: 0; }
-.templatesUsed a { color: var(--sn-link); }
+.templatesUsed a { color: var(--sn-nova); }
 
 /* ─── #wpSummary: el input de resumen de edición ───────────────────
  * Lo envuelve OOUI (`.oo-ui-textInputWidget`) y hereda los tokens

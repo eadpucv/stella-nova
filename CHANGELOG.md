@@ -9,6 +9,46 @@ ajustes editoriales. La fuente de verdad del comportamiento es
 [`specs/stella-nova.allium`](specs/stella-nova.allium); cada entrada que toque
 comportamiento debería reflejarse también ahí.
 
+## [0.2.1] — 2026-06-02
+
+### Added
+- **Íconos del pie para herramientas de usuario/admin**: `t-contributions`
+  (user-plus), `t-log` (file-text), `t-blockip` (user-x), `t-userrights`
+  (users) y `t-smwbrowselink` (book-open). Cinco símbolos Feather nuevos en
+  el sprite (`SnIcons.mustache`).
+- **`skinStyles/jquery.ui.css`**: re-tematiza los diálogos de jQuery UI
+  (tema "smoothness") usados por WikiEditor — Buscar/Reemplazar, Insertar
+  tabla, Insertar enlace/archivo. Fuera Verdana y texturas PNG; superficies,
+  campos y botones por tokens del skin. Iconos PNG (cerrar, resize) se
+  invierten en oscuro.
+
+### Changed
+- **`.wiki-btn`** afinado: borde 1px (era 2px), forma de píldora, padding
+  mayor, **todo color tokenizado** y variante `.blue` **eliminada** (sin token
+  equivalente, sin uso). Ahora voltea claro/oscuro.
+- **`.sn-subtitle`** en versalitas: `text-transform: uppercase`,
+  `font-stretch: condensed`, `letter-spacing`.
+- **Enlaces visitados en oscuro** más sobrios: `--sn-link-visited`
+  `#c2a6e0` → `#a99cae` (lila grisáceo apagado).
+
+### Fixed
+- **El logo NUNCA se ve morado.** El `<svg>` del isotipo se colorea directo
+  con `--sn-icon` en vez de heredar del `<a>`: los navegadores ignoran
+  colores con alfa en `:visited`, y el logo caía al morado de enlace
+  visitado. El SVG no es enlace → inmune al estado link/visited.
+- **WikiEditor en modo oscuro**: fondo de la toolbar tokenizado
+  (`--sn-sunk`), íconos OOUI (SVG monocromos por `background-image`)
+  invertidos con `filter` en oscuro, y arreglo de cascada — los overrides
+  perdían por orden de fuente ante el módulo grande `ext.wikiEditor`; ahora
+  prefijados con `.skin-stellanova` para ganar siempre. Bordes a
+  `--sn-hairline`, textos negros `#222` a `--sn-ink`.
+- **Sin azul en el cromo del editor.** Links de toolbar/booklet/copyright y
+  acentos OOUI `progressive` (botones Guardar/Previsualizar) redefinidos a
+  la **nova** en el scope del editor; el azul de `--sn-link` queda solo para
+  enlaces de contenido.
+- **Filete `#aaa` de core bajo h1/h2** neutralizado también en la chrome
+  (pie editable, modales, drawer), no solo en el cuerpo del artículo.
+
 ## [0.2.0] — 2026-06-02
 
 ### Changed
