@@ -17,23 +17,35 @@
 --     qué exponen, no DÓNDE se sitúan ni su afordancia de despliegue,
 --   · justificación + hyphenation de párrafos del cuerpo (decisión de
 --     presentación editorial 2026-05-26),
+--   · reducción de movimiento: el skin honra prefers-reduced-motion del SO
+--     vía @media (sin estado ni control de usuario) — presentación, no
+--     preferencia (2026-05-31),
+--   · el re-vestido de afordancias de acción de MediaWiki core (p. ej. el
+--     enlace de patrullaje "marcar como verificada" → nav-pill): presentación
+--     sobre HTML del core, cubierto por SkinRenderFidelity (no se recorta),
 --   · la búsqueda y el logo→home (comportamiento de MediaWiki core, no del skin).
 --
 -- Sí modela los núcleos con estado y decisión condicional:
---   1. Preferencias de skin (5, ver enum lista abajo): resolución por
+--   1. Preferencias de skin (2: tema y tamaño de letra): resolución por
 --      campo explícito > SO (donde aplica) > default. EXCEPCIÓN tema:
 --      default claro; el SO sólo aplica si la elección es `auto`
 --      (decisión de producto 2026-05-18). Persistencia híbrida por
 --      identidad — registrado → cuenta MediaWiki (BBDD, cross-device);
 --      anónimo/temporal → sesión del navegador (por-navegador).
---      NOTA 2026-05-26: el conjunto se redujo de 7 a 5 — se retiraron
---      ContentWidth y LineHeight porque la métrica de la hoja y la
---      interlínea del cuerpo participan del cálculo del baseline grid
---      (--sn-baseline = fs-base × leading); dejarlas modulables al
---      usuario desparametrizaba el ajuste vertical entre cabeceras y
---      párrafos. Ambos quedaron como tokens fijos en tokens.css.
+--      HISTÓRICO: el conjunto fue 7 → 5 (2026-05-26: fuera ContentWidth y
+--      LineHeight, que participan del baseline grid) → 2 (2026-05-31: fuera
+--      TocMode y CollapsibleSections —eran preferencias-stub sin realización
+--      en CSS— y ReducedMotion como toggle de usuario). El panel aparte de
+--      preferencias se eliminó: las dos restantes cuelgan ahora del menú de
+--      usuario (ver UserTools.HostsReadingPreferences). La señal del SO de
+--      movimiento reducido (prefers-reduced-motion) se sigue respetando, pero
+--      sólo a nivel CSS (@media) — sin estado ni override de usuario, ya no es
+--      preferencia del skin y queda como presentación (lista de exclusión).
 --   2. Chrome administrable desde páginas wiki del namespace Stella-Nova
---      (pie, barra lateral, aviso): visibilidad y autorización CRUD.
+--      (pie, barra lateral, aviso): visibilidad y autorización CRUD. El
+--      AVISO añade además descartabilidad: el visitante puede cerrarlo y el
+--      descarte se recuerda POR VERSIÓN del contenido (al editar el aviso,
+--      reaparece); por-navegador, no cross-device (ver surface SiteNotice).
 --   3. Qué expone cada región según identidad (anónimo / cuenta temporal
 --      1.43 / registrado).
 --   4. Modo de página: standard (chrome del tema) | fullscreen (control
@@ -200,10 +212,12 @@ contract ChromeAccessibility {
 
 -- Obligaciones de comportamiento de un panel emergente. Se invoca cuando
 -- una surface del chrome se presenta como overlay temporal (modal, dropdown
--- con scrim, drawer dismissable). PreferencesPanel lo cumple siempre; el
--- resto (UserTools, presentación de ManagedChrome.sidebar, portlets de
--- página, búsqueda) cuando la realización los colapsa así — típicamente
--- en viewports estrechos. Decisión de producto 2026-05-24.
+-- con scrim, drawer dismissable): el menú de usuario (que aloja las
+-- preferencias de lectura), la navegación del sitio, las herramientas de
+-- página y la búsqueda, cuando la realización los colapsa así — típicamente
+-- en viewports estrechos. Decisión de producto 2026-05-24; actualizada
+-- 2026-05-31 (las preferencias dejaron de ser un panel propio y pasaron al
+-- menú de usuario, que es quien cumple el contrato al colapsarse).
 contract TransientPanel {
     present: (viewer: User) -> RenderedDocument
 
@@ -257,30 +271,25 @@ enum ChromeSlot { footer | sidebar | notice }
 
 enum LayoutMode { standard | fullscreen }
 
--- Las 5 preferencias de skin (estilo Citizen/Vector-2022). Histórico
--- 2026-05-26: se retiraron ContentWidth y LineHeight (ver nota de
--- ALCANCE arriba); ambas son fijas a nivel de token y no exhibidas al
--- usuario.
+-- Las 2 preferencias de skin (estilo Citizen/Vector-2022): tema (enum
+-- ThemeChoice, arriba) y tamaño de letra. Histórico de recortes en la nota
+-- de ALCANCE: 7 → 5 (ContentWidth, LineHeight) → 2 (TocMode,
+-- CollapsibleSections, ReducedMotion). Los enums Toggle/TocMode/Motion se
+-- retiraron al quedar sin uso.
 enum FontSize { small | medium | large }
-enum Toggle { enabled | disabled }
-enum TocMode { persistent | inline }
-enum Motion { full | reduced }
 
 ------------------------------------------------------------
 -- Value Types
 ------------------------------------------------------------
 
--- El conjunto de 5 preferencias de skin. Cada campo es opcional: null =
+-- El conjunto de 2 preferencias de skin. Cada campo es opcional: null =
 -- "sin elección explícita" → se resuelve por default (y, donde aplica,
 -- por SO). El tema es el caso especial: null → claro (el SO NO aplica);
--- el SO sólo influye si theme = auto. Los demás (p. ej. motion) sí
--- toman la señal del SO en ausencia de elección.
+-- el SO sólo influye si theme = auto. El tamaño de letra no toma señal del
+-- SO: null → medium.
 value Preferences {
     theme: ThemeChoice?
     font_size: FontSize?
-    collapsible_sections: Toggle?       -- recordar estado de secciones
-    toc_mode: TocMode?                  -- índice persistente vs en línea
-    reduced_motion: Motion?             -- override de prefers-reduced-motion
 }
 
 ------------------------------------------------------------
@@ -294,8 +303,13 @@ value Preferences {
 entity ViewingSession {
     user: User
     os_scheme: Theme?               -- prefers-color-scheme; null = sin señal
-    os_motion: Motion?              -- prefers-reduced-motion; null = sin señal
     saved: Preferences?             -- null = nada explícito guardado aún
+
+    -- Versión del aviso (InterfaceFragment.version del slot notice) que esta
+    -- sesión descartó; null = no se ha descartado ninguna. Per-navegador
+    -- (no migra entre dispositivos, decisión de producto). Si difiere de la
+    -- versión publicada vigente, el aviso vuelve a mostrarse (ver SiteNotice).
+    dismissed_notice_version: String?
 
     -- Resolución por campo: explícito > SO (donde aplica) > default skin.
     -- Defaults de diseño (tunables por globales del skin en realización,
@@ -304,17 +318,13 @@ entity ViewingSession {
     -- TEMA (decisión de producto 2026-05-18): el default es CLARO y el SO
     -- NO oscurece por sí solo. saved.theme = auto → seguir al SO (claro si
     -- no hay señal); = light|dark → forzado; sin elección (null) → claro.
-    -- Sólo `auto` deja entrar prefers-color-scheme. El resto de campos sí
-    -- siguen "explícito > SO > default" (p. ej. motion).
+    -- Sólo `auto` deja entrar prefers-color-scheme.
     active_theme:
         if saved?.theme = auto: os_scheme ?? light
         else if saved?.theme = dark: dark
         else if saved?.theme = light: light
         else: light
-    active_motion: saved?.reduced_motion ?? os_motion ?? full
     active_font_size: saved?.font_size ?? medium
-    active_collapsible: saved?.collapsible_sections ?? enabled
-    active_toc_mode: saved?.toc_mode ?? persistent
 }
 
 -- Conjunto cerrado de tres regiones (footer, sidebar, notice). No es un
@@ -341,6 +351,12 @@ entity InterfaceFragment {
     is_published: source_page.exists
         and source_page.content != null
         and not is_blank(source_page.content)
+
+    -- Identidad de la revisión publicada vigente de source_page (cambia al
+    -- editarla); null si no publicada. La usa la descartabilidad del aviso
+    -- (slot notice): un aviso descartado reaparece cuando su versión cambia.
+    -- Irrelevante para footer/sidebar (no descartables).
+    version: String?
 }
 
 -- Cómo se renderiza una página concreta. `mode` lo declara la propia
@@ -359,7 +375,7 @@ entity PageRender {
 ------------------------------------------------------------
 
 config {
-    skin_version: String = "0.0.7"      -- debe coincidir con skin.json
+    skin_version: String = "0.2.0"      -- debe coincidir con skin.json
     chrome_namespace: String = "Stella-Nova"
     interface_editor_group: String = "editores-de-interfaz"
 }
@@ -381,11 +397,19 @@ rule ViewerUpdatesPreferences {
         --     temporal 1.43 no se loguea, por lo que nunca es cross-device.
 }
 
--- El visitante restablece: vuelve a SO/defaults del skin.
-rule ViewerResetsPreferences {
-    when: ResetPreferences(session)
-    requires: session.saved != null
-    ensures: session.saved = null
+-- El visitante descarta el aviso. El descarte se recuerda por VERSIÓN del
+-- contenido publicado: al editar el aviso (cambia fragment.version) la
+-- sesión deja de coincidir y el aviso reaparece. Per-navegador.
+rule ViewerDismissesNotice {
+    when: DismissNotice(session, fragment)
+    requires: fragment.slot = notice
+    requires: fragment.is_published
+    ensures: session.dismissed_notice_version = fragment.version
+    @guidance
+        -- Persistencia por-navegador (localStorage), NO por cuenta: un aviso
+        -- descartado no debería perseguir al usuario entre dispositivos
+        -- (decisión de producto 2026-05-31). El pre-pintado resuelve la
+        -- ocultación antes del primer paint para no parpadear.
 }
 
 -- Toda escritura sobre el namespace de chrome (crear/editar/mover/borrar)
@@ -433,34 +457,32 @@ invariant ThemeAlwaysResolved {
 -- Surfaces
 ------------------------------------------------------------
 
--- Panel de preferencias. Público: cualquier visitante (anónimo, temporal
--- o registrado). Las 5 preferencias estilo Citizen.
+-- Preferencias de lectura. Público: cualquier visitante (anónimo, temporal
+-- o registrado). Sólo DOS: tema y tamaño de letra. Ya NO es un panel/diálogo
+-- aparte: se realiza como una sección del menú de usuario tras un separador
+-- (decisión de producto 2026-05-31; ver UserTools.HostsReadingPreferences).
+-- Es una surface por capacidad (qué expone / qué provee), no por su lugar en
+-- el DOM; las obligaciones de panel emergente las cumple el menú contenedor.
 surface PreferencesPanel {
     facing viewer: User
     context session: ViewingSession where user = viewer
 
     exposes:
         session.active_theme
-        session.active_motion
         session.active_font_size
-        session.active_collapsible
-        session.active_toc_mode
         session.os_scheme
-        session.os_motion
 
     provides:
         SavePreferences(session, prefs)
-        ResetPreferences(session)
-            when session.saved != null
 
     @guarantee Precedence
         -- Cada preferencia se resuelve: valor explícito guardado >
         -- señal del SO (donde aplica) > default de diseño del skin.
-        -- El SO aplica al motion (← prefers-reduced-motion) sin elección.
         -- EXCEPCIÓN tema (decisión de producto): el default es claro y el
         -- SO (prefers-color-scheme) sólo influye si la elección guardada
-        -- es `auto`; sin elección → claro, no el esquema del SO.
-        -- active_theme nunca es indeterminado (siempre claro u oscuro).
+        -- es `auto`; sin elección → claro, no el esquema del SO. El tamaño
+        -- de letra no toma señal del SO (default medium). active_theme nunca
+        -- es indeterminado (siempre claro u oscuro).
 
     @guarantee CrossDeviceForRegistered
         -- identity = registered: lo guardado persiste en la cuenta
@@ -474,8 +496,12 @@ surface PreferencesPanel {
         -- No se renderiza cuando la página vista está en
         -- LayoutMode.fullscreen (ver surface ExperimentalCanvas).
 
-    contracts:
-        fulfils TransientPanel
+    @guidance
+        -- Sin afordancia de "restablecer" (se retiró con el panel). Sin
+        -- elección guardada, cada preferencia cae a su default. Las
+        -- obligaciones de TransientPanel (Escape, scrim, trap de foco,
+        -- scroll propio) las aporta el menú de usuario que la aloja, no
+        -- esta surface por sí sola.
 }
 
 -- Regiones de chrome administradas desde páginas wiki. Una instancia de
@@ -519,6 +545,55 @@ surface ManagedChrome {
     @guarantee SuppressedInFullscreen
         -- No se renderiza cuando la página vista está en
         -- LayoutMode.fullscreen (ver surface ExperimentalCanvas).
+
+    @guidance
+        -- El slot `notice` tiene además una capa interactiva de descarte
+        -- (cerrar + recordar por versión), modelada aparte en la surface
+        -- SiteNotice. Esta surface cubre sólo la publicación/visibilidad
+        -- base compartida por los tres slots.
+}
+
+-- Aviso descartable (slot notice). Capa interactiva sobre la publicación
+-- base de ManagedChrome: el visitante puede cerrarlo y el descarte se
+-- recuerda POR VERSIÓN del contenido. Editar el aviso (cambia
+-- fragment.version) lo hace reaparecer aunque se hubiera cerrado.
+surface SiteNotice {
+    facing viewer: User
+    context session: ViewingSession where user = viewer
+    context fragment: InterfaceFragment where slot = notice
+
+    exposes:
+        fragment.is_published
+        fragment.source_page.content
+            when fragment.is_published
+                and session.dismissed_notice_version != fragment.version
+
+    provides:
+        DismissNotice(session, fragment)
+            when fragment.is_published
+                and session.dismissed_notice_version != fragment.version
+
+    @guarantee DismissedUntilContentChanges
+        -- Un aviso descartado permanece oculto para esa sesión MIENTRAS su
+        -- versión publicada no cambie. Al editarse el aviso (nueva versión),
+        -- el descarte previo deja de coincidir y vuelve a mostrarse: "ya
+        -- leído" aplica a lo leído, no a un aviso nuevo.
+
+    @guarantee PerBrowserDismissal
+        -- El descarte es por-navegador (no por cuenta), también para
+        -- registrados: un aviso cerrado no persigue al usuario entre
+        -- dispositivos (decisión de producto 2026-05-31). Difiere a propósito
+        -- de la persistencia de PreferencesPanel (cross-device para cuenta).
+
+    @guarantee SuppressedInFullscreen
+        -- No se renderiza cuando la página vista está en
+        -- LayoutMode.fullscreen (ver surface ExperimentalCanvas).
+
+    @guidance
+        -- Presentación (fuera del spec): banda full-bleed como primer
+        -- elemento de la hoja, fondo de señal de aviso, con botón de cerrar.
+        -- La ocultación del aviso ya descartado se resuelve antes del primer
+        -- paint (sin parpadeo).
 }
 
 -- Herramientas de usuario en el horizonte superior. Lo que se ofrece
@@ -539,6 +614,14 @@ surface UserTools {
         -- identity = registered → expone el menú de usuario (discusión,
         --   preferencias, seguimiento, contribuciones) y cerrar sesión.
 
+    @guarantee HostsReadingPreferences
+        -- El menú de usuario ALOJA las preferencias de lectura (tema y
+        -- tamaño de letra; surface PreferencesPanel) como una sección tras
+        -- un separador, para las TRES identidades (no sólo registrados).
+        -- Sustituye al panel/diálogo aparte que existía hasta 2026-05-31.
+        -- Cuando la realización colapsa el menú a overlay, sus obligaciones
+        -- de panel emergente (TransientPanel) cubren también esta sección.
+
     @guarantee SuppressedInFullscreen
         -- No se renderiza cuando la página vista está en
         -- LayoutMode.fullscreen (ver surface ExperimentalCanvas).
@@ -555,8 +638,9 @@ surface ExperimentalCanvas {
 
     @guarantee ChromeSuppressed
         -- En fullscreen el skin suprime header, búsqueda, herramientas de
-        -- usuario, sidebar, pie y panel de preferencias. El body de la
-        -- página ocupa el viewport completo, salvo la afordancia de escape.
+        -- usuario (con las preferencias de lectura que aloja), sidebar, aviso
+        -- y pie. El body de la página ocupa el viewport completo, salvo la
+        -- afordancia de escape.
 
     @guidance
         -- Hoy el JS interactivo (p5.js) se inyecta vía MediaWiki:Common.js
@@ -586,8 +670,8 @@ surface EscapeAffordance {
 -- Estándar MediaWiki: el logo vive en $wgLogos (LocalSettings, nivel wiki)
 -- y llega al skin por data-logos; el core NO tiene variante por tema. Aquí
 -- se invierte por preferencia: el skin trae el isotipo y su adaptación
--- clara/oscura; $wgLogos, si está definido, actúa como override de
--- instalación.
+-- clara/oscura, e IGNORA $wgLogos (el logo lo define el skin, no la wiki;
+-- decisión 2026-06-02 — ver SkinLogoAlwaysWins).
 surface SiteIsotype {
     facing viewer: User
     context session: ViewingSession where user = viewer
@@ -600,15 +684,33 @@ surface SiteIsotype {
         -- asset por defecto vive en el repo del skin; la adaptación
         -- clara/oscura es responsabilidad del skin (el core no la provee).
 
-    @guarantee WikiOverride
-        -- Si la instalación define $wgLogos (data-logos), ese valor
-        -- sustituye al isotipo embebido; sin él, se usa el del skin.
+    @guarantee SkinLogoAlwaysWins
+        -- El isotipo del skin SIEMPRE se usa; $wgLogos (data-logos) se
+        -- ignora. Decisión de producto 2026-06-02: revierte el override de
+        -- instalación previo (WikiOverride) porque en producción $wgLogos
+        -- llevaba el logo del skin anterior y tapaba el de Stella Nova. El
+        -- logo queda definido por el skin, sin depender de LocalSettings —
+        -- coherente con SiteIsotype (asset autocontenido en el repo).
+
+    @guarantee FaviconFromSkin
+        -- El skin define TAMBIÉN su propio favicon (ícono de pestaña/
+        -- marcador), autocontenido en el repo y adaptable al esquema
+        -- claro/oscuro del navegador. Se emite desde el skin sin depender
+        -- de $wgFavicon (decisión 2026-05-31: las marcas de identidad
+        -- viajan con el skin). MediaWiki sólo emite su <link rel=icon> si
+        -- $wgFavicon difiere del default, así que sin configuración no hay
+        -- colisión; si la instalación fija $wgFavicon, su etiqueta coexiste
+        -- (la del skin, con type explícito, prevalece en navegadores
+        -- modernos). La adaptación clara/oscura sigue prefers-color-scheme
+        -- del navegador, no el tema del skin.
 
     @guarantee LinksHome
         -- Enlaza a la portada (link-mainpage); comportamiento de MW core.
 
     @guarantee SuppressedInFullscreen
-        -- Forma parte del chrome: ausente en LayoutMode.fullscreen.
+        -- Forma parte del chrome: ausente en LayoutMode.fullscreen. El
+        -- favicon, al ser del documento y no del chrome visible, no se ve
+        -- afectado por fullscreen.
 }
 
 -- Frontera código-a-código entre el skin y el host MediaWiki + sus

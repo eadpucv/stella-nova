@@ -2,7 +2,7 @@
 	"manifest_version": 2,
 	"name": "StellaNova",
 	"namemsg": "skinname-stellanova",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"author": [
 		"Herbert Spencer"
 	],
@@ -24,9 +24,7 @@
 					"name": "stellanova",
 					"responsive": true,
 					"templateDirectory": "includes/templates",
-					"styles": [
-						"skins.stellanova.styles"
-					],
+					"styles": [],
 					"scripts": [
 						"skins.stellanova.scripts"
 					],
@@ -90,7 +88,7 @@
 		"BeforePageDisplay": "MediaWiki\\Skins\\StellaNova\\Hooks::onBeforePageDisplay",
 		"ResourceLoaderRegisterModules": "MediaWiki\\Skins\\StellaNova\\Hooks::onResourceLoaderRegisterModules"
 	},
-	"_comment_ResourceModules": "skins.stellanova.styles y skins.stellanova.scripts se registran en PHP (Hooks::onResourceLoaderRegisterModules) con remoteSkinPath calculado de la carpeta REAL del skin, para que las URLs de las fuentes resuelvan sin importar cómo se llame el directorio al clonar.",
+	"_comment_ResourceModules": "skins.stellanova.styles y .scripts se registran en PHP (Hooks::onResourceLoaderRegisterModules) con remoteSkinPath calculado de la carpeta REAL del skin (robusto al nombre del directorio al clonar). Ademas, `styles` esta vacio a proposito: la CSS critica del skin NO la carga MediaWiki en su <link> combinado (que va SIN version y se cachea rancio tras cada deploy), sino Hooks::onBeforePageDisplay con un <link> propio cuyo `version` es el hash de contenido de RL → caché larga inmutable + bust automático en cada cambio de CSS, sin acceso al servidor.",
 	"ResourceModuleSkinStyles": {
 		"stellanova": {
 			"localBasePath": "resources",

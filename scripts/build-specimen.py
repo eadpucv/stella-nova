@@ -936,6 +936,65 @@ si hace falta.
 </section>
 
 <section class="comp">
+  <h2>Imágenes a sangre completa (.full-width)</h2>
+  <p class="meta">Clase de wikitexto migrada desde <code>Common.css</code> de
+  producción para que viaje con el tema. Una imagen, figura o envoltorio con
+  <code>class="full-width"</code> se &laquo;revienta&raquo; del padding lateral
+  de la hoja para ir <strong>borde a borde</strong> del artículo. Sirve a tres
+  patrones de wikitexto.</p>
+
+  <div class="grilla cols-2 spec-usage">
+<pre class="howto-code">[[Archivo:foo.jpg|class=full-width]]
+[[Archivo:foo.jpg|frameless|class=full-width]]
+&lt;div class="full-width"&gt;[[Archivo:foo.jpg]]&lt;/div&gt;</pre>
+    <div class="sn-paper sn-body demo demo--bleed">
+      <p>Párrafo del cuerpo, con el ancho de lectura normal de la hoja.</p>
+      <div class="full-width spec-bleed">imagen a sangre completa · borde a borde</div>
+      <p>El párrafo siguiente regresa al ancho de lectura.</p>
+    </div>
+  </div>
+
+  <div class="spec-notes">
+    <p>El truco: <code>margin-inline: calc(-1 * var(--sn-paper-px))</code>, el
+    mismo padding lateral que la hoja expone como contrato. Sólo funciona
+    dentro de <code>.sn-paper</code> / <code>.sn-canvas</code>. También casa el
+    token con apóstrofes <code>'full-width'</code> que MediaWiki preserva en
+    <code>[[Imagen:…|class='full-width']]</code>.</p>
+  </div>
+</section>
+
+<section class="comp">
+  <h2>Botón de contenido (.wiki-btn)</h2>
+  <p class="meta">Clase de wikitexto migrada desde <code>Common.css</code>.
+  Botón &laquo;outline&raquo; que envuelve un enlace: contorno en reposo, se
+  rellena al pasar el cursor y el texto pasa a blanco. Cuatro variantes: por
+  defecto (gris), <code>red</code>, <code>green</code>, <code>blue</code>.</p>
+
+  <div class="grilla cols-2 spec-usage">
+<pre class="howto-code">&lt;span class="wiki-btn"&gt;[[Página|Etiqueta]]&lt;/span&gt;
+&lt;span class="wiki-btn red"&gt;[[…|Rojo]]&lt;/span&gt;
+&lt;span class="wiki-btn green"&gt;[[…|Verde]]&lt;/span&gt;
+&lt;span class="wiki-btn blue"&gt;[[…|Azul]]&lt;/span&gt;</pre>
+    <div class="sn-paper sn-body demo">
+      <div class="demo-inline">
+        <span class="wiki-btn"><a href="#">Por defecto</a></span>
+        <span class="wiki-btn red"><a href="#">Rojo</a></span>
+        <span class="wiki-btn green"><a href="#">Verde</a></span>
+        <span class="wiki-btn blue"><a href="#">Azul</a></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="spec-notes">
+    <p>Tokenizado salvo <code>blue</code> (<code>#059BE6</code> literal): el
+    tema es de paleta carmín y no define un acento azul. Por defecto →
+    <code>--sn-ink-soft</code>; <code>red</code> → <code>--sn-nova</code>;
+    <code>green</code> → <code>--sn-ok</code>. El enlace interno hereda el
+    color; al hover/foco el botón se rellena y el texto va a blanco.</p>
+  </div>
+</section>
+
+<section class="comp">
   <h2>Grilla utilitaria</h2>
   <p class="meta">Reemplaza el patrón <code>.row &gt; .col-md-*</code> del
   skin Bootstrap anterior. <code>.grilla</code> es un Grid simple;
@@ -1229,6 +1288,12 @@ body.spec { display: flex; flex-direction: column; min-height: 100vh; }
              gap: var(--sn-s-5); }
 .demo-stack > * + * { margin-top: var(--sn-s-3); }
 .demo-inline { display: flex; flex-wrap: wrap; gap: var(--sn-s-2); align-items: center; }
+/* Demo de .full-width: el padding lateral del contenedor se iguala a
+   --sn-paper-px (lo normal de .demo es --sn-s-5), para que el margin negativo
+   de .full-width sangre EXACTO hasta el borde del demo. */
+.demo--bleed { padding-inline: var(--sn-paper-px); }
+.spec-bleed { background: var(--sn-sunk); color: var(--sn-ink-soft);
+  padding: var(--sn-s-3); text-align: center; font-size: var(--sn-fs-sm); }
 
 /* — Token grids — */
 .tokgrp-h { font-family: var(--sn-font-display); font-size: var(--sn-fs-lg);

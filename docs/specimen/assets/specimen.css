@@ -80,6 +80,12 @@ body.spec { display: flex; flex-direction: column; min-height: 100vh; }
              gap: var(--sn-s-5); }
 .demo-stack > * + * { margin-top: var(--sn-s-3); }
 .demo-inline { display: flex; flex-wrap: wrap; gap: var(--sn-s-2); align-items: center; }
+/* Demo de .full-width: el padding lateral del contenedor se iguala a
+   --sn-paper-px (lo normal de .demo es --sn-s-5), para que el margin negativo
+   de .full-width sangre EXACTO hasta el borde del demo. */
+.demo--bleed { padding-inline: var(--sn-paper-px); }
+.spec-bleed { background: var(--sn-sunk); color: var(--sn-ink-soft);
+  padding: var(--sn-s-3); text-align: center; font-size: var(--sn-fs-sm); }
 
 /* — Token grids — */
 .tokgrp-h { font-family: var(--sn-font-display); font-size: var(--sn-fs-lg);

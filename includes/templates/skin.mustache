@@ -10,8 +10,8 @@
 	sintaxis de plantilla dentro de comentarios: el primer cierre la trunca.
 
 	Datos propios (SkinStellaNova::getTemplateData):
-	  is-sn-fullscreen · sn-isotype{href,is-override,html-override,svg,
-	  svg-icon} · sn-identity · sn-prefs{…} · sn-chrome{notice,sidebar,
+	  is-sn-fullscreen · sn-isotype{href,svg,svg-icon} · sn-identity ·
+	  sn-prefs{…} · sn-chrome{notice,sidebar,
 	  footer}{is-published,html}
 }}
 {{{html-headelement}}}
@@ -132,10 +132,7 @@
 			<div class="sn-brandnav">
 				<a class="sn-isotype" href="{{sn-isotype.href}}"
 					aria-label="{{msg-stellanova-home}}" title="{{msg-stellanova-home}}">
-					{{#sn-isotype}}
-					{{#is-override}}{{{html-override}}}{{/is-override}}
-					{{^is-override}}<span class="sn-isotype-full">{{{svg}}}</span><span class="sn-isotype-compact">{{{svg-icon}}}</span>{{/is-override}}
-					{{/sn-isotype}}
+					{{#sn-isotype}}<span class="sn-isotype-full">{{{svg}}}</span><span class="sn-isotype-compact">{{{svg-icon}}}</span>{{/sn-isotype}}
 				</a>
 
 				{{!	Navegación del SITIO (Escuela/Wiki/Navegación…). La caja

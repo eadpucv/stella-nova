@@ -177,26 +177,15 @@ class SkinStellaNova extends SkinMustache {
 		$identity = $isNamed ? 'registered' : ( $isTemp ? 'temporary' : 'anonymous' );
 		$data['sn-identity'] = $identity;
 
-		// — SiteIsotype: autocontenido; $wgLogos (data-logos) como override —
-		// $wgLogos override SOLO si la instalación fijó un logo deliberado;
-		// el placeholder por defecto de MediaWiki ("change-your-logo") no
-		// cuenta — ahí manda el isotipo autocontenido (spec SiteIsotype:
-		// el asset del skin es el default; data-logos es el override).
-		$logos = $data['data-logos'] ?? [];
-		$override = '';
-		foreach ( [ 'icon', '1x', 'wordmark' ] as $k ) {
-			$v = $logos[$k] ?? null;
-			$src = is_array( $v ) ? ( $v['src'] ?? '' ) : ( is_string( $v ) ? $v : '' );
-			if ( $src !== '' && !preg_match( '/(change-your-logo|(^|\/)Wiki\.png)/i', $src ) ) {
-				$override = '<img src="' . htmlspecialchars( $src )
-					. '" alt="" class="sn-isotype-img">';
-				break;
-			}
-		}
+		// — SiteIsotype: AUTOCONTENIDO, el logo del skin SIEMPRE gana —
+		// Decisión de producto 2026-06-02: el skin trae su propio isotipo
+		// (SVG embebido, tematizable claro/oscuro) e IGNORA $wgLogos. Antes
+		// $wgLogos (data-logos) actuaba como override de instalación; se
+		// retiró porque en producción $wgLogos llevaba el logo del skin viejo
+		// (bo) y tapaba el del skin. "Logo definido por la skin, saltándose
+		// LocalSettings" era la intención original. Ver spec SiteIsotype.
 		$data['sn-isotype'] = [
 			'href' => $data['link-mainpage'] ?? Title::newMainPage()->getLocalURL(),
-			'is-override' => $override !== '',
-			'html-override' => $override,
 			'svg' => self::isotypeSvg(),
 			'svg-icon' => self::iconSvg(),
 		];

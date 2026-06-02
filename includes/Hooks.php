@@ -182,6 +182,72 @@ class Hooks {
 			'<link rel="icon" type="image/svg+xml" href="' . htmlspecialchars( $favicon ) . '">'
 		);
 
+		// — Busting de caché de la CSS crítica del skin —
+		// El <link> combinado de estilos que emite MediaWiki NO lleva `version`
+		// en su URL; una caché HTTP por-URL (CDN/nginx) delante de load.php sirve
+		// entonces CSS VIEJO tras cada deploy (las fuentes "se rompen" hasta que
+		// expira el TTL, sin que el hard-refresh ayude porque la caché es
+		// compartida). Solución sin acceso al servidor: cargamos la CSS del skin
+		// nosotros, con un `version` derivado del mtime de los .css → cada deploy
+		// cambia la URL → MISS → CSS fresca. `skins.stellanova.styles` se quitó de
+		// skin.json `styles` para que MediaWiki no la incluya además (sin doble
+		// carga). El módulo se sigue registrando en onResourceLoaderRegisterModules.
+		$lang = $skin->getLanguage()->getCode();
+		// `version` = el hash de contenido REAL que ResourceLoader computa para
+		// el módulo. Usándolo, RL lo reconoce como versión válida y le da caché
+		// larga e inmutable; y como el hash cambia con cualquier cambio de
+		// contenido, cada deploy produce una URL nueva → MISS → CSS fresca. Si
+		// algo falla, caemos al mtime de los .css (caché de 60s pero igual busta
+		// por deploy, porque el HTML siempre lleva el tag vigente).
+		$version = null;
+		try {
+			$rl = $out->getResourceLoader();
+			$rlCtx = new \MediaWiki\ResourceLoader\Context(
+				$rl,
+				new \MediaWiki\Request\FauxRequest( [
+					'lang'    => $lang,
+					'modules' => 'skins.stellanova.styles',
+					'only'    => 'styles',
+					'skin'    => 'stellanova',
+				] )
+			);
+			// makeVersionQuery produce EXACTAMENTE el string que RL valida en
+			// respond() (getVersionHash de un solo módulo no coincide con la
+			// versión combinada). Coincidir → RL concede caché larga inmutable.
+			if ( $rl->getModule( 'skins.stellanova.styles' ) ) {
+				$version = $rl->makeVersionQuery( $rlCtx, [ 'skins.stellanova.styles' ] );
+			}
+		} catch ( \Throwable $e ) {
+			$version = null;
+		}
+		if ( $version === null || $version === '' ) {
+			$resDir = self::skinResourcesDir();
+			$mtime = 0;
+			if ( $resDir !== null ) {
+				foreach ( [ 'fonts.css', 'tokens.css', 'stella-nova.css', 'print.css' ] as $f ) {
+					$p = $resDir . '/' . $f;
+					if ( is_file( $p ) ) {
+						$mtime = max( $mtime, (int)filemtime( $p ) );
+					}
+				}
+			}
+			$version = $mtime > 0 ? dechex( $mtime ) : 'dev';
+		}
+		$href = wfAppendQuery(
+			$skin->getConfig()->get( 'LoadScript' ),
+			[
+				'lang'    => $lang,
+				'modules' => 'skins.stellanova.styles',
+				'only'    => 'styles',
+				'skin'    => 'stellanova',
+				'version' => $version,
+			]
+		);
+		$out->addHeadItem(
+			'zzz-stellanova-styles',
+			'<link rel="stylesheet" href="' . htmlspecialchars( $href ) . '">'
+		);
+
 		$user = $out->getUser();
 		$isNamed = method_exists( $user, 'isNamed' ) ? $user->isNamed() : $user->isRegistered();
 		$isTemp = method_exists( $user, 'isTemp' ) && $user->isTemp();
@@ -235,6 +301,21 @@ class Hooks {
 			'd.setAttribute("data-sn-notice-hide","");}catch(e){}}' .
 			'}catch(e){}})();</script>';
 		$out->addHeadItem( 'stellanova-prepaint', $script );
+	}
+
+	/**
+	 * Directorio físico `resources/` del skin tal como está instalado (vía la
+	 * ruta registrada por ExtensionRegistry, que preserva symlinks/clon — NO
+	 * __DIR__). Devuelve null si no se puede resolver. Lo usan el busting de
+	 * caché de la CSS (mtime de los archivos) y el registro de módulos.
+	 *
+	 * @return string|null
+	 */
+	private static function skinResourcesDir(): ?string {
+		$jsonPath = ExtensionRegistry::getInstance()->getAllThings()['StellaNova']['path'] ?? null;
+		$skinDir = $jsonPath !== null ? dirname( $jsonPath ) : dirname( __DIR__ );
+		$res = $skinDir . '/resources';
+		return is_dir( $res ) ? $res : null;
 	}
 
 	/**
