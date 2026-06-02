@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Fundamentos — Stella Nova v0.2.0</title>
+<title>Fundamentos — Stella Nova v0.2.1</title>
 <link rel="icon" href="assets/icons/casiopea-icon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/fonts.css">
 <link rel="stylesheet" href="assets/tokens.css">
@@ -41,6 +41,11 @@
 	<symbol id="sn-i-printer" viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></symbol>
 	<symbol id="sn-i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></symbol>
 	<symbol id="sn-i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></symbol>
+	<symbol id="sn-i-user-plus" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></symbol>
+	<symbol id="sn-i-user-x" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="18" y1="8" x2="23" y2="13"/><line x1="23" y1="8" x2="18" y2="13"/></symbol>
+	<symbol id="sn-i-users" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+	<symbol id="sn-i-file-text" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></symbol>
+	<symbol id="sn-i-book-open" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></symbol>
 </svg>
 <header class="spec-top">
   <a class="spec-brand" href="index.html" aria-label="Stella Nova — Inicio">
@@ -61,7 +66,7 @@
 	</g>
 </svg>
     <span class="spec-brand-name">Stella Nova</span>
-    <span class="spec-brand-ver">v0.2.0</span>
+    <span class="spec-brand-ver">v0.2.1</span>
   </a>
   <nav class="spec-nav" aria-label="Secciones del espécimen"><a href="index.html" aria-current="page">Fundamentos</a><a href="components.html">Componentes</a><a href="layout.html">Layout</a></nav>
   <div class="spec-controls">
@@ -263,6 +268,20 @@
   <figcaption>
     <code class="sw-var">--sn-danger</code>
     <span class="sw-val">#b21e3e</span>
+    
+  </figcaption>
+</figure><figure class="sw" style="--sw-c: var(--sn-notice-bg);">
+  <span class="sw-chip" aria-hidden="true"></span>
+  <figcaption>
+    <code class="sw-var">--sn-notice-bg</code>
+    <span class="sw-val">#f7db7e</span>
+    
+  </figcaption>
+</figure><figure class="sw" style="--sw-c: var(--sn-notice-ink);">
+  <span class="sw-chip" aria-hidden="true"></span>
+  <figcaption>
+    <code class="sw-var">--sn-notice-ink</code>
+    <span class="sw-val">#2c2410</span>
     
   </figcaption>
 </figure><figure class="sw" style="--sw-c: var(--sn-ok-wash);">
@@ -736,7 +755,7 @@
 <footer class="spec-foot">
   <p>
     Espécimen generado por <code>scripts/build-specimen.py</code> ·
-    Stella Nova v0.2.0 ·
+    Stella Nova v0.2.1 ·
     <a href="notes.md">notes.md</a> (notas del taller de diseño) ·
     <a href="https://wiki.ead.pucv.cl">wiki.ead.pucv.cl</a>
   </p>

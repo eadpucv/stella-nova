@@ -159,9 +159,20 @@ a.new, a[href].new { color: var(--sn-link-new); }
 .sn-isotype:hover, .sn-isotype:focus-visible, .sn-isotype:active {
 	color: var(--sn-icon-active);
 }
+/* El SVG colorea DIRECTAMENTE con el token de icono, NO `inherit` del <a>.
+   Motivo: `--sn-icon` lleva alfa (color-mix … transparent), y por privacidad
+   los navegadores IGNORAN colores con transparencia en `:visited` → el <a>
+   visitado caía al morado de `--sn-link-visited` y el SVG (color:inherit) lo
+   heredaba. Coloreando el <svg> (que no es enlace, no sufre la restricción)
+   el logo es inmune al estado link/visited y NUNCA se ve morado. */
 .sn-isotype svg {
 	display: block; height: 2rem; width: auto; max-width: 100%;
-	color: inherit;
+	color: var(--sn-icon);
+}
+.sn-isotype:hover svg,
+.sn-isotype:focus-visible svg,
+.sn-isotype:active svg {
+	color: var(--sn-icon-active);
 }
 .sn-isotype :is(img, .sn-isotype-img) { display: block; height: 2rem; width: auto; max-width: 12em; }
 /* Doble variante inline: wordmark (desktop) + glifo cuadrado (mobile).
@@ -494,7 +505,7 @@ a.new, a[href].new { color: var(--sn-link-new); }
 	margin: calc(-1 * var(--sn-paper-py)) calc(-1 * var(--sn-paper-px)) var(--sn-s-5);
 	border: 0;
 	border-radius: var(--sn-radius-paper) var(--sn-radius-paper) 0 0;
-	background: var(--sn-sunk); color: var(--sn-warn-ink-soft);
+	background: var(--sn-notice-bg); color: var(--sn-notice-ink);
 	display: flex; align-items: flex-start; gap: var(--sn-s-3);
 	padding: var(--sn-s-3) var(--sn-paper-px);
 	font-size: var(--sn-fs-sm);
@@ -539,6 +550,9 @@ html[data-sn-notice-hide] .sn-notice { display: none; }
    filete: cuando hay contenido es una línea sobria; vacío no inserta nada. */
 .sn-subtitle {
 	color: var(--sn-ink-soft); font-size: var(--sn-fs-sm); margin: 0;
+	text-transform: uppercase;
+	font-stretch: condensed;
+	letter-spacing: .25ex;
 }
 /* Vacío (caso normal, p. ej. portada: solo el #mw-content-subtitle hueco)
    → cero altura, ninguna inserción visible. Solo cuando trae algo real
@@ -633,6 +647,15 @@ html[data-sn-notice-hide] .sn-notice { display: none; }
 .sn-app :is(h1, h2, h3, h4, h5, h6, .mw-heading),
 .sn-canvas :is(h1, h2, h3, h4, h5, h6, .mw-heading) {
 	color: inherit;
+}
+/* El filete #aaa de core (elements.less, `.mw-heading1,h1,.mw-heading2,h2`)
+   NO va en NINGÚN contexto del skin. El reset de `.sn-body` de arriba ya lo
+   mata dentro del artículo; esto lo extiende a la chrome fuera del cuerpo —
+   pie editable (Stella-Nova:Pie, donde un `== Título ==` se vuelve h2),
+   modales y drawer— para que la doctrina "sin filetes" sea total. */
+.sn-app :is(h1, h2, .mw-heading1, .mw-heading2),
+.sn-canvas :is(h1, h2, .mw-heading1, .mw-heading2) {
+	border-bottom: 0;
 }
 /* Cuando Parsoid envuelve el heading: el wrapper carga la tipografía y
    el <hN> interno hereda. Sin esto, la margin del <hN> se suma a la del
@@ -1824,6 +1847,78 @@ canvas, iframe,
 }
 .sn-body :is(.mw-changeslist-legend, .mw-specialpages-notes) dl {
 	margin: var(--sn-s-2) 0 0;
+}
+
+/* ─── Botones de wikitexto (.wiki-btn) — portados de MediaWiki:Common.css ───
+   Patrón de la portada y guías: un <span class="wiki-btn [red|green]"> que
+   envuelve un enlace wiki. Vive aquí (no en Common.css) para que herede los
+   tokens del skin y voltee claro/oscuro solo. Cambios respecto al original
+   de producción: borde 1px (era 2px), forma de píldora (border-radius 2ex),
+   y TODO color tokenizado. La variante `.blue` (#059BE6) se ELIMINÓ — no
+   tenía token equivalente y no la usa ninguna página.
+
+   Texto sobre relleno = `--sn-nova-ink`: voltea solo (blanco en claro,
+   casi-negro en oscuro) y sirve a las tres variantes porque los tres
+   rellenos (ink-soft, nova, ok) son oscuros en claro y claros en oscuro. */
+.sn-body .wiki-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 1ex 1.5ex;
+	border-radius: 2ex;
+	border: 1px solid var(--sn-ink-soft);
+	background-color: transparent;
+	color: var(--sn-ink-soft);
+	white-space: nowrap;
+	text-decoration: none;
+	cursor: pointer;
+	transition: background-color .2s ease-in-out, border-color .2s ease-in-out, color .2s ease-in-out;
+}
+.sn-body .wiki-btn:hover,
+.sn-body .wiki-btn:focus-within {
+	background-color: var(--sn-ink-soft);
+	border-color: var(--sn-ink-soft);
+}
+.sn-body .wiki-btn a {
+	font-weight: 700;
+	line-height: 90%;
+	color: inherit !important;
+	text-decoration: none !important;
+	white-space: nowrap;
+	background-color: transparent;
+	border: none;
+	padding: 0;
+	margin: 0;
+	display: inline-block;
+	transition: text-shadow .2s ease-in-out;
+}
+.sn-body .wiki-btn a:hover,
+.sn-body .wiki-btn a:focus {
+	text-shadow: 1px 1px 1px rgba(0, 0, 0, .2);
+}
+.sn-body .wiki-btn:hover a,
+.sn-body .wiki-btn:focus-within a {
+	color: var(--sn-nova-ink) !important;
+}
+/* Variante roja (la nova del skin). */
+.sn-body .wiki-btn.red {
+	border-color: var(--sn-nova);
+	color: var(--sn-nova);
+}
+.sn-body .wiki-btn.red:hover,
+.sn-body .wiki-btn.red:focus-within {
+	background-color: var(--sn-nova);
+	border-color: var(--sn-nova);
+}
+/* Variante verde (token de éxito). */
+.sn-body .wiki-btn.green {
+	border-color: var(--sn-ok);
+	color: var(--sn-ok);
+}
+.sn-body .wiki-btn.green:hover,
+.sn-body .wiki-btn.green:focus-within {
+	background-color: var(--sn-ok);
+	border-color: var(--sn-ok);
 }
 
 /* ─── Grilla utilitaria para wikitexto: reemplaza el patrón

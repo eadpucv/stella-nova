@@ -965,32 +965,33 @@ si hace falta.
 
 <section class="comp">
   <h2>Botón de contenido (.wiki-btn)</h2>
-  <p class="meta">Clase de wikitexto migrada desde <code>Common.css</code>.
-  Botón &laquo;outline&raquo; que envuelve un enlace: contorno en reposo, se
-  rellena al pasar el cursor y el texto pasa a blanco. Cuatro variantes: por
-  defecto (gris), <code>red</code>, <code>green</code>, <code>blue</code>.</p>
+  <p class="meta">Clase de wikitexto migrada desde <code>Common.css</code> al
+  tema. Botón &laquo;outline&raquo; que envuelve un enlace: contorno fino
+  (1&nbsp;px) en forma de píldora; al pasar el cursor se rellena y el texto
+  voltea. Tres variantes: por defecto (gris), <code>red</code> y
+  <code>green</code>. Color 100&nbsp;% por tokens → voltea claro/oscuro.</p>
 
   <div class="grilla cols-2 spec-usage">
 <pre class="howto-code">&lt;span class="wiki-btn"&gt;[[Página|Etiqueta]]&lt;/span&gt;
 &lt;span class="wiki-btn red"&gt;[[…|Rojo]]&lt;/span&gt;
-&lt;span class="wiki-btn green"&gt;[[…|Verde]]&lt;/span&gt;
-&lt;span class="wiki-btn blue"&gt;[[…|Azul]]&lt;/span&gt;</pre>
+&lt;span class="wiki-btn green"&gt;[[…|Verde]]&lt;/span&gt;</pre>
     <div class="sn-paper sn-body demo">
       <div class="demo-inline">
         <span class="wiki-btn"><a href="#">Por defecto</a></span>
         <span class="wiki-btn red"><a href="#">Rojo</a></span>
         <span class="wiki-btn green"><a href="#">Verde</a></span>
-        <span class="wiki-btn blue"><a href="#">Azul</a></span>
       </div>
     </div>
   </div>
 
   <div class="spec-notes">
-    <p>Tokenizado salvo <code>blue</code> (<code>#059BE6</code> literal): el
-    tema es de paleta carmín y no define un acento azul. Por defecto →
-    <code>--sn-ink-soft</code>; <code>red</code> → <code>--sn-nova</code>;
-    <code>green</code> → <code>--sn-ok</code>. El enlace interno hereda el
-    color; al hover/foco el botón se rellena y el texto va a blanco.</p>
+    <p>Color 100&nbsp;% tokenizado: por defecto → <code>--sn-ink-soft</code>;
+    <code>red</code> → <code>--sn-nova</code>; <code>green</code> →
+    <code>--sn-ok</code>. El enlace interno hereda el color; al hover/foco el
+    botón se rellena y el texto pasa a <code>--sn-nova-ink</code> (voltea:
+    blanco en claro, casi-negro en oscuro). La variante <code>blue</code> se
+    retiró (sin token equivalente, sin uso). Debe vivir dentro de
+    <code>.sn-body</code> (la regla está acotada a ese contenedor).</p>
   </div>
 </section>
 
