@@ -793,17 +793,25 @@ html[data-sn-notice-hide] .sn-notice { display: none; }
    <br/> sobra y produciría doble línea. Lo neutralizamos. */
 .sn-body .poem br { display: none; }
 /* MW feature `elements` impone `code, pre, .mw-code { color:#000;
-   background:#f8f9fa }` (selector bare → especificidad 0,0,1). Sin un
-   `color` explícito aquí, en modo oscuro queda negro sobre `--sn-sunk`
-   (#181610) — ilegible. Fijamos color de tinta del tema; el background
-   ya volteaba bien. */
+   background:#f8f9fa; border: 1px solid @border-color-muted }` con
+   especificidad (0,0,1). Las hex de Codex se compilan a literales (no
+   pasan por var()), así que en modo oscuro: tinta negra sobre --sn-sunk
+   (#181610) → ilegible, y filete claro #c8ccd1 → alto contraste sobre
+   papel oscuro. Tinta y fondo ya los pisábamos; el filete claro
+   sobrevivía en `code` inline. Lo normalizamos:
+   · inline (code/kbd/samp) → sin borde y sin caja sólida: wash
+     translúcido derivado de --sn-ink (~6%) que voltea solo claro/oscuro
+     y se siente parte del cuerpo, no una "pastilla" importada.
+   · bloque (pre/.mw-code)  → borde --sn-hairline (warm dark en oscuro). */
 .sn-body :is(code, kbd, samp) {
 	font-family: var(--sn-font-mono); font-size: .9em;
 	color: var(--sn-ink);
-	background: var(--sn-sunk); padding: .12em .38em;
+	background: color-mix(in oklab, var(--sn-ink) 6%, transparent);
+	padding: .08em .32em;
+	border: 0;
 	border-radius: var(--sn-radius-s);
 }
-.sn-body pre {
+.sn-body :is(pre, .mw-code) {
 	background: var(--sn-sunk); color: var(--sn-ink);
 	border: 1px solid var(--sn-hairline);
 	border-radius: var(--sn-radius);
