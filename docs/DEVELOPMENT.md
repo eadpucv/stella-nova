@@ -109,10 +109,13 @@ Decidir herramienta (pendiente del PLAN del proyecto).
   cuerpo se condensa vía `font-stretch` (eje wdth) sin variantes extra. (La
   build `@fontsource-variable` antigua solo exponía wght — esos
   `plexsans-latin-wght-*.woff2` ignoraban `font-stretch` y se retiraron.)
-  **Source Serif 4** (serif del cuerpo cuando el lector la elige desde el
-  menú; citas y `<poem>` por defecto) — **variable**, eje **wght 200–900**
-  (`sourceserif4-latin-wght-*.woff2`, build de Google Fonts) + **IBM Plex
-  Mono** (código). Auto-alojadas en `resources/fonts/` (sin CDN en runtime;
+  **Roboto Serif** (serif del cuerpo cuando el lector la elige desde el
+  menú; citas y `<poem>` por defecto) — **variable de cuatro ejes**
+  **wght 100–900 + wdth 75–100 + opsz 8–60 + GRAD −50–100**
+  (`robotoserif-latin-wghtwdthgrad-*.woff2`, TTF OFL de Google Fonts
+  instanciado con fonttools: opsz/wdth recortados de 8–144 / 50–150 a 8–60
+  / 75–100 para no cargar masters de despliegue ni anchos extremos que el
+  skin no usa) + **IBM Plex Mono** (código). Auto-alojadas en `resources/fonts/` (sin CDN en runtime;
   **versionadas en git** — su ausencia rompía el tema). Las URLs las
   calcula `Hooks::onResourceLoaderRegisterModules` de la carpeta real
   (robusto al nombre del directorio). Subset latin: U+0000-00FF cubre el
@@ -121,13 +124,21 @@ Decidir herramienta (pendiente del PLAN del proyecto).
   (`--sn-font-text` = sans del cuerpo, `--sn-font-quote` = serif de citas,
   `--sn-font-display` = alias de text). La preferencia `family` (sans|serif)
   invierte los dos alias en cascada: cuerpo+UI voltean a serif y
-  citas/`<poem>` voltean a sans. IBM Plex Sans tope en 700; Source Serif 4
-  tope en 900: pesos fuera del eje se recortan al máximo. Historial:
+  citas/`<poem>` voltean a sans. Ambas familias de texto comparten el rango
+  `wdth 75–100`, así que el cuerpo condensa (`--sn-text-width`) elija el
+  lector la familia que elija; las citas/`<poem>` se resetean a `100%`
+  (contraste a ancho natural). El **grado** de la serif (eje GRAD) lo
+  conduce `--sn-serif-grade`, aplicado a `:root` vía
+  `font-variation-settings: "GRAD"` (0 en claro, 30 en oscuro). IBM Plex
+  Sans tope en 700; Roboto Serif tope en 900: pesos fuera del eje se
+  recortan al máximo. Historial:
   Work Sans + Newsreader → Anthropic Sans + Anthropic Serif → Alegreya Sans +
   Alegreya (2026-05-25, rama `fonts`) → IBM Plex Sans (variable wght) + IBM
   Plex Serif (2026-05-29) → IBM Plex Sans variable de dos ejes wght+wdth
   (2026-05-31) → IBM Plex Sans + **Source Serif 4 variable** + alternador
-  sans/serif desde el menú del usuario (2026-06-03).
+  sans/serif desde el menú del usuario (2026-06-03) → IBM Plex Sans +
+  **Roboto Serif variable de cuatro ejes** (wght+wdth+opsz+GRAD), serif que
+  condensa con el cuerpo y grade auto en oscuro (2026-06-06).
 - **Sin `text-transform: uppercase` en cabeceras del cuerpo** (rev.
   2026-05-25): h3 (subsección en nova) y h5/h6 (labels secundarios)
   perdieron el uppercase; ahora la jerarquía visual la hacen tamaño,

@@ -236,7 +236,7 @@ cuando reconoce el patrón:
   nada.
 - **`<blockquote>`** y **`<poem>`** (extensión Poem): consumen la
   familia editorial de contraste (`--sn-font-quote`). Por defecto es
-  Source Serif 4 (la serif variable del skin). Si el lector elige serif
+  Roboto Serif (la serif variable del skin). Si el lector elige serif
   como familia del cuerpo desde el menú, citas y poemas voltean a sans
   para mantener el contraste. No usar `<blockquote>` para "destacar
   texto general" — está reservado para citas reales.

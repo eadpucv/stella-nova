@@ -601,10 +601,12 @@ html[data-sn-notice-hide] .sn-notice { display: none; }
 .sn-subtitle a { color: var(--sn-ink-soft); }
 
 /* ─────────────── Cuerpo: ritmo editorial ─────────────── */
-/* Ancho condensado del cuerpo vía el eje wdth de IBM Plex Sans (token
-   --sn-text-width). font-stretch hereda, así que párrafos, listas, tablas y
-   captions lo toman; las cabeceras lo resetean a 100% más abajo. Serif/Mono
-   no tienen eje wdth → lo ignoran sin efecto. */
+/* Ancho condensado del cuerpo vía el eje wdth (token --sn-text-width).
+   font-stretch hereda, así que párrafos, listas, tablas y captions lo toman;
+   las cabeceras lo resetean a 100% más abajo. Las DOS familias de texto —IBM
+   Plex Sans y Roboto Serif— declaran el mismo rango wdth 75–100, así que el
+   cuerpo condensa por igual aunque el lector alterne a serif. Mono no tiene
+   eje wdth → lo ignora sin efecto. */
 .sn-body { min-width: 0; font-stretch: var(--sn-text-width); }
 /* El ancho de la HOJA lo fija --sn-measure (.sn-paper-wrap). Esa es la
    medida de lectura: TODO el contenido —párrafos, cabeceras, listas, tablas,
@@ -774,20 +776,25 @@ html[data-sn-notice-hide] .sn-notice { display: none; }
 .sn-body a.external:has(img)::after { content: none; }
 
 /* Citas y poemas: familia "de contraste" frente al cuerpo. Consumen
-   --sn-font-quote (default = serif Source Serif 4; sans Plex cuando el
-   lector alterna familia desde el menú). El <poem> de la extensión Poem
-   se renderiza como .poem dentro de mw-parser-output. Line-height y
-   márgenes en baselines: el ritmo se mantiene aunque el cuerpo cambie. */
+   --sn-font-quote (default = serif Roboto Serif; sans Plex cuando el lector
+   alterna familia desde el menú). El <poem> de la extensión Poem se
+   renderiza como .poem dentro de mw-parser-output. Line-height y márgenes en
+   baselines: el ritmo se mantiene aunque el cuerpo cambie.
+   font-stretch: 100% — el contraste se lee a ancho NATURAL en ambos modos
+   (Roboto Serif y Plex Sans tienen eje wdth y heredarían la condensada del
+   cuerpo si no se reseteara aquí; el contraste no debe condensarse). */
 .sn-body blockquote {
 	margin: var(--sn-baseline) 0;
 	padding: 0 0 0 var(--sn-s-5);
 	font-family: var(--sn-font-quote); font-optical-sizing: auto;
+	font-stretch: 100%;
 	font-size: var(--sn-fs-md);
 	color: var(--sn-ink-soft); line-height: var(--sn-baseline);
 }
 .sn-body blockquote p:last-child { margin-bottom: 0; }
 .sn-body .poem {
 	font-family: var(--sn-font-quote); font-optical-sizing: auto;
+	font-stretch: 100%;
 	font-size: var(--sn-fs-md); line-height: var(--sn-baseline);
 	color: var(--sn-ink);
 	white-space: pre-wrap;

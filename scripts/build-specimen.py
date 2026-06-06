@@ -356,12 +356,15 @@ def body_components():
       <div class="colophon-row">
         <div class="colophon-name" style="font-family: var(--sn-font-serif);">Aa Bb Cc · 0123</div>
         <div class="colophon-meta">
-          <strong>Source Serif 4</strong> · variable, eje wght 200–900<br>
+          <strong>Roboto Serif</strong> · variable, cuatro ejes wght 100–900 + wdth 75–100 + opsz 8–60 + GRAD −50–100<br>
           Token <code>--sn-font-serif</code> (primitiva). Alias semántico:
           <code>--sn-font-quote</code> = citas + <code>&lt;poem&gt;</code> por defecto.<br>
           Activable como familia del cuerpo desde el menú del usuario
           (<code>data-sn-family="serif"</code>): cuerpo + UI voltean a Serif y
-          citas/<code>&lt;poem&gt;</code> voltean a Sans.
+          citas/<code>&lt;poem&gt;</code> voltean a Sans. Comparte el rango de
+          ancho con el sans (wdth 75–100) → el cuerpo condensa igual.
+          Grado vía <code>--sn-serif-grade</code> (eje GRAD): 0 en claro, 30
+          en oscuro para compensar el aclaramiento óptico.
         </div>
       </div>
       <div class="colophon-row">
@@ -563,7 +566,7 @@ Filete horizontal: cuatro guiones al inicio: ----</pre>
   <h2>Cita y poema</h2>
   <p class="meta"><code>&lt;blockquote&gt;</code> y <code>&lt;poem&gt;</code>
   (extensión Poem) consumen <code>--sn-font-quote</code>, que por defecto
-  apunta a Source Serif 4 (la serif del skin, variable wght 200–900). Si
+  apunta a Roboto Serif (la serif del skin, variable en wght/wdth/opsz/GRAD). Si
   el lector alterna la familia del cuerpo a serif desde el menú del
   usuario, citas y poemas voltean a sans para mantener el contraste
   editorial. El poema lleva

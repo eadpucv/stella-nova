@@ -3,9 +3,10 @@
  * Metáfora rectora: "página de papel". Una hoja cálida flota sobre un campo
  * gris ahuesado (el atelier de la e[ad]); un único punto de luz carmín es la
  * nova. Editorial, sobrio, cálido. IBM Plex Sans (sans del cuerpo · UI ·
- * cabeceras, variable de dos ejes) · Source Serif 4 (serif del cuerpo cuando
- * el lector la elige desde el menú, citas y poemas; variable wght 200–900) ·
- * IBM Plex Mono (código).
+ * cabeceras, variable de dos ejes) · Roboto Serif (serif del cuerpo cuando
+ * el lector la elige desde el menú, citas y poemas; variable de cuatro ejes
+ * wght 100–900 + wdth 75–100 + opsz 8–60 + GRAD −50–100) · IBM Plex Mono
+ * (código).
  * Ritmo vertical sobre la interlínea del cuerpo: la unidad es
  * `--sn-baseline`, todo line-height/margen vertical de bloque es un múltiplo.
  *
@@ -226,15 +227,16 @@
 
 	/* — Tipografía — dos familias para texto. IBM Plex Sans (sans del cuerpo,
 	   UI y TODAS las cabeceras; VARIABLE, dos ejes wght 100–700 + wdth 75–100)
-	   y Source Serif 4 (serif del cuerpo cuando el lector la elige desde el
-	   menú; siempre en citas/poemas; VARIABLE, eje wght 200–900). IBM Plex
-	   Mono para código. Auto-alojadas (fonts.css). `--sn-font-display` queda
+	   y Roboto Serif (serif del cuerpo cuando el lector la elige desde el
+	   menú; siempre en citas/poemas; VARIABLE, cuatro ejes wght 100–900 +
+	   wdth 75–100 + opsz 8–60 + GRAD −50–100). IBM Plex Mono para código.
+	   Auto-alojadas (fonts.css). `--sn-font-display` queda
 	   como alias de `--sn-font-text`: la doctrina del skin es "todo sans en
 	   cabeceras"; el alias permite reintroducir un display distinto tocando
 	   solo el token. */
 	/* Primitivas tipográficas: las dos familias reales (no se redefinen al alternar). */
 	--sn-font-sans:  'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-	--sn-font-serif: 'Source Serif 4', 'Iowan Old Style', Palatino, 'Times New Roman', Georgia, serif;
+	--sn-font-serif: 'Roboto Serif', 'Iowan Old Style', Palatino, 'Times New Roman', Georgia, serif;
 	--sn-font-mono:  'IBM Plex Mono', ui-monospace, 'SFMono-Regular', 'Cascadia Code', Menlo, Consolas, monospace;
 	/* Semánticas: alias que el resto del skin consume.
 	   --sn-font-text  → familia del cuerpo + UI + cabeceras (default: sans).
@@ -249,13 +251,26 @@
 	--sn-font-display: var(--sn-font-text);
 	--sn-font-quote: var(--sn-font-serif);
 
-	/* Ancho del cuerpo (eje wdth de IBM Plex Sans, vía font-stretch). 100% =
-	   normal, 75% = lo más condensado que ofrece Plex. Aplica a párrafos,
-	   listas y tablas (el cuerpo de .sn-body); las CABECERAS se resetean a
-	   100% aparte (doctrina: condensada solo en cuerpo, no en titulares).
-	   Serif y Mono no tienen eje de ancho → font-stretch los ignora sin daño.
-	   Sube a 100% para desactivar la condensación; baja hacia 75% para más
-	   densidad. */
+	/* Grado (eje GRAD de Roboto Serif): engrosa el trazo SIN cambiar el ancho
+	   ni el avance del texto — la caja no se mueve, solo el peso percibido.
+	   Únicamente la serif tiene este eje; sans y mono lo ignoran. Se aplica a
+	   TODA la cascada vía font-variation-settings en :root (línea siguiente),
+	   para que acompañe a la serif dondequiera que aparezca: citas/poemas y el
+	   cuerpo+UI cuando el lector alterna a familia serif. Default 0; sube en
+	   modo oscuro para compensar el aclaramiento óptico del texto claro sobre
+	   fondo negro (los overrides de tema más abajo). */
+	--sn-serif-grade: 0;
+	font-variation-settings: "GRAD" var(--sn-serif-grade);
+
+	/* Ancho del cuerpo (eje wdth, vía font-stretch). 100% = normal, 75% = lo
+	   más condensado. Lo comparten las DOS familias de texto: IBM Plex Sans
+	   (sans) y Roboto Serif (serif) declaran el MISMO rango wdth 75–100, así
+	   el cuerpo condensa por igual elija el lector la familia que elija.
+	   Aplica a párrafos, listas y tablas (el cuerpo de .sn-body); las
+	   CABECERAS y las citas/poemas se resetean a 100% aparte (doctrina:
+	   condensada solo en el cuerpo corrido, no en titulares ni contraste).
+	   Mono no tiene eje de ancho → font-stretch lo ignora sin daño. Sube a
+	   100% para desactivar la condensación; baja hacia 75% para más densidad. */
 	--sn-text-width: 80%;
 
 	/* Escala fluida sobria (sin titulares exagerados). --sn-font-scale lo
@@ -481,11 +496,13 @@
 /* ═══════════════════════════════════════════════════════════════════════
    Conmutación de tema. Solo dos responsabilidades:
      1. Setear `color-scheme` para que light-dark() resuelva al lado correcto.
-     2. Sobrescribir los CUATRO tokens NO-color que varían por tema
-        (`--sn-field-grain` y los tres `--sn-lift*`): mezclan geometría y
-        color, así que no encajan en light-dark().
+     2. Sobrescribir los CINCO tokens NO-color que varían por tema
+        (`--sn-field-grain`, los tres `--sn-lift*` y `--sn-serif-grade`):
+        mezclan geometría/número y color, así que no encajan en light-dark()
+        (light-dark() solo interpola colores). El grado sube en oscuro para
+        compensar el aclaramiento óptico del texto claro sobre fondo negro.
 
-   La duplicación de los 4 overrides entre [data-sn-theme="dark"] y
+   La duplicación de los overrides entre [data-sn-theme="dark"] y
    @media (prefers-color-scheme: dark) [data-sn-theme="auto"] es inevitable
    con CSS estándar: ambos selectores activan oscuro pero en condiciones
    diferentes (el primero ignora al SO, el segundo lo sigue). La duplicación
@@ -502,6 +519,7 @@
 	--sn-lift-paper: 0 1px 1px rgba(0,0,0,.25), 0 3px 10px rgba(0,0,0,.35);
 	--sn-lift:       0 1px 2px rgba(0,0,0,.35), 0 8px 22px rgba(0,0,0,.45), 0 24px 60px rgba(0,0,0,.4);
 	--sn-lift-soft:  0 2px 12px rgba(0,0,0,.4);
+	--sn-serif-grade: 30;
 }
 
 /* Auto: sigue al SO. `color-scheme: light dark` deja a light-dark() honrar
@@ -514,6 +532,7 @@
 		--sn-lift-paper: 0 1px 1px rgba(0,0,0,.25), 0 3px 10px rgba(0,0,0,.35);
 		--sn-lift:       0 1px 2px rgba(0,0,0,.35), 0 8px 22px rgba(0,0,0,.45), 0 24px 60px rgba(0,0,0,.4);
 		--sn-lift-soft:  0 2px 12px rgba(0,0,0,.4);
+		--sn-serif-grade: 30;
 	}
 }
 
@@ -527,10 +546,10 @@
 :root[data-sn-font="large"]  { --sn-font-scale: 1.14; }
 
 /* ── Familia tipográfica (preferencia del lector). Default = sans
-   (cuerpo+UI en IBM Plex Sans, citas/<poem> en Source Serif 4). Al elegir
+   (cuerpo+UI en IBM Plex Sans, citas/<poem> en Roboto Serif). Al elegir
    "serif" desde el menú del usuario, se invierten los dos alias y, en
    cascada, todos los componentes que los consumen voltean a la vez:
-     · cuerpo + UI + cabeceras → Source Serif 4
+     · cuerpo + UI + cabeceras → Roboto Serif
      · citas + <poem>          → IBM Plex Sans
    Las primitivas --sn-font-sans/--sn-font-serif no se tocan: las dos
    familias siguen disponibles, sólo cambia QUIÉN consume cuál. ── */

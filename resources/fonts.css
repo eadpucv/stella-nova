@@ -2,9 +2,10 @@
    instalación local). Dos familias para texto y una mono:
      · IBM Plex Sans — sans del cuerpo · UI · cabeceras. VARIABLE de DOS
        ejes (peso wght 100–700 + ancho wdth 75–100), normal e italic.
-     · Source Serif 4 — serif del cuerpo cuando el usuario alterna a familia
+     · Roboto Serif — serif del cuerpo cuando el usuario alterna a familia
        serif desde el menú (data-sn-family="serif"), y en <poem>/blockquote
-       por defecto. VARIABLE (wght 200–900), normal e italic.
+       por defecto. VARIABLE de CUATRO ejes (peso wght 100–900, ancho
+       wdth 75–100, óptico opsz 8–60, grado GRAD −50–100), normal e italic.
      · IBM Plex Mono — código, normal+italic 400 y normal 600.
    Subset latin: U+0000-00FF cubre el español (no hace falta latin-ext).
    Las woff2 viven en resources/fonts/.
@@ -91,20 +92,32 @@
 	unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
-/* — Source Serif 4 — serif del cuerpo (alterna desde el menú), citas y
-   poemas. VARIABLE: eje wght 200–900, un único woff2 por estilo cubre
-   todos los pesos. Subset latin, build de Google Fonts (gstatic). — */
+/* — Roboto Serif — serif del cuerpo (alterna desde el menú), citas y
+   poemas. VARIABLE de CUATRO ejes en un único woff2 por estilo:
+     · wght 100–900  → font-weight (peso)
+     · wdth 75–100   → font-stretch (ancho; MISMO rango que IBM Plex Sans,
+                       así el cuerpo serif condensa igual que el sans con
+                       --sn-text-width)
+     · opsz 8–60     → font-optical-sizing: auto (tamaño óptico)
+     · GRAD −50–100  → font-variation-settings "GRAD" (grado; lo conduce el
+                       token --sn-serif-grade, que sube en modo oscuro)
+   Subset latin, TTF variable de Google Fonts (OFL) instanciado a estos
+   rangos con fonttools: opsz y wdth se recortaron de 8–144 / 50–150 a 8–60
+   / 75–100 para no cargar los masters de despliegue ni los anchos extremos
+   que el skin nunca usa (de ~1.6 MB a ~0.9 MB la familia). — */
 @font-face {
-	font-family: 'Source Serif 4';
+	font-family: 'Roboto Serif';
 	font-style: normal;
-	font-weight: 200 900;
+	font-weight: 100 900;
+	font-stretch: 75% 100%;
 	font-display: swap;
-	src: url('fonts/sourceserif4-latin-wght-normal.woff2') format('woff2');
+	src: url('fonts/robotoserif-latin-wghtwdthgrad-normal.woff2') format('woff2');
 }
 @font-face {
-	font-family: 'Source Serif 4';
+	font-family: 'Roboto Serif';
 	font-style: italic;
-	font-weight: 200 900;
+	font-weight: 100 900;
+	font-stretch: 75% 100%;
 	font-display: swap;
-	src: url('fonts/sourceserif4-latin-wght-italic.woff2') format('woff2');
+	src: url('fonts/robotoserif-latin-wghtwdthgrad-italic.woff2') format('woff2');
 }

@@ -5,7 +5,7 @@
 -- ALCANCE. Allium describe comportamiento observable, no presentación.
 -- Por eso este spec NO modela (y deliberadamente lo deja a ARCHITECTURE.md /
 -- tokens.css / CSS):
---   · tipografía (IBM Plex Sans + Source Serif 4 + IBM Plex Mono): cargar vs.
+--   · tipografía (IBM Plex Sans + Roboto Serif + IBM Plex Mono): cargar vs.
 --     clonar es decisión de empaquetado. La preferencia "family" (sans|serif)
 --     que alterna cuerpo↔citas SÍ se modela abajo en SkinPreferences,
 --   · feather icons, la metáfora "página de papel", fondo gris ahuesado,
@@ -38,7 +38,7 @@
 --      TocMode y CollapsibleSections —eran preferencias-stub sin realización
 --      en CSS— y ReducedMotion como toggle de usuario) → 3 (2026-06-03: entra
 --      family — sans|serif — para alternar la familia del cuerpo entre IBM
---      Plex Sans y Source Serif 4; al elegir serif, citas/<poem> voltean a
+--      Plex Sans y Roboto Serif; al elegir serif, citas/<poem> voltean a
 --      sans para preservar el contraste editorial). El panel aparte de
 --      preferencias se eliminó: las tres cuelgan ahora del menú de usuario
 --      (ver UserTools.HostsReadingPreferences). La señal del SO de
@@ -285,7 +285,7 @@ enum FontSize { small | medium | large }
 
 -- Familia tipográfica del cuerpo (decisión editorial del lector).
 -- `sans` = IBM Plex Sans (default; citas y <poem> en serif por contraste).
--- `serif` = Source Serif 4 en cuerpo + UI + cabeceras; citas y <poem>
+-- `serif` = Roboto Serif en cuerpo + UI + cabeceras; citas y <poem>
 -- voltean a sans para preservar el contraste editorial. La realización
 -- vive en los alias --sn-font-text / --sn-font-quote (tokens.css).
 enum FontFamily { sans | serif }

@@ -43,10 +43,10 @@ ver los cambios al instante:
 ## Tipografía
 
 **IBM Plex Sans** (sans del cuerpo · UI · todas las cabeceras h1–h6;
-**variable**, dos ejes wght 100–700 + wdth 75–100) · **Source Serif 4**
+**variable**, dos ejes wght 100–700 + wdth 75–100) · **Roboto Serif**
 (serif del cuerpo cuando el lector la elige desde el menú, citas y
-`<poem>` por defecto; **variable**, eje wght 200–900) · **IBM Plex
-Mono** (código).
+`<poem>` por defecto; **variable**, cuatro ejes wght 100–900 + wdth
+75–100 + opsz 8–60 + GRAD −50–100) · **IBM Plex Mono** (código).
 
 Todas auto-alojadas (sin CDN en runtime): `@font-face` en
 [`resources/fonts.css`](../resources/fonts.css), archivos `woff2` en
@@ -59,7 +59,7 @@ consume el resto del skin, y que el menú del usuario invierte para
 alternar la familia del cuerpo entre sans y serif).
 
 - `--sn-font-sans` (primitiva) — IBM Plex Sans.
-- `--sn-font-serif` (primitiva) — Source Serif 4.
+- `--sn-font-serif` (primitiva) — Roboto Serif.
 - `--sn-font-mono` (primitiva) — IBM Plex Mono.
 - `--sn-font-text` = `var(--sn-font-sans)` por defecto. Cambia a
   `var(--sn-font-serif)` cuando `data-sn-family="serif"`. Lo consumen el
@@ -70,7 +70,18 @@ alternar la familia del cuerpo entre sans y serif).
 - `--sn-font-quote` = `var(--sn-font-serif)` por defecto. Cambia a
   `var(--sn-font-sans)` cuando `data-sn-family="serif"`. Lo consumen
   `<blockquote>` y `.poem` para mantener el contraste editorial frente
-  al cuerpo.
+  al cuerpo (siempre a ancho natural, `font-stretch: 100%`).
+- `--sn-serif-grade` (eje GRAD de Roboto Serif) — engrosa el trazo de la
+  serif sin mover la caja del texto. Aplicado a toda la cascada vía
+  `font-variation-settings: "GRAD"` en `:root` (sans/mono ignoran el eje).
+  `0` en claro; `30` en oscuro para compensar el aclaramiento óptico del
+  texto claro sobre fondo negro.
+
+**Ancho del cuerpo (`--sn-text-width`, default 80%).** Las dos familias de
+texto declaran el mismo rango `wdth 75–100`, así que el cuerpo condensa por
+igual elija el lector sans o serif. Las cabeceras y las citas/`<poem>` se
+resetean a `100%` (la condensada es solo del cuerpo corrido). Mono no tiene
+eje de ancho → lo ignora.
 
 El alternador (botón "Aa / Aa" con specimens en cada familia) vive en
 el menú del usuario junto al tema y al tamaño de letra; persiste como

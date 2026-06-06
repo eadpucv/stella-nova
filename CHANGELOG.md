@@ -9,6 +9,35 @@ ajustes editoriales. La fuente de verdad del comportamiento es
 [`specs/stella-nova.allium`](specs/stella-nova.allium); cada entrada que toque
 comportamiento debería reflejarse también ahí.
 
+## [0.2.4] — 2026-06-06
+
+### Changed
+- **Serif del skin: Source Serif 4 → Roboto Serif** (cambio global; se
+  regeneró todo, incluido el especimen). Roboto Serif es **variable de
+  cuatro ejes**: peso `wght 100–900`, ancho `wdth 75–100`, óptico
+  `opsz 8–60` y grado `GRAD −50–100`. La woff2 se construyó desde el TTF
+  OFL de Google Fonts con `fonttools`, subset latin (U+0000-00FF), e
+  **instanciando** `opsz`/`wdth` de sus rangos completos (8–144 / 50–150)
+  a los que el skin realmente usa, para no cargar masters de despliegue ni
+  anchos extremos (la familia bajó de ~1.6 MB a ~0.9 MB). Normal e itálica
+  reales. Archivos `robotoserif-latin-wghtwdthgrad-{normal,italic}.woff2`;
+  se retiraron los `sourceserif4-latin-wght-*.woff2`.
+- **El cuerpo serif ahora condensa con el sans.** A diferencia de Source
+  Serif 4 (sin eje de ancho), Roboto Serif declara `wdth 75–100` —el mismo
+  rango que IBM Plex Sans—, así que `--sn-text-width` (default 80%) aplica
+  por igual elija el lector sans o serif. Las citas y `<poem>` se resetean
+  a `font-stretch: 100%` para leer el contraste a ancho natural en ambos
+  modos.
+
+### Added
+- **Token `--sn-serif-grade` (eje GRAD de Roboto Serif).** Engrosa el trazo
+  de la serif sin mover la caja del texto. Aplicado a toda la cascada vía
+  `font-variation-settings: "GRAD"` en `:root` (sans y mono ignoran el eje
+  inexistente). `0` en tema claro; **`30` en oscuro** para compensar el
+  aclaramiento óptico del texto claro sobre fondo negro (quinto token
+  no-color que varía por tema, junto a `--sn-field-grain` y los tres
+  `--sn-lift*`).
+
 ## [0.2.3] — 2026-06-03
 
 ### Changed
