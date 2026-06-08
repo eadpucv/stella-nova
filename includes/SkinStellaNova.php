@@ -180,6 +180,12 @@ class SkinStellaNova extends SkinMustache {
 		$fullscreen = (bool)$out->getProperty( 'stellanova-fullscreen' );
 		$data['is-sn-fullscreen'] = $fullscreen;
 
+		// — NoTitle: __PANTALLACOMPLETA__ ya NO implica ocultar el título; el
+		// título se omite SOLO si la página declaró __NOTITLE__. La plantilla
+		// de fullscreen usa esta bandera (en modo normal lo oculta el CSS de
+		// la extensión NoTitle dentro de .mw-body). —
+		$data['sn-notitle'] = (bool)$out->getProperty( 'stellanova-notitle' );
+
 		// — UserTools: identidad tri-estado (spec UserIdentity) —
 		$isNamed = method_exists( $user, 'isNamed' ) ? $user->isNamed() : $user->isRegistered();
 		$isTemp = method_exists( $user, 'isTemp' ) && $user->isTemp();
@@ -252,11 +258,12 @@ class SkinStellaNova extends SkinMustache {
 				try {
 					$forms = \PFFormLinker::getDefaultFormsForPage( $title );
 					if ( is_array( $forms ) && $forms !== [] ) {
-						$fe = \SpecialPage::getTitleFor(
-							'FormEdit',
-							(string)$forms[0] . '/' . $title->getPrefixedText()
-						);
-						$formHref = $fe->getLocalURL();
+						// IN-PAGE: la acción `formedit` de PageForms sobre el PROPIO
+							// artículo (no Especial:FormEdit). Así el lápiz edita con
+							// formulario SIN salir del contexto de la página → el menú
+							// "Página" conserva todas sus opciones (espacios, historial,
+							// "Editar código", etc.); la página especial las perdía.
+							$formHref = $title->getLocalURL( [ 'action' => 'formedit' ] );
 					}
 				} catch ( \Throwable $e ) {
 					// Defensivo: una API de PF distinta no rompe el render.
@@ -326,6 +333,21 @@ class SkinStellaNova extends SkinMustache {
 					$html = $this->msg( 'lastmodifiedat', $d, $t )->escaped();
 				}
 				$data['sn-lastedit'] = [ 'html' => $html ];
+			}
+		}
+
+		// — Licencia de la wiki (copyright) —
+		// El grupo `data-info` del footer de core trae el item
+		// 'footer-info-copyright' (presente solo si la página existe y
+		// $wgRights* está configurado; respeta $wgRightsText/$wgRightsUrl). Se
+		// extrae para mostrarlo al pie, a continuación de los enlaces de sitio,
+		// SIN la fecha de última modificación (que el skin ya emite aparte como
+		// sn-lastedit). Si no hay licencia configurada → null → no se pinta.
+		$data['sn-license'] = null;
+		foreach ( $data['data-footer']['data-info']['array-items'] ?? [] as $item ) {
+			if ( ( $item['id'] ?? '' ) === 'footer-info-copyright' && !empty( $item['html'] ) ) {
+				$data['sn-license'] = [ 'html' => $item['html'] ];
+				break;
 			}
 		}
 

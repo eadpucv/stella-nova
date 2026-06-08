@@ -259,7 +259,7 @@
 	   cuerpo+UI cuando el lector alterna a familia serif. Default 0; sube en
 	   modo oscuro para compensar el aclaramiento óptico del texto claro sobre
 	   fondo negro (los overrides de tema más abajo). */
-	--sn-serif-grade: 0;
+	--sn-serif-grade: 70;
 	font-variation-settings: "GRAD" var(--sn-serif-grade);
 
 	/* Ancho del cuerpo (eje wdth, vía font-stretch). 100% = normal, 75% = lo
@@ -267,11 +267,22 @@
 	   (sans) y Roboto Serif (serif) declaran el MISMO rango wdth 75–100, así
 	   el cuerpo condensa por igual elija el lector la familia que elija.
 	   Aplica a párrafos, listas y tablas (el cuerpo de .sn-body); las
-	   CABECERAS y las citas/poemas se resetean a 100% aparte (doctrina:
-	   condensada solo en el cuerpo corrido, no en titulares ni contraste).
-	   Mono no tiene eje de ancho → font-stretch lo ignora sin daño. Sube a
-	   100% para desactivar la condensación; baja hacia 75% para más densidad. */
+	   CABECERAS y las CITAS se resetean a 100% aparte (doctrina: condensada
+	   solo en el cuerpo corrido, no en titulares ni cita). El VERSO tiene su
+	   propio ancho (--sn-poem-width, abajo). Mono no tiene eje de ancho →
+	   font-stretch lo ignora sin daño. Sube a 100% para desactivar la
+	   condensación; baja hacia 75% para más densidad. */
 	--sn-text-width: 80%;
+
+	/* Verso (<poem>): tratamiento editorial propio, distinto del cuerpo y de
+	   la cita. Más condensado que el cuerpo (la métrica del verso pide una
+	   columna estrecha), algo menor y de peso medio para diferenciar su voz.
+	   El tamaño es % del cuerpo → hereda la preferencia FontSize del lector;
+	   el peso es literal (el skin no tokeniza pesos, salvo este caso de voz
+	   editorial). */
+	--sn-poem-width:  77%;
+	--sn-poem-size:   85%;
+	--sn-poem-weight: 500;
 
 	/* Escala fluida sobria (sin titulares exagerados). --sn-font-scale lo
 	   modula la preferencia tamaño-de-fuente. --sn-leading es FIJO (no es
@@ -556,6 +567,20 @@
 :root[data-sn-family="serif"] {
 	--sn-font-text:  var(--sn-font-serif);
 	--sn-font-quote: var(--sn-font-sans);
+	/* Normaliza el TAMAÑO aparente de la serif al de la sans. Con
+	   `font-optical-sizing: auto`, a tamaño de cuerpo el eje opsz de Roboto
+	   Serif baja y su x-height REAL sube (≈0.53–0.56) → "crece" frente a IBM
+	   Plex Sans (x-height ≈0.516). `font-size-adjust` fuerza la x-height
+	   RENDERIZADA al objetivo de la sans, conservando el trazo óptico. Solo
+	   en modo serif (el modo sans por defecto queda intacto). El valor es la
+	   relación x-height/em de IBM Plex Sans; ajústalo para afinar. */
+	--sn-serif-size-adjust: 0.516;
+	font-size-adjust: var(--sn-serif-size-adjust);
+}
+/* El monoespaciado (IBM Plex Mono) conserva su propio tamaño en modo serif:
+   no se normaliza a la x-height de la sans. */
+:root[data-sn-family="serif"] :is(code, pre, kbd, samp, tt, .mw-code) {
+	font-size-adjust: none;
 }
 
 /* ── Movimiento: sólo la señal del SO (ya no es preferencia del usuario;

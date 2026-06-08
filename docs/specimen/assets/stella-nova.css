@@ -780,9 +780,10 @@ html[data-sn-notice-hide] .sn-notice { display: none; }
    alterna familia desde el menú). El <poem> de la extensión Poem se
    renderiza como .poem dentro de mw-parser-output. Line-height y márgenes en
    baselines: el ritmo se mantiene aunque el cuerpo cambie.
-   font-stretch: 100% — el contraste se lee a ancho NATURAL en ambos modos
-   (Roboto Serif y Plex Sans tienen eje wdth y heredarían la condensada del
-   cuerpo si no se reseteara aquí; el contraste no debe condensarse). */
+   La CITA se lee a ancho NATURAL (font-stretch: 100%): tanto Roboto Serif
+   como Plex Sans tienen eje wdth y heredarían la condensada del cuerpo si no
+   se reseteara aquí; la cita no debe condensarse. El VERSO, en cambio, tiene
+   su propio tratamiento (ver .poem más abajo). */
 .sn-body blockquote {
 	margin: var(--sn-baseline) 0;
 	padding: 0 0 0 var(--sn-s-5);
@@ -792,10 +793,15 @@ html[data-sn-notice-hide] .sn-notice { display: none; }
 	color: var(--sn-ink-soft); line-height: var(--sn-baseline);
 }
 .sn-body blockquote p:last-child { margin-bottom: 0; }
+/* Verso: voz editorial propia (tokens --sn-poem-*): columna más estrecha que
+   el cuerpo (font-stretch condensado), tamaño algo menor —% del cuerpo, así
+   respeta la preferencia FontSize— y peso medio. line-height sigue en el
+   baseline para no romper el ritmo pese al tamaño menor. */
 .sn-body .poem {
 	font-family: var(--sn-font-quote); font-optical-sizing: auto;
-	font-stretch: 100%;
-	font-size: var(--sn-fs-md); line-height: var(--sn-baseline);
+	font-stretch: var(--sn-poem-width);
+	font-weight: var(--sn-poem-weight);
+	font-size: var(--sn-poem-size); line-height: var(--sn-baseline);
 	color: var(--sn-ink);
 	white-space: pre-wrap;
 }

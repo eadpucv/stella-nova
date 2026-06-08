@@ -7,32 +7,78 @@
 
 .pfForm, .pf-form-wrapper { font-size: var(--sn-fs-base); max-width: 100%; }
 
-/* La rejilla del formulario: respeta su tabla, suaviza el ritmo */
-.formtable, table.formtable {
+/* La rejilla del formulario: respeta su tabla, suaviza el ritmo.
+   `table-layout: fixed` es CLAVE: con `auto` un campo ancho (un input con
+   `size=35` o un token con `width:600px` inline) estira su columna más allá
+   del 100% y arrastra toda la tabla fuera de la página. Con `fixed` las
+   columnas respetan el ancho de la tabla y los campos (con max-width:100%)
+   se acotan a su celda. */
+.skin-stellanova .formtable, .skin-stellanova table.formtable {
 	border-collapse: separate; border-spacing: 0 var(--sn-s-3);
 	width: 100%;
+	table-layout: fixed;
 }
-.formtable > tbody > tr > td:first-child,
-.formtable th {
+/* Etiqueta = <th> (o 1ª celda). Alineada a la derecha y más chica. El prefijo
+   `.skin-stellanova` sube la especificidad por encima de la regla propia de
+   PageForms `.formtable th { text-align: left }` (misma especificidad → ganaba
+   por orden de cascada). */
+.skin-stellanova .formtable > tbody > tr > td:first-child,
+.skin-stellanova .formtable th {
+	width: 28%;                        /* columna de etiqueta (table-layout: fixed) */
 	vertical-align: top; padding-right: var(--sn-s-4);
-	font-weight: 600; color: var(--sn-ink); white-space: normal;
+	text-align: right;                 /* etiqueta alineada hacia el campo */
+	font-weight: 600; font-size: var(--sn-fs-xs);
+	color: var(--sn-ink); white-space: normal;
 }
 .formtable td { padding-block: var(--sn-s-1); }
+/* Checkboxes / radios — PageForms emite
+   `<label class="checkboxLabel"><input>&nbsp;Texto</label>` (radios: análogo).
+   Etiqueta más chica (--sn-fs-xs), AIRE entre la casilla y el texto (el `&nbsp;`
+   solo no basta) y separación entre opciones. */
+.skin-stellanova :is(.checkboxLabel, .radioButtonItem),
+.pfForm label:has(> input:is([type="checkbox"], [type="radio"])) {
+	display: inline-block;
+	margin-inline-end: var(--sn-s-4);
+	font-size: var(--sn-fs-xs);
+	line-height: var(--sn-baseline);
+	color: var(--sn-ink);
+}
+/* El "aire" va a la casilla VISIBLE (hijo directo del label): el span del
+   widget OOUI, o el <input> pelado si no hay OOUI. */
+.skin-stellanova :is(.checkboxLabel, .radioButtonItem)
+	> :is(input, .oo-ui-checkboxInputWidget, .oo-ui-radioInputWidget),
+.pfForm label:has(> input:is([type="checkbox"], [type="radio"])) > input {
+	margin-inline-end: var(--sn-s-2);
+}
 
-/* Campos: misma materia que la búsqueda y los selects del panel */
+/* Campos: misma materia que la búsqueda y los selects del panel. `box-sizing:
+   border-box` evita que el padding cause desbordes; `max-width: 100%` acota
+   cualquier campo a su columna (incluido el width inline de los tokens). */
 .pfForm :is(input[type="text"], input[type="number"], input[type="search"],
 	input[type="url"], input[type="email"], input[type="date"], textarea, select),
 .pf-form-wrapper :is(input[type="text"], textarea, select),
 input.createboxInput, .formInput input, textarea.createboxInput {
+	box-sizing: border-box;
 	font: inherit; color: var(--sn-ink);
 	background: var(--sn-paper);
 	border: 1px solid var(--sn-hairline);
 	border-radius: var(--sn-radius);
-	padding: .5rem var(--sn-s-3);
+	padding: .45rem var(--sn-s-3);
 	max-width: 100%;
+	vertical-align: middle;
 }
 .pfForm textarea, textarea.createboxInput { width: 100%;
 	line-height: var(--sn-leading); }
+/* Altura UNIFORME para los controles de una sola línea (textarea y tokens
+   multilínea conservan su propio alto). */
+.pfForm :is(input[type="text"], input[type="number"], input[type="search"],
+	input[type="url"], input[type="email"], input[type="date"], select):not([multiple]),
+.pfForm input.createboxInput:not([type="checkbox"]):not([type="radio"]):not([multiple]) {
+	min-height: var(--sn-ctl);
+}
+/* Widgets de tokens (select2) y selects múltiples: acotados al contenedor pese
+   al width inline (p. ej. 600px) → nunca rebasan el ancho de la página. */
+.pfForm :is(.select2-container, .pfTokens, select[multiple]) { max-width: 100%; }
 .pfForm :is(input, textarea, select):focus {
 	outline: none; border-color: var(--sn-nova);
 	box-shadow: 0 0 0 3px var(--sn-nova-wash);

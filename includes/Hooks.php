@@ -115,6 +115,16 @@ class Hooks {
 		if ( $prop !== null && $prop !== false ) {
 			$out->setProperty( 'stellanova-fullscreen', true );
 		}
+		// __NOTITLE__ (extensión NoTitle) es INDEPENDIENTE de pantalla
+		// completa: se lee aquí para que la plantilla pueda omitir el título
+		// también en el canvas. (NoTitle solo oculta vía CSS dentro de
+		// `.mw-body`, ausente en fullscreen → lo resolvemos en el skin.)
+		$notitle = method_exists( $pOut, 'getPageProperty' )
+			? $pOut->getPageProperty( 'notitle' )
+			: $pOut->getProperty( 'notitle' );
+		if ( $notitle !== null && $notitle !== false ) {
+			$out->setProperty( 'stellanova-notitle', true );
+		}
 	}
 
 	/**

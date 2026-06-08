@@ -9,6 +9,113 @@ ajustes editoriales. La fuente de verdad del comportamiento es
 [`specs/stella-nova.allium`](specs/stella-nova.allium); cada entrada que toque
 comportamiento debería reflejarse también ahí.
 
+## [0.2.5] — 2026-06-06
+
+### Added
+- **Pie en pantalla completa (`__PANTALLACOMPLETA__`).** Antes el modo
+  canvas no tenía pie; ahora lleva uno sobre el mismo papel, al ancho de
+  lectura (`--sn-measure`), en una sola columna a todo el ancho (sin columna
+  derecha ni "última edición"). Herramientas en un `<details>` discreto
+  rotulado «Herramientas» (mensaje nuevo `stellanova-tools`), luego enlaces
+  de sitio y licencia.
+- **Licencia de la wiki en el pie.** Tras los enlaces de sitio
+  (`.sn-foot-places`) se muestra el copyright de MediaWiki (item
+  `footer-info-copyright` del grupo `data-info`, que respeta `$wgRights*`),
+  expuesto como `sn-license` en `getTemplateData()` y renderizado como
+  `<p class="sn-foot-license">`. Sin la fecha de última modificación (el
+  skin ya la emite aparte como `sn-lastedit`). Si no hay licencia
+  configurada, la sección no se pinta.
+
+### Changed
+- **Formularios (PageForms) armonizados.** Las etiquetas `<th>` van a la
+  derecha y a `--sn-fs-xs` — con prefijo `.skin-stellanova` para ganarle a la
+  regla propia de PageForms `.formtable th { text-align: left }` (misma
+  especificidad, ganaba por orden). Los checkboxes/radios (`.checkboxLabel`,
+  envueltos en widget OOUI): etiqueta a `--sn-fs-xs`, AIRE entre la casilla y
+  el texto (el `&nbsp;` solo no bastaba) y separación entre opciones. Los
+  campos: `box-sizing: border-box`, alto uniforme (`min-height: --sn-ctl`) en
+  los de una línea, y `max-width: 100%` en todo. La causa de los desbordes
+  era `table-layout: auto`: un input con `size=100`/`size=35` o un token con
+  `width:600px` inline estiraba su columna más allá del 100% y arrastraba la
+  tabla fuera de la página; se fija con `table-layout: fixed` + columna de
+  etiqueta al 28%, de modo que cada campo se acota a su celda.
+- **Editar con formulario sin perder el menú de página.** El lápiz de
+  edición con formulario (PageForms) ahora enlaza a la acción `formedit`
+  sobre el PROPIO artículo (`?action=formedit`) en vez de a
+  `Especial:FormEdit/<form>/<page>`. La página especial es otro título y
+  perdía las pestañas del artículo (espacios, historial, "Editar código"…);
+  la acción in-page conserva el contexto completo del artículo, incluido
+  "Editar código" en el menú `.sn-pagemenu`.
+- **`__PANTALLACOMPLETA__` ya no implica ocultar el título.** Antes la rama
+  de pantalla completa nunca renderizaba el título; ahora lo muestra salvo
+  que la página declare además `__NOTITLE__` (control explícito, más limpio).
+  El skin lee la page-prop `notitle` (`Hooks::onOutputPageParserOutput` →
+  `stellanova-notitle` → dato `sn-notitle`) y la plantilla omite el título
+  solo en ese caso; así un hero `.full-width` con `__NOTITLE__` sigue siendo
+  el primer hijo y conserva su bleed a tope. El estilo de `firstHeading` se
+  extiende a `.sn-canvas`. La sección Usuario del menú de pantalla completa
+  incorpora los controles de lectura (Tema · Tamaño · Familia).
+- **Pantalla completa: isotipo sobrepuesto y menú traslúcido.** El isotipo
+  (única afordancia) ya no vive en una "barra fantasma": su riel
+  (`.sn-fs-md`) es ahora un contenedor fijo, full-width, `pointer-events:
+  none`, alineado a la columna de lectura, que deja el glifo SOBREPUESTO y
+  EN FRENTE del contenido (un hero `.full-width` queda a tope arriba y a los
+  lados, con el glifo encima, un poco más abajo del borde). El glifo
+  conserva su tamaño (2.5rem) y gana un "cuño seco" (`drop-shadow` blanca
+  dura 1px). El menú desplegado pasa a traslúcido con `blur`+`saturate`
+  (mismo lenguaje que la barra superior); el buscador del modal usa el mismo
+  input tipo pill que la barra y las pills van un punto más chicas.
+- **Categorías del pie redistinguidas por estado.** La que existe: fondo
+  igual al campo fuera de la hoja (`--sn-field`) y texto en color de enlace
+  (`--sn-link`). La que no existe (redlink `a.new`): fondo muy pálido casi
+  blanco (`color-mix(--sn-ink 5%, --sn-paper)`) y texto gris claro
+  (`--sn-ink-faint`).
+- **La skin es dueña del estilo de TODAS las tablas.** Sistema unificado
+  para tablas regulares (`wikitable`) y de resultados semánticos
+  (`smwtable`/`broadtable`): sin contorno exterior, solo filetes
+  horizontales — filete normal (`--sn-hairline`) bajo las cabeceras y
+  filetes muy finos (`--sn-hairline-soft`) entre filas, nunca verticales;
+  texto al 80% del cuerpo y alineación a la izquierda en celdas y
+  cabeceras. El estilo visual de las tablas SMW se centraliza en
+  `stella-nova.css`; `skinStyles/smw.css` conserva solo el desbordamiento
+  por contenedor. La ficha vertical `table.plantilla` se porta desde
+  `MediaWiki:Common.css` a la skin (etiqueta a la derecha, versalita
+  tenue, sin filetes).
+- **Cabeceras ordenables con íconos Feather y hover.** Se reemplaza el
+  cromo de flechas de `jquery.tablesorter` (SVG `sort_*.svg` del core, con
+  variantes invertidas para oscuro) por chevrons Feather pintados como
+  `mask` + `background-color` tokenizado — se adaptan solos a claro/oscuro.
+  Estado neutro = doble chevron tenue (afford. de ordenable); activo =
+  chevron arriba (ascendente) / abajo (descendente) a tinta plena. Las
+  `th.headerSort` ganan estado `:hover`.
+- **Tablas alineadas al baseline grid.** El `line-height` de celda pasa de
+  `1.65` unitless (que con el font al 80% daba `0.8 × baseline` por línea,
+  fuera de retícula) a `--sn-baseline` absoluto: cada línea de celda ocupa
+  un baseline y toda fila —de una o varias líneas— cae en la grilla. El
+  padding vertical se anula (el aire lo da el medio-interlineado del
+  baseline) y los filetes pasan de `border` a `box-shadow inset` para que
+  el 1px no ocupe layout ni desplace la retícula fila a fila. Margen de
+  bloque de la tabla = `--sn-baseline-2`. Alto mínimo de celda = 1
+  baseline.
+- **Verso (`<poem>`) con voz editorial propia.** Deja de compartir el
+  tratamiento de la cita: ahora usa columna más estrecha que el cuerpo
+  (`--sn-poem-width: 77%` vía `font-stretch`), tamaño algo menor
+  (`--sn-poem-size: 85%`, % del cuerpo → respeta la preferencia FontSize) y
+  peso medio (`--sn-poem-weight: 500`). `line-height` sigue en el baseline
+  para no romper el ritmo. La cita (`<blockquote>`) se mantiene a ancho
+  natural. Tres tokens nuevos `--sn-poem-*` agrupan el ajuste.
+- **Chrome sin filetes (doctrina "sin reglas horizontales").** Se eliminan
+  las tres líneas finas horizontales que el skin dibujaba de forma
+  automática en cada página: el `border-bottom` de la barra superior
+  (`.sn-header` — ahora se separa del cuerpo solo por el fondo translúcido +
+  `blur`), el `border-top` sobre la sección de categorías (`.catlinks` — la
+  separación la da el aire `margin-top`/`padding-top`) y el `border-top` del
+  pie (`.sn-footer` — se distingue por su fondo y `margin-top`). Las
+  cabeceras de sección (`== ==`) y el título de página ya estaban libres de
+  filete (reset de `.sn-body`/chrome sobre el `1px solid #aaa` del core); se
+  conservan los separadores funcionales internos de los overlays (cabecera
+  del modal de menú y barra de búsqueda a pantalla completa).
+
 ## [0.2.4] — 2026-06-06
 
 ### Changed

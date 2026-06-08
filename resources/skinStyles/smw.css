@@ -46,29 +46,16 @@
 .smwrdflink, .smw-factbox-facts-derived { padding: var(--sn-s-2) var(--sn-s-4);
 	font-size: var(--sn-fs-xs); color: var(--sn-ink-faint); }
 
-/* ── Tablas SMW / resultados #ask: overflow por contenedor ── */
-.sn-body :is(table.smwtable, table.broadtable, table.wikitable.sortable, .smw-table) {
-	border-collapse: collapse;
-	font-size: var(--sn-fs-sm);
-	max-width: 100%;
-}
-/* Desbordamiento: contenedores SMW conocidos hacen scroll, sin recorte. */
+/* ── Tablas de resultados #ask ──────────────────────────────────────
+   El ESTILO VISUAL de las tablas de resultados (smwtable/broadtable) lo
+   define la skin de forma unificada con las wikitable regulares en
+   stella-nova.css (sin contorno, filetes horizontales, 80%, izquierda).
+   Aquí solo queda el desbordamiento por contenedor: scroll en X sin
+   recortar contenido. */
 .sn-body :is(.smw-table, .smw-datatable, .datatables-wrapper, .smw-format.table-format) {
 	display: block; max-width: 100%; overflow-x: auto;
 	-webkit-overflow-scrolling: touch;
 }
-.sn-body :is(table.smwtable, table.broadtable) :is(th, td) {
-	padding: var(--sn-s-2) var(--sn-s-3);
-	border-bottom: 1px solid var(--sn-hairline-soft);
-	text-align: left; vertical-align: top;
-}
-.sn-body :is(table.smwtable, table.broadtable) thead th,
-.sn-body :is(table.smwtable, table.broadtable) th.smwtableheader {
-	background: var(--sn-sunk); color: var(--sn-ink);
-	font-weight: 600; border-bottom: 1px solid var(--sn-hairline);
-	position: sticky; top: 0;
-}
-.sn-body table.smwtable tr:hover td { background: color-mix(in oklab, var(--sn-nova-wash) 55%, transparent); }
 
 /* Listas de columnas (#ask format=ul/ol con columnas) */
 .smw-columnlist-container { column-gap: var(--sn-s-6); }
