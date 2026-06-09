@@ -336,9 +336,6 @@ a.new, a[href].new { color: var(--sn-link-new); }
 
 /* Página: grupos (espacios · vistas · acciones · variantes) con filete */
 .sn-mm-grp { padding: var(--sn-s-1) 0; }
-.sn-mm-grp + .sn-mm-grp {
-	border-top: 1px solid var(--sn-hairline-soft); margin-top: var(--sn-s-1);
-}
 
 /* Navegación: megamenú en secciones, varias columnas si caben */
 .sn-megamenu {
