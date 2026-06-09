@@ -246,6 +246,16 @@ contract TransientPanel {
         -- requiere ni dispara scroll de la página subyacente. Garantiza
         -- que ningún ítem del panel quede inalcanzable en pantallas
         -- pequeñas.
+
+    @guidance
+        -- La realización debe presentar el panel DENTRO del viewport activo,
+        -- sea cual sea la posición de scroll de la página: un panel anclado
+        -- fuera de pantalla viola en la práctica SelfContainedScroll y
+        -- FocusContained (no se opera lo que no se ve). Documentado a raíz de
+        -- un fallo de realización corregido en 0.2.9: un ancestro que crea
+        -- bloque contenedor (backdrop-filter) anclaba el panel `fixed` al
+        -- origen del header sticky, fuera del viewport y con la página
+        -- bloqueada. Realización, no nuevo invariante.
 }
 
 ------------------------------------------------------------
@@ -389,7 +399,7 @@ entity PageRender {
 ------------------------------------------------------------
 
 config {
-    skin_version: String = "0.2.0"      -- debe coincidir con skin.json
+    skin_version: String = "0.2.9"      -- debe coincidir con skin.json
     chrome_namespace: String = "Stella-Nova"
     interface_editor_group: String = "editores-de-interfaz"
 }
