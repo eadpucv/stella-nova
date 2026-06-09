@@ -439,17 +439,25 @@
 		sitio (Escuela/Wiki/Navegación) vive en su menú del header, no aquí. }}
 	<footer class="sn-footer" role="contentinfo">
 		<div class="sn-footer-inner">
-			{{!	Columna ancha — última edición + herramientas inline + enlaces de sitio. }}
+			{{!	Columna ancha — última edición + herramientas (colapsables) + enlaces de sitio. }}
 			<div class="sn-footer-col sn-footer-main">
 				{{#sn-lastedit}}<p class="sn-foot-lastedit">{{{html}}}</p>{{/sn-lastedit}}
 
-				{{#sn-toolbox}}{{^is-empty}}
-				<nav class="sn-foot-tools" aria-label="{{label}}">
-					<ul class="sn-foot-toollist">{{{html-items}}}</ul>
-				</nav>
-				{{/is-empty}}{{/sn-toolbox}}
+				{{!	Herramientas — disclosure NATIVO (<details>, sin JS) al comienzo de
+					la línea de enlaces de sitio y con su mismo aspecto. Al abrir, la
+					lista se despliega ARRIBA, en su sitio de siempre (la columna es
+					column-reverse). Mismo patrón que el pie de pantalla completa, así
+					funciona en TODA página sin depender de JavaScript. }}
+				<div class="sn-foot-line">
+					{{#sn-toolbox}}{{^is-empty}}
+					<details class="sn-foot-tools-dd">
+						<summary class="sn-foot-tools-summary">{{msg-stellanova-tools}}</summary>
+						<ul class="sn-foot-toollist">{{{html-items}}}</ul>
+					</details>
+					{{/is-empty}}{{/sn-toolbox}}
 
-				{{#data-footer}}{{#data-places}}<ul class="sn-foot-places" id="{{id}}">{{#array-items}}<li id="{{id}}">{{{html}}}</li>{{/array-items}}</ul>{{/data-places}}{{/data-footer}}
+					{{#data-footer}}{{#data-places}}<ul class="sn-foot-places" id="{{id}}">{{#array-items}}<li id="{{id}}">{{{html}}}</li>{{/array-items}}</ul>{{/data-places}}{{/data-footer}}
+				</div>
 
 				{{!	Licencia de la wiki (copyright de core, $wgRights*), tras los enlaces de sitio. }}
 				{{#sn-license}}<p class="sn-foot-license">{{{html}}}</p>{{/sn-license}}

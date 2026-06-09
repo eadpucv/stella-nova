@@ -1232,6 +1232,9 @@ canvas, iframe,
 .sn-foot-toollist {
 	list-style: none; margin: 0; padding: 0;
 	display: flex; flex-wrap: wrap; gap: var(--sn-s-1) var(--sn-s-4);
+	/* Mismo tamaño que los enlaces de sitio (.sn-foot-places), no el del
+	   cuerpo del pie: los dos grupos de enlaces leen igual. */
+	font-size: calc(var(--sn-fs-sm) * .8);
 }
 .sn-foot-toollist li { margin: 0; list-style: none; }
 .sn-foot-toollist li a {
@@ -1254,6 +1257,22 @@ canvas, iframe,
 .sn-foot-places li { margin: 0; }
 .sn-foot-places a { color: var(--sn-ink-soft); text-decoration: none; }
 .sn-foot-places a:hover { color: var(--sn-nova); }
+
+/* "Herramientas" en el pie normal — disclosure NATIVO (<details>, sin JS),
+   al comienzo de la línea de enlaces de sitio y con el mismo aspecto que
+   esos enlaces (lo da el genérico .sn-foot-tools-summary, más abajo). A
+   diferencia del pie de pantalla completa (que despliega hacia ABAJO), aquí
+   la lista crece hacia ARRIBA, a su sitio de siempre sobre la línea: la
+   columna del <details> es column-reverse → el summary queda abajo (en la
+   línea) y la lista se apila encima. `align-items: flex-end` mantiene el
+   summary alineado con los enlaces de sitio; al abrir, [open] ocupa la fila
+   completa para que la lista no ensanche la línea. */
+.sn-footer-main .sn-foot-line { align-items: flex-end; }
+.sn-footer-main .sn-foot-tools-dd { display: flex; flex-direction: column-reverse; }
+.sn-footer-main .sn-foot-tools-dd[open] { flex-basis: 100%; }
+.sn-footer-main .sn-foot-tools-dd > .sn-foot-toollist {
+	margin: 0 0 var(--sn-s-3);     /* hueco bajo la lista (queda sobre el summary) */
+}
 
 /* Licencia de la wiki (copyright de MediaWiki, $wgRights*): tras los enlaces
    de sitio, en el mismo tono pequeño y discreto; el enlace en color de enlace. */
