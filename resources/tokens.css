@@ -63,6 +63,7 @@
 
 	/* — Primitiva · papel — neutros cálidos claros (la hoja, sus pliegues, su sombra) */
 	--sn-papel-50:  #fcfbf7;
+	--sn-papel-75:  #f4f2ed;   /* fondo de página + pie (--sn-field claro) */
 	--sn-papel-100: #f3f0e7;
 	--sn-papel-200: #efece2;
 	--sn-papel-300: #ece7da;
@@ -127,7 +128,7 @@
 	color-scheme: light;
 
 	/* — Semántica · campo y papel — luz cálida (el papel tiene cuerpo, no es #fff puro) */
-	--sn-field:        light-dark(var(--sn-papel-400), var(--sn-tinta-950));
+	--sn-field:        light-dark(var(--sn-papel-75), var(--sn-tinta-950));
 	--sn-field-grain:  0.035;          /* opacidad del grano de papel; override por tema al final */
 	--sn-paper:        light-dark(var(--sn-papel-50),  var(--sn-tinta-800));
 	--sn-paper-edge:   light-dark(var(--sn-papel-100), var(--sn-tinta-700));
@@ -581,12 +582,23 @@
 	   relación x-height/em de IBM Plex Sans; ajústalo para afinar. */
 	--sn-serif-size-adjust: 0.516;
 	font-size-adjust: var(--sn-serif-size-adjust);
+	/* Roboto Serif renderiza más ANCHA y PESADA que IBM Plex Sans al mismo
+	   ajuste. Se angosta el cuerpo serif al wdth más condensado (75%) para
+	   acercar su mancha a la de la sans. El peso (normal y negrita) se afina
+	   abajo. */
+	--sn-text-width: 75%;
 }
 /* El monoespaciado (IBM Plex Mono) conserva su propio tamaño en modo serif:
    no se normaliza a la x-height de la sans. */
 :root[data-sn-family="serif"] :is(code, pre, kbd, samp, tt, .mw-code) {
 	font-size-adjust: none;
 }
+/* Serif: cuerpo un punto más fino (380) y negrita proporcionalmente más
+   liviana (600, no 700), para calibrar el contraste normal↔negrita ahora que
+   el cuerpo serif es menos pesado. `:where()` neutraliza la especificidad del
+   selector de familia para NO pisar los pesos propios de las cabeceras. */
+:where(:root[data-sn-family="serif"]) .sn-body { font-weight: 380; }
+:where(:root[data-sn-family="serif"]) .sn-body :is(b, strong) { font-weight: 600; }
 
 /* ── Movimiento: sólo la señal del SO (ya no es preferencia del usuario;
    reduced-motion sigue siendo 1ª clase). ── */

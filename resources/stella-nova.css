@@ -378,7 +378,9 @@ html[data-sn-modal] .sn-header {
 	justify-content: center;
 	width: 100%;
 	margin-inline: auto;
-	padding: clamp(var(--sn-s-5), 5vw, var(--sn-s-7)) var(--sn-s-4);
+	/* Sin padding inferior: el campo ya se fusiona con el pie (mismo --sn-field),
+	   así la hoja no deja un colchón muerto antes del pie. */
+	padding: clamp(var(--sn-s-5), 5vw, var(--sn-s-7)) var(--sn-s-4) 0;
 }
 /* El ancho de la HOJA está fijado por --sn-measure (no es preferencia de
    usuario: la métrica de la hoja desparametriza el ajuste al baseline grid).
@@ -734,9 +736,9 @@ html[data-sn-notice-hide] .sn-notice { display: none; }
 	margin: var(--sn-baseline) 0 0; font-weight: 500;
 }
 .sn-body :is(h6, .mw-heading6) {
-	font-size: var(--sn-fs-sm);
-	margin: var(--sn-baseline) 0 0; font-weight: 500;
-	color: var(--sn-ink-soft);
+	font-size: var(--sn-fs-base);          /* no menor que el cuerpo */
+	margin: var(--sn-baseline) 0 0; font-weight: 400;   /* un punto más liviano */
+	color: var(--sn-nova);                 /* rojo */
 }
 .sn-body :is(h1, h2, h3, h4, h5, h6, .mw-heading1, .mw-heading2, .mw-heading3, .mw-heading4, .mw-heading5, .mw-heading6):first-child {
 	margin-top: 0;
@@ -1209,9 +1211,11 @@ canvas, iframe,
 /* "Más" (acciones) y Variantes: bloque compacto al final de las pestañas. */
 /* ───── Pie a 3 columnas: Stella-Nova:Pie · legal · herramientas ───── */
 .sn-footer {
-	/* Sin filete superior: el pie se separa del cuerpo por su fondo y el aire
-	   (margin-top), no por una regla horizontal (doctrina "sin filetes"). */
-	background: color-mix(in oklab, var(--sn-field) 62%, var(--sn-paper));
+	/* Mismo fondo que la página (--sn-field): pie y fondo se igualan en un
+	   solo tono (decisión 2026-06-09 «más simple»). El pie se separa de la
+	   hoja por el campo y el aire (margin-top), no por filete ni por un tono
+	   propio (doctrina "sin filetes"). */
+	background: var(--sn-field);
 	font-size: var(--sn-fs-sm); color: var(--sn-ink-soft);
 	margin-top: var(--sn-s-7);
 }
@@ -2156,7 +2160,7 @@ details[open]::details-content { block-size: auto; opacity: 1; }
 	   grilla, así que la ficha va fuera de grilla a 1.4 × fs-table. */
 	line-height: 1.4;
 }
-.sn-body table.plantilla > tbody > tr { vertical-align: top; }
+.sn-body table.plantilla > tbody > tr { vertical-align: top; text-transform: uppercase; font-size: 89%; letter-spacing: 0.045ex;}
 .sn-body table.plantilla > tbody > tr > :is(th, td) { border: 0; }
 /* `:first-child` para empatar la especificidad (0,3,4) de la regla de
    "fila de cabecera" de wikitable, que si no marca esta primera th a 600.
