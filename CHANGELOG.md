@@ -9,6 +9,43 @@ ajustes editoriales. La fuente de verdad del comportamiento es
 [`specs/stella-nova.allium`](specs/stella-nova.allium); cada entrada que toque
 comportamiento debería reflejarse también ahí.
 
+## [0.3.0] — 2026-06-10
+
+### Added
+- **`grid` / `grilla` como framework de layout.** La mini-grilla utilitaria se
+  amplía a un sistema de layout semántico con modificadores combinables:
+  `cols-1…6` y nuevo `cols-auto` (auto-fit de tarjetas ≥ 16 rem), `cols1-2` /
+  `cols2-1` (tercios), `gap-0/s/m/l` (espaciado por instancia vía
+  `--sn-grid-gap`), `flujo-v` / `stack` (pila vertical), `align-top/center/
+  bottom/baseline` (+ alias `arriba/centro/abajo`), `sin-margen` / `flush`
+  (margen) y `full` / `completa` (full-bleed a todo el campo, técnica de
+  `.full-width`).
+
+### Changed
+- **Nombres de clase bilingües.** Se añaden alias en inglés como nombre
+  canónico, manteniendo el español por retrocompatibilidad (nada se rompe en
+  páginas existentes): `.grid` ↔ `.grilla`, `table.template` ↔
+  `table.plantilla`. Los selectores pasan a `:is(.grid, .grilla)` y
+  `table:is(.template, .plantilla)`. (La magic word `__FULLSCREEN__` ya existía
+  junto a `__PANTALLACOMPLETA__`.)
+- **`__PANTALLACOMPLETA__` — contenido absolutamente libre.** El cuerpo
+  (`.sn-canvas-body`) deja de centrarse y limitarse a `--sn-shell`: ocupa todo
+  el canvas, con el único margen del padding básico. El pie de pantalla
+  completa (`.sn-fs-footer-inner`) pasa de centrado a la lectura a **alineado a
+  la izquierda** con el mismo margen básico. La prosa ya no se acota al ancho de
+  lectura: se maqueta con el framework `grid`.
+- **Enlaces rojos en ambos temas.** En modo oscuro los enlaces dejan de ser
+  azules y pasan a coral rojo (`--sn-coral-400`); el `:hover` aclara y el
+  `:visited` es un coral apagado (mezcla con negro), levemente más oscuro que el
+  enlace base, igual que en claro (vino `--sn-rojo-900`).
+- **Páginas inexistentes en rosado pálido.** Los redlinks (`a.new`) usan un
+  rosa pálido en ambos temas (`--sn-rosa-400` en claro, `--sn-rosa-300` en
+  oscuro), reemplazando el gris apagado (claro) y el coral (oscuro). No se
+  oscurecen al visitarse (`a.new:visited` mantiene el rosa).
+- **Pie del color de la hoja.** `.sn-footer` toma el tono de la hoja
+  (`--sn-paper`) en lugar del campo (`--sn-field`); más notorio en modo oscuro,
+  donde página y pie quedan del mismo color.
+
 ## [0.2.9] — 2026-06-09
 
 ### Added

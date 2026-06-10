@@ -95,7 +95,7 @@ las "extras" del skin disponibles para maquetar contenido editorial.
 Convención de uso en wikitexto:
 
 ```wiki
-<div class="grilla cols-3">
+<div class="grid cols-3">
 …contenido…
 </div>
 ```
@@ -130,45 +130,77 @@ borde-a-borde del artículo. Funciona en tres patrones de wikitexto:
   `class=full-width` (canónico) y `class='full-width'` (con apóstrofes,
   resultado del paso a `[[Imagen:|class='…']]`).
 
-### `grilla` + `cols-N` — grilla utilitaria
+### `grid` / `grilla` — framework de layout
 
-Reemplaza el patrón `.row > .col-md-*` del skin anterior (Bootstrap).
-Uso:
+Reemplaza el patrón `.row > .col-md-*` del skin anterior (Bootstrap). El
+nombre es **bilingüe**: `grid` (canónico, estándar) y `grilla` (alias en
+español, retrocompatible). Funcionan idéntico; se pueden mezclar con
+otras páginas que aún usen `grilla`.
 
 ```wiki
-<div class="grilla cols-2">
+<div class="grid cols-2">
 [[Archivo:a.jpg]]
 [[Archivo:b.jpg]]
 </div>
 ```
 
+Los modificadores se **combinan** sumando clases (`class="grid cols-3 gap-l align-center"`).
+
+**Columnas**
+
 | Modificador | Resultado | Colapso responsive |
 |---|---|---|
+| `cols-1` | 1 columna | — |
 | `cols-2` | 2 columnas iguales | → 1 col bajo 48 rem (~768 px) |
 | `cols-3` | 3 columnas iguales | → 1 col bajo 48 rem |
 | `cols-4` | 4 columnas iguales | → 2 col bajo 64 rem, → 1 col bajo 48 rem |
 | `cols-5` | 5 columnas iguales | → 3 col bajo 64 rem, → 1 col bajo 48 rem |
 | `cols-6` | 6 columnas iguales | → 3 col bajo 64 rem, → 1 col bajo 48 rem |
+| `cols-auto` | tantas columnas (≥ 16 rem) como quepan (auto-fit) | fluido |
 | `cols1-2` | 1/3 + 2/3 (asimétrica) | → 1 col bajo 48 rem |
 | `cols2-1` | 2/3 + 1/3 (asimétrica) | → 1 col bajo 48 rem |
 
+**Espaciado** (gap entre celdas; default `gap-m` = 1 rem)
+
+| Modificador | Gap |
+|---|---|
+| `gap-0` | sin separación |
+| `gap-s` | 0.5 rem |
+| `gap-m` | 1 rem (default) |
+| `gap-l` | 2.25 rem |
+
+**Flujo, alineación, margen y ancho**
+
+| Modificador | Resultado |
+|---|---|
+| `flujo-v` / `stack` | apila las celdas en una columna vertical (con el mismo gap) |
+| `align-top` / `arriba` | alinea el contenido de las celdas arriba |
+| `align-center` / `centro` | centra verticalmente el contenido de las celdas |
+| `align-bottom` / `abajo` | alinea el contenido de las celdas abajo |
+| `align-baseline` | alinea por la línea base del texto |
+| `sin-margen` / `flush` | anula el margen vertical de la grilla |
+| `full` / `completa` | la grilla rompe el ancho de lectura y ocupa **todo el campo** |
+
 **Consecuencias:**
-- Cada hijo directo de `.grilla` es una celda. URLs largas o bloques de
+- Cada hijo directo de la grilla es una celda. URLs largas o bloques de
   código no desbordan (`minmax(0, 1fr)` previene overflow).
-- Funciona igual en chrome normal y en `__PANTALLACOMPLETA__`.
-- El gap entre celdas es `--sn-s-4` (1 rem). No se puede ajustar por
-  página sin estilo inline (se desaconseja).
+- Funciona igual en chrome normal y en `__PANTALLACOMPLETA__`. En pantalla
+  completa el contenido es libre (sin columna central), por lo que `grid`
+  es la herramienta recomendada para maquetar ahí.
+- `full` / `completa` usan la misma técnica que `full-width`: a sangre del
+  viewport en pantalla completa, del paper en chrome normal.
 
-### `plantilla` — fichas tabulares sin bordes
+### `template` / `plantilla` — fichas tabulares sin bordes
 
-Modificador para `<table class="wikitable plantilla">`. Pensado para las
-fichas de plantillas Casiopea (perfiles, fichas técnicas, créditos):
-conserva el contorno exterior del wikitable pero **quita los bordes
-entre celdas y el fondo de los `<th>`**, dejando una tabla más
+Modificador para `<table class="wikitable template">`. Nombre **bilingüe**:
+`template` (canónico) y `plantilla` (alias en español, retrocompatible).
+Pensado para las fichas de plantillas Casiopea (perfiles, fichas técnicas,
+créditos): conserva el contorno exterior del wikitable pero **quita los
+bordes entre celdas y el fondo de los `<th>`**, dejando una tabla más
 silenciosa, propia de ficha y no de datos.
 
 ```wiki
-{| class="wikitable plantilla"
+{| class="wikitable template"
 ! Campo
 | valor
 |-
@@ -178,8 +210,8 @@ silenciosa, propia de ficha y no de datos.
 ```
 
 Si se usa en una tabla sin `.wikitable`, no aplica nada (el selector
-empieza por `.sn-body table.plantilla`); siempre va combinada con
-`wikitable`.
+empieza por `.sn-body table:is(.template, .plantilla)`); siempre va
+combinada con `wikitable`.
 
 ### `img-circle` — recorte circular limpio
 

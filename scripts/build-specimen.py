@@ -1005,35 +1005,44 @@ si hace falta.
 </section>
 
 <section class="comp">
-  <h2>Grilla utilitaria</h2>
+  <h2>Grid / grilla — framework de layout</h2>
   <p class="meta">Reemplaza el patrón <code>.row &gt; .col-md-*</code> del
-  skin Bootstrap anterior. <code>.grilla</code> es un Grid simple;
-  <code>.cols-N</code> fija N columnas iguales (2–6);
-  <code>.cols1-2</code> / <code>.cols2-1</code> son tercios asimétricos.
-  Bajo 64 rem las grillas densas (4/5/6) reducen columnas; bajo 48 rem
-  todas colapsan a una sola.</p>
+  skin Bootstrap anterior. Nombre <strong>bilingüe</strong>:
+  <code>.grid</code> (canónico) y <code>.grilla</code> (alias en español).
+  Los modificadores se combinan: <code>.cols-1…6</code> /
+  <code>.cols-auto</code> / <code>.cols1-2</code> / <code>.cols2-1</code>
+  (columnas), <code>.gap-0/s/m/l</code> (espaciado),
+  <code>.flujo-v</code>/<code>.stack</code> (pila vertical),
+  <code>.align-top/center/bottom</code> (alineación de celda),
+  <code>.sin-margen</code>/<code>.flush</code> (margen) y
+  <code>.full</code>/<code>.completa</code> (a todo el campo). Bajo 64 rem
+  las grillas densas (4/5/6) reducen columnas; bajo 48 rem todas colapsan.</p>
+
+  <p class="meta">A la izquierda el código que se escribe; a la derecha, el
+  resultado. La misma referencia vive en la wiki en
+  <a href="https://wiki.ead.pucv.cl/Ayuda:Grilla"><code>Ayuda:Grilla</code></a>.</p>
 
   <h3 class="spec-subh">cols-2</h3>
   <div class="grilla cols-2 spec-usage">
-<pre class="howto-code">&lt;div class="grilla cols-2"&gt;
-[[Archivo:a.jpg]]
-[[Archivo:b.jpg]]
+<pre class="howto-code">&lt;div class="grid cols-2"&gt;
+  Celda 1
+  Celda 2
 &lt;/div&gt;</pre>
     <div class="sn-paper sn-body demo">
-      <div class="grilla cols-2">
-        <div class="spec-cell">celda 1</div>
-        <div class="spec-cell">celda 2</div>
+      <div class="grid cols-2">
+        <div class="spec-cell">Celda 1</div>
+        <div class="spec-cell">Celda 2</div>
       </div>
     </div>
   </div>
 
   <h3 class="spec-subh">cols-3</h3>
   <div class="grilla cols-2 spec-usage">
-<pre class="howto-code">&lt;div class="grilla cols-3"&gt;
+<pre class="howto-code">&lt;div class="grid cols-3"&gt;
 …tres hijos directos…
 &lt;/div&gt;</pre>
     <div class="sn-paper sn-body demo">
-      <div class="grilla cols-3">
+      <div class="grid cols-3">
         <div class="spec-cell">1</div>
         <div class="spec-cell">2</div>
         <div class="spec-cell">3</div>
@@ -1041,29 +1050,106 @@ si hace falta.
     </div>
   </div>
 
-  <h3 class="spec-subh">cols2-1 (tercios asimétricos)</h3>
+  <h3 class="spec-subh">cols-auto + gap-l (tarjetas auto-fit, gap amplio)</h3>
   <div class="grilla cols-2 spec-usage">
-<pre class="howto-code">&lt;div class="grilla cols2-1"&gt;
+<pre class="howto-code">&lt;div class="grid cols-auto gap-l"&gt;
+…tantas columnas (≥ 16 rem) como quepan…
+&lt;/div&gt;</pre>
+    <div class="sn-paper sn-body demo">
+      <div class="grid cols-auto gap-l">
+        <div class="spec-cell">auto 1</div>
+        <div class="spec-cell">auto 2</div>
+        <div class="spec-cell">auto 3</div>
+        <div class="spec-cell">auto 4</div>
+      </div>
+    </div>
+  </div>
+
+  <h3 class="spec-subh">cols2-1 (tercios asimétricos) + align-center</h3>
+  <div class="grilla cols-2 spec-usage">
+<pre class="howto-code">&lt;div class="grid cols2-1 align-center"&gt;
 Bloque amplio (dos tercios)
 Bloque angosto (un tercio)
 &lt;/div&gt;</pre>
     <div class="sn-paper sn-body demo">
-      <div class="grilla cols2-1">
-        <div class="spec-cell">2/3 — bloque amplio</div>
+      <div class="grid cols2-1 align-center">
+        <div class="spec-cell">2/3 — bloque amplio<br>con dos líneas</div>
         <div class="spec-cell">1/3</div>
       </div>
     </div>
   </div>
 
+  <h3 class="spec-subh">stack (flujo vertical) + gap-s</h3>
+  <div class="grilla cols-2 spec-usage">
+<pre class="howto-code">&lt;div class="grid stack gap-s"&gt;
+…celdas apiladas en columna…
+&lt;/div&gt;</pre>
+    <div class="sn-paper sn-body demo">
+      <div class="grid stack gap-s">
+        <div class="spec-cell">fila 1</div>
+        <div class="spec-cell">fila 2</div>
+        <div class="spec-cell">fila 3</div>
+      </div>
+    </div>
+  </div>
+
+  <h3 class="spec-subh">gap-0 (sin separación)</h3>
+  <div class="grilla cols-2 spec-usage">
+<pre class="howto-code">&lt;div class="grid cols-3 gap-0"&gt;
+…sin separación entre celdas…
+&lt;/div&gt;</pre>
+    <div class="sn-paper sn-body demo">
+      <div class="grid cols-3 gap-0">
+        <div class="spec-cell">1</div>
+        <div class="spec-cell">2</div>
+        <div class="spec-cell">3</div>
+      </div>
+    </div>
+  </div>
+
+  <h3 class="spec-subh">alias en español (grilla)</h3>
+  <div class="grilla cols-2 spec-usage">
+<pre class="howto-code">&lt;div class="grilla cols-2"&gt;
+…equivalente a class="grid cols-2"…
+&lt;/div&gt;</pre>
+    <div class="sn-paper sn-body demo">
+      <div class="grilla cols-2">
+        <div class="spec-cell">Celda 1</div>
+        <div class="spec-cell">Celda 2</div>
+      </div>
+    </div>
+  </div>
+
+  <h3 class="spec-subh">full / completa (a todo el campo)</h3>
+  <p class="meta"><code>full</code> rompe el ancho de lectura con la técnica de
+  <code>full-width</code> (100vw + margen inline negativo): a sangre del viewport
+  en pantalla completa, del paper en chrome normal. No se demuestra en vivo aquí
+  porque reventaría el recuadro del espécimen; ver la wiki para el efecto real.</p>
+  <div class="grilla cols-2 spec-usage">
+<pre class="howto-code">&lt;div class="grid cols-3 full"&gt;
+…ocupa todo el campo…
+&lt;/div&gt;</pre>
+    <div class="sn-paper sn-body demo">
+      <div class="grid cols-3">
+        <div class="spec-cell">1</div>
+        <div class="spec-cell">2</div>
+        <div class="spec-cell">3</div>
+      </div>
+    </div>
+  </div>
+
   <div class="spec-notes">
-    <p>Cada hijo directo de <code>.grilla</code> es una celda; URLs
+    <p>Cada hijo directo de <code>.grid</code> es una celda; URLs
     largas o bloques de código no desbordan
-    (<code>minmax(0, 1fr)</code>). El gap entre celdas es
-    <code>--sn-s-4</code> (1 rem) y no se ajusta por página.</p>
+    (<code>minmax(0, 1fr)</code>). El gap por defecto es
+    <code>--sn-s-4</code> (1 rem) y ahora se ajusta con
+    <code>.gap-0/s/m/l</code>.</p>
     <p>Funciona en chrome normal y en <code>__PANTALLACOMPLETA__</code>:
     ambos contenedores llevan <code>.sn-body</code>, que es donde el
-    skin define la regla. Si la grilla aparece "rota" (en una sola
-    columna), revisar que esté dentro de <code>.sn-body</code>.</p>
+    skin define la regla. En pantalla completa el contenido es libre
+    (sin columna central), así que <code>.grid</code> es la herramienta
+    recomendada para maquetar ahí. Si la grilla aparece "rota" (en una
+    sola columna), revisar que esté dentro de <code>.sn-body</code>.</p>
   </div>
 </section>
 """

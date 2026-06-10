@@ -53,6 +53,9 @@ a:visited { color: var(--sn-link-visited); }
    !important de redlinks empata al !important del site CSS, y la
    especificidad mayor desempata. */
 a.new, a[href].new { color: var(--sn-link-new); }
+/* El redlink NO se oscurece al visitarse: mantiene el rosado pálido por
+   encima de la regla global `a:visited`. */
+a.new:visited, a[href].new:visited { color: var(--sn-link-new); }
 :root[data-sn-theme="dark"] a.new,
 :root[data-sn-theme="dark"] a[href].new {
 	color: var(--sn-link-new) !important;
@@ -1211,11 +1214,11 @@ canvas, iframe,
 /* "Más" (acciones) y Variantes: bloque compacto al final de las pestañas. */
 /* ───── Pie a 3 columnas: Stella-Nova:Pie · legal · herramientas ───── */
 .sn-footer {
-	/* Mismo fondo que la página (--sn-field): pie y fondo se igualan en un
-	   solo tono (decisión 2026-06-09 «más simple»). El pie se separa de la
-	   hoja por el campo y el aire (margin-top), no por filete ni por un tono
-	   propio (doctrina "sin filetes"). */
-	background: var(--sn-field);
+	/* El pie toma el tono de la HOJA (--sn-paper), no el del campo (decisión
+	   2026-06-10: «página y pie del mismo color», más notorio en oscuro). El
+	   pie se separa de la hoja por el aire (margin-top), no por filete ni por
+	   un tono propio (doctrina "sin filetes"). */
+	background: var(--sn-paper);
 	font-size: var(--sn-fs-sm); color: var(--sn-ink-soft);
 	margin-top: var(--sn-s-7);
 }
@@ -1432,9 +1435,13 @@ canvas, iframe,
 	   diferencia de `hidden`, que rompería sticky/fixed). */
 	overflow-x: clip;
 }
+/* Pantalla completa = contenido ABSOLUTAMENTE LIBRE: el cuerpo NO se centra
+   ni se limita al ancho de lectura; ocupa todo el canvas (el único margen es
+   el padding básico de `.sn-canvas`, --sn-canvas-px). La prosa ya no se acota
+   a --sn-measure: el autor estructura con el framework de grilla (.grid). */
 .sn-canvas-body {
-	max-width: var(--sn-shell);
-	margin-inline: auto;
+	max-width: none;
+	margin-inline: 0;
 }
 /* Afordancia única de pantalla completa: el isotipo SOBREPUESTO, fijo y EN
    FRENTE del contenido, alineado a la columna de lectura. Sin "barra": este
@@ -1701,14 +1708,15 @@ canvas, iframe,
 	color: var(--sn-ink); font: inherit;
 }
 
-/* — Pie de pantalla completa — sobre el MISMO papel del canvas, al ancho de
-   lectura (--sn-measure, el de las páginas normales), UNA sola columna a todo
-   el ancho. Sin "última edición" ni columna derecha (Stella-Nova:Pie).
+/* — Pie de pantalla completa — sobre el MISMO papel del canvas. Acompaña al
+   contenido libre: NO se centra ni se acota a --sn-measure; queda alineado a
+   la IZQUIERDA con el margen básico del canvas (--sn-canvas-px). UNA sola
+   columna. Sin "última edición" ni columna derecha (Stella-Nova:Pie).
    Reutiliza .sn-foot-toollist / .sn-foot-places / .sn-foot-license; las
    herramientas van en un <details> discreto rotulado "Herramientas". */
 .sn-fs-footer { margin-top: var(--sn-s-7); }
 .sn-fs-footer-inner {
-	max-width: var(--sn-measure); margin-inline: auto;
+	max-width: none; margin-inline: 0;
 	display: flex; flex-direction: column; gap: var(--sn-s-4);
 	font-size: var(--sn-fs-xs); color: var(--sn-ink-soft);
 }
@@ -2146,10 +2154,10 @@ details[open]::details-content { block-size: auto; opacity: 1; }
 	border: 1px solid var(--sn-hairline);
 }
 
-/* `table.plantilla`: ficha vertical clave→valor (NO es tabla de datos;
-   migrada desde MediaWiki:Common.css). Cabecera = etiqueta a la derecha
-   en versalita tenue; sin filetes de ningún tipo. */
-.sn-body table.plantilla {
+/* `table.template` / `table.plantilla` (alias bilingüe): ficha vertical
+   clave→valor (NO es tabla de datos; migrada desde MediaWiki:Common.css).
+   Cabecera = etiqueta a la derecha en versalita tenue; sin filetes. */
+.sn-body table:is(.template, .plantilla) {
 	width: 100%; margin: var(--sn-s-6) auto;
 	border: 0;
 	/* Mismo achicado que las tablas generales: el token único --sn-fs-table
@@ -2160,13 +2168,13 @@ details[open]::details-content { block-size: auto; opacity: 1; }
 	   grilla, así que la ficha va fuera de grilla a 1.4 × fs-table. */
 	line-height: 1.4;
 }
-.sn-body table.plantilla > tbody > tr { vertical-align: top; text-transform: uppercase; font-size: 89%; letter-spacing: 0.045ex;}
-.sn-body table.plantilla > tbody > tr > :is(th, td) { border: 0; }
+.sn-body table:is(.template, .plantilla) > tbody > tr { vertical-align: top; text-transform: uppercase; font-size: 89%; letter-spacing: 0.045ex;}
+.sn-body table:is(.template, .plantilla) > tbody > tr > :is(th, td) { border: 0; }
 /* `:first-child` para empatar la especificidad (0,3,4) de la regla de
    "fila de cabecera" de wikitable, que si no marca esta primera th a 600.
    En una ficha la primera fila es un par clave→valor, no una cabecera. */
-.sn-body table.plantilla > tbody > tr > th,
-.sn-body table.plantilla > tbody > tr:first-child > th {
+.sn-body table:is(.template, .plantilla) > tbody > tr > th,
+.sn-body table:is(.template, .plantilla) > tbody > tr:first-child > th {
 	width: 20%; min-width: 110px;
 	padding-right: 1.5ex;
 	text-align: right;
@@ -2180,7 +2188,7 @@ details[open]::details-content { block-size: auto; opacity: 1; }
    fijo. Dentro de la ficha eso rompe la fila. Lo despojamos a texto plano: sin
    caja, monospaced del skin, un punto más pesado, y color/interlínea heredados
    del cuerpo (así sigue al tema claro/oscuro). */
-.sn-body table.plantilla .smwpre {
+.sn-body table:is(.template, .plantilla) .smwpre {
 	margin: 0; padding: 0;
 	border: 0; background: none;
 	font-family: var(--sn-font-mono);
@@ -2306,14 +2314,26 @@ details[open]::details-content { block-size: auto; opacity: 1; }
 	border-color: var(--sn-ok);
 }
 
-/* ─── Grilla utilitaria para wikitexto: reemplaza el patrón
-   `.row > .col-md-*` del skin Bootstrap anterior. Uso esperado:
+/* ─── Grilla / grid: framework de layout semántico para wikitexto.
+   Reemplaza el patrón `.row > .col-md-*` del skin Bootstrap anterior.
+   Nombre bilingüe: `.grid` (canónico) y `.grilla` (alias, retrocompat).
+   Uso esperado:
 
-       <div class="grilla cols-2"> … </div>
-       <div class="grilla cols-3"> … </div>
-       <div class="grilla cols-6"> … </div>
-       <div class="grilla cols1-2"> … </div>   ← 1/3 + 2/3
-       <div class="grilla cols2-1"> … </div>   ← 2/3 + 1/3
+       <div class="grid cols-2"> … </div>
+       <div class="grid cols-3 gap-l"> … </div>
+       <div class="grid cols-auto"> … </div>      ← tarjetas auto-fit
+       <div class="grid cols1-2"> … </div>        ← 1/3 + 2/3
+       <div class="grid stack gap-s"> … </div>    ← pila vertical
+       <div class="grid cols-3 full"> … </div>    ← a todo el campo
+       <div class="grilla cols-3"> … </div>       ← alias español (igual)
+
+   Modificadores combinables:
+     · Columnas .......... cols-1…6 · cols-auto · cols1-2 · cols2-1
+     · Espaciado ......... gap-0 · gap-s · gap-m (=def) · gap-l
+     · Flujo ............. (horizontal por defecto) · flujo-v / stack
+     · Alineación celda .. align-top/center/bottom/baseline (+ arriba/centro/abajo)
+     · Margen contenedor . sin-margen / flush (anula el margen vertical)
+     · Ancho ............. full / completa (rompe --sn-measure a todo el campo)
 
    Funciona tanto en chrome normal como en __PANTALLACOMPLETA__: ambos
    wrappers de contenido llevan `.sn-body`. `minmax(0, 1fr)` evita
@@ -2322,32 +2342,72 @@ details[open]::details-content { block-size: auto; opacity: 1; }
    (cols-4/5/6) reducen el número de columnas; por debajo de 48rem
    (tablet vertical) todas caen a una sola columna — las asimétricas
    cols1-2 / cols2-1 también colapsan a una columna ahí. */
-.sn-body .grilla {
+.sn-body :is(.grid, .grilla) {
+	--sn-grid-gap: var(--sn-s-4);
 	display: grid;
-	gap: var(--sn-s-4);
+	gap: var(--sn-grid-gap);
 	margin: var(--sn-s-4) 0;
 }
-.sn-body .grilla.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.sn-body .grilla.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.sn-body .grilla.cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-.sn-body .grilla.cols-5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
-.sn-body .grilla.cols-6 { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+.sn-body :is(.grid, .grilla).cols-1 { grid-template-columns: minmax(0, 1fr); }
+.sn-body :is(.grid, .grilla).cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.sn-body :is(.grid, .grilla).cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.sn-body :is(.grid, .grilla).cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.sn-body :is(.grid, .grilla).cols-5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.sn-body :is(.grid, .grilla).cols-6 { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+/* Auto-fit: tantas columnas (≥ 16rem) como quepan; ideal para tarjetas. */
+.sn-body :is(.grid, .grilla).cols-auto {
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+}
 /* Asimétricas: pareja de columnas en proporción 1:2 / 2:1 (tercios). */
-.sn-body .grilla.cols1-2 { grid-template-columns: 1fr 2fr; }
-.sn-body .grilla.cols2-1 { grid-template-columns: 2fr 1fr; }
+.sn-body :is(.grid, .grilla).cols1-2 { grid-template-columns: 1fr 2fr; }
+.sn-body :is(.grid, .grilla).cols2-1 { grid-template-columns: 2fr 1fr; }
+
+/* Espaciado entre celdas (override del default --sn-s-4). */
+.sn-body :is(.grid, .grilla).gap-0 { --sn-grid-gap: 0; }
+.sn-body :is(.grid, .grilla).gap-s { --sn-grid-gap: var(--sn-s-2); }
+.sn-body :is(.grid, .grilla).gap-m { --sn-grid-gap: var(--sn-s-4); }
+.sn-body :is(.grid, .grilla).gap-l { --sn-grid-gap: var(--sn-s-6); }
+
+/* Flujo vertical: pila las celdas en una sola columna con el mismo gap.
+   Gana sobre cols-* (más específico por la 2ª clase) si se combinan por
+   error; pensado para usarse solo, sin cols. */
+.sn-body :is(.grid, .grilla):is(.flujo-v, .stack) {
+	grid-template-columns: minmax(0, 1fr);
+	grid-auto-flow: row;
+}
+
+/* Alineación vertical del contenido de cada celda (default: stretch). */
+.sn-body :is(.grid, .grilla):is(.align-top, .arriba)        { align-items: start; }
+.sn-body :is(.grid, .grilla):is(.align-center, .centro)     { align-items: center; }
+.sn-body :is(.grid, .grilla):is(.align-bottom, .abajo)      { align-items: end; }
+.sn-body :is(.grid, .grilla).align-baseline                 { align-items: baseline; }
+
+/* Margen contenedor: anular el margen vertical por defecto. */
+.sn-body :is(.grid, .grilla):is(.sin-margen, .flush) { margin: 0; }
+
+/* Full-bleed: la grilla trasciende --sn-measure y ocupa todo el campo,
+   con la misma técnica que `.full-width` (width 100vw + margen inline
+   negativo calculado relativo al 100% del contenedor). Sirve igual en la
+   hoja normal y en el canvas de __PANTALLACOMPLETA__. */
+.sn-body :is(.grid, .grilla):is(.full, .completa) {
+	width: 100vw;
+	max-width: 100vw;
+	margin-inline: calc((100% - 100vw) / 2);
+}
+
 @media (max-width: 64rem) {
-	.sn-body .grilla.cols-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-	.sn-body .grilla.cols-5,
-	.sn-body .grilla.cols-6 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+	.sn-body :is(.grid, .grilla).cols-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+	.sn-body :is(.grid, .grilla).cols-5,
+	.sn-body :is(.grid, .grilla).cols-6 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 @media (max-width: 48rem) {
-	.sn-body .grilla.cols-2,
-	.sn-body .grilla.cols-3,
-	.sn-body .grilla.cols-4,
-	.sn-body .grilla.cols-5,
-	.sn-body .grilla.cols-6,
-	.sn-body .grilla.cols1-2,
-	.sn-body .grilla.cols2-1 { grid-template-columns: 1fr; }
+	.sn-body :is(.grid, .grilla).cols-2,
+	.sn-body :is(.grid, .grilla).cols-3,
+	.sn-body :is(.grid, .grilla).cols-4,
+	.sn-body :is(.grid, .grilla).cols-5,
+	.sn-body :is(.grid, .grilla).cols-6,
+	.sn-body :is(.grid, .grilla).cols1-2,
+	.sn-body :is(.grid, .grilla).cols2-1 { grid-template-columns: minmax(0, 1fr); }
 }
 
 /* ─── Editor: tipografía monoespaciada recién instalada (IBM Plex Mono),
