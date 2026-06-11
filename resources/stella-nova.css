@@ -126,8 +126,8 @@ a.new:visited, a[href].new:visited { color: var(--sn-link-new); }
 .sn-header {
 	position: sticky; top: 0; z-index: var(--sn-z-header);
 	background: color-mix(in oklab, var(--sn-field) 60%, transparent);
-	-webkit-backdrop-filter: saturate(1.5) blur(8px);
-	backdrop-filter: saturate(1.5) blur(8px);
+	-webkit-backdrop-filter: saturate(1.5) blur(5px);
+	backdrop-filter: saturate(1.5) blur(5px);
 	/* Sin filete inferior: la cabecera se separa del cuerpo por el blur y el
 	   fondo translúcido, no por una regla horizontal (doctrina "sin filetes"). */
 }
@@ -542,7 +542,11 @@ html[data-sn-notice-hide] .sn-notice { display: none; }
 	flex: none; cursor: pointer; color: inherit;
 	display: grid; place-items: center;
 	width: 1.9rem; height: 1.9rem; padding: 0;
-	margin: -.1rem -.2rem 0 0;
+	/* El cuerpo del aviso se inset­a a --sn-paper-px (margen del contenido),
+	   pero la X va al BORDE del papel: cancelamos ese padding con margen
+	   derecho negativo y dejamos un inset pequeño y fijo (--sn-s-2) desde el
+	   borde real, constante aunque --sn-paper-px crezca en pantallas anchas. */
+	margin: -.1rem calc(var(--sn-s-2) - var(--sn-paper-px)) 0 0;
 	background: transparent; border: 0; border-radius: var(--sn-radius);
 	transition: background var(--sn-dur-1);
 }
@@ -1216,11 +1220,15 @@ canvas, iframe,
 /* "Más" (acciones) y Variantes: bloque compacto al final de las pestañas. */
 /* ───── Pie a 3 columnas: Stella-Nova:Pie · legal · herramientas ───── */
 .sn-footer {
-	/* El pie toma el tono de la HOJA (--sn-paper), no el del campo (decisión
-	   2026-06-10: «página y pie del mismo color», más notorio en oscuro). El
-	   pie se separa de la hoja por el aire (margin-top), no por filete ni por
-	   un tono propio (doctrina "sin filetes"). */
-	background: var(--sn-paper);
+	/* El pie es TRANSPARENTE: deja pasar el fondo del `body` —el "escritorio"
+	   (campo --sn-field + degradado radial + grano SVG, con
+	   background-attachment: fixed)— de modo que se ve CONTINUO con el campo
+	   que rodea a la hoja, en claro y en oscuro. Un color plano (--sn-field
+	   sin la textura/degradado del body) se leería como un parche distinto;
+	   por eso transparent y no el token. `.sn-app`, su contenedor, no pinta
+	   fondo, así que el fixed del body asoma sin obstáculo. El pie se separa
+	   de la hoja por el aire (margin-top), no por filete ni tono propio. */
+	background: transparent;
 	font-size: var(--sn-fs-sm); color: var(--sn-ink-soft);
 	margin-top: var(--sn-s-7);
 }
@@ -1293,18 +1301,9 @@ canvas, iframe,
 .sn-foot-places a { color: var(--sn-ink-soft); text-decoration: none; }
 .sn-foot-places a:hover { color: var(--sn-nova); }
 
-/* "Herramientas" en el pie normal — disclosure NATIVO (<details>, sin JS),
-   al comienzo de la línea de enlaces de sitio y con el mismo aspecto que
-   esos enlaces (lo da el genérico .sn-foot-tools-summary, más abajo). A
-   diferencia del pie de pantalla completa (que despliega hacia ABAJO), aquí
-   la lista crece hacia ARRIBA, a su sitio de siempre sobre la línea: la
-   columna del <details> es column-reverse → el summary queda abajo (en la
-   línea) y la lista se apila encima. `align-items: flex-end` mantiene el
-   summary alineado con los enlaces de sitio; al abrir, [open] ocupa la fila
-   completa para que la lista no ensanche la línea. */
-.sn-footer-main .sn-foot-line { align-items: flex-end; }
-.sn-footer-main .sn-foot-tools-dd { display: flex; flex-direction: column-reverse; }
-.sn-footer-main .sn-foot-tools-dd[open] { flex-basis: 100%; }
+/* "Herramientas" (disclosure del pie) se define UNA sola vez para AMBOS
+   layouts en `.sn-foot-line` (sección del pie de pantalla completa, más
+   abajo): mismo grid de dos filas, misma animación, mismo ícono +/↑. */
 
 /* Licencia de la wiki (copyright de MediaWiki, $wgRights*): tras los enlaces
    de sitio, en el mismo tono pequeño y discreto; el enlace en color de enlace. */
@@ -1446,15 +1445,15 @@ canvas, iframe,
 	margin-inline: 0;
 }
 /* Afordancia única de pantalla completa: el isotipo SOBREPUESTO, fijo y EN
-   FRENTE del contenido, alineado a la columna de lectura. Sin "barra": este
-   contenedor full-width es solo el RIEL de posición; `pointer-events: none`
-   deja pasar los clics al contenido salvo en el glifo (y el menú). El
-   `padding-top` lo baja un poco respecto al borde del viewport. */
+   FRENTE del contenido, alineado al MARGEN DERECHO ESTÁNDAR del viewport (no
+   a la columna de lectura). Sin "barra": este contenedor full-width es solo
+   el RIEL de posición; `pointer-events: none` deja pasar los clics al
+   contenido salvo en el glifo (y el menú). `flex-end` + el padding derecho
+   de `--sn-canvas-px` lo clavan al margen estándar; el `padding-top` lo baja
+   un poco respecto al borde del viewport. */
 .sn-fs-md {
 	position: fixed; inset: 0 0 auto 0; z-index: var(--sn-z-panel);
 	display: flex; align-items: flex-start; justify-content: flex-end;
-	max-width: calc(var(--sn-shell) + 2 * var(--sn-canvas-px));
-	margin-inline: auto;
 	padding: var(--sn-s-6) var(--sn-canvas-px) 0;
 	pointer-events: none;
 }
@@ -1519,13 +1518,12 @@ canvas, iframe,
 	clip: rect(0 0 0 0); white-space: nowrap; border: 0;
 }
 .sn-md.sn-md-fs .sn-modal-x {
-	/* Alineado al borde derecho de la columna de lectura — EXACTAMENTE donde
-	   está el isotipo (mismo `top` y mismo borde), no pegado al viewport: al
-	   abrir, la X cae sobre el lugar del iso. `(100% - shell)/2` es el margen
-	   centrado del ancho de página; en viewports angostos cae a `canvas-px`. */
+	/* Al MARGEN DERECHO ESTÁNDAR del viewport — EXACTAMENTE donde queda el
+	   isotipo (mismo `top` y mismo `--sn-canvas-px`): al abrir, la X cae
+	   sobre el lugar del iso. */
 	position: absolute;
 	top: var(--sn-s-6);
-	right: max(var(--sn-canvas-px), calc((100% - var(--sn-shell)) / 2));
+	right: var(--sn-canvas-px);
 	z-index: 2;
 	display: grid; place-items: center;
 	background: transparent; border: 0; padding: 0;
@@ -1722,18 +1720,51 @@ canvas, iframe,
 	display: flex; flex-direction: column; gap: var(--sn-s-4);
 	font-size: var(--sn-fs-xs); color: var(--sn-ink-soft);
 }
-/* "Herramientas" + enlaces de sitio en UNA línea, con el mismo ritmo de
-   separación que entre los enlaces de sitio. */
+/* "Herramientas" — disclosure UNIFICADO para AMBOS pies (normal y pantalla
+   completa). Grid de dos filas:
+     fila 1 (arriba):  la lista de herramientas, a TODO el ancho.
+     fila 2 (abajo):   [+ Herramientas]  ·  enlaces de sitio  — en una línea.
+   La lista (.sn-foot-toollist) vive FUERA del <details>, como hermana que lo
+   sigue, así ocupa su propia fila superior mientras el rótulo "Herramientas"
+   queda inline con los enlaces de sitio (un <details> no puede partir su
+   summary y su contenido en celdas distintas del grid). El <details> es solo
+   el toggle nativo; al abrir, `[open] ~ .sn-foot-toollist` revela la fila de
+   arriba y su altura anima 0→auto (interpolate-size) EMPUJANDO la línea de
+   abajo hacia abajo. Combinador `~` + grid-areas: sin :has, sin JS. */
 .sn-foot-line {
-	display: flex; flex-wrap: wrap; align-items: baseline;
-	gap: var(--sn-s-1) var(--sn-s-3);
+	display: grid;
+	grid-template-columns: auto 1fr;
+	grid-template-areas:
+		"tools  tools"
+		"label  places";
+	align-items: end;
+	column-gap: var(--sn-s-3);
 }
-.sn-foot-tools-dd { margin: 0; }
-/* El summary se ve EXACTAMENTE como un enlace de .sn-foot-places: mismo
-   color, tamaño y peso normal (sin negrita), sin marcador del UA. Al abrir,
-   la lista de herramientas cae debajo. */
+.sn-foot-tools-dd { grid-area: label; margin: 0; }
+.sn-foot-places   { grid-area: places; justify-self: start; align-self: end; }
+/* Sin caja de herramientas, los enlaces de sitio ocupan la línea entera
+   desde la izquierda (no quedan corridos a la columna derecha). */
+.sn-foot-places:only-child { grid-column: 1 / -1; }
+
+/* La lista revelada: fila superior a todo el ancho. Colapsada por defecto;
+   se expande cuando el <details> hermano anterior está [open]. */
+.sn-foot-toollist {
+	grid-area: tools;
+	block-size: 0; overflow: hidden; opacity: 0; margin: 0;
+	transition: block-size var(--sn-dur-2) var(--sn-ease),
+	            opacity var(--sn-dur-2) var(--sn-ease),
+	            margin-block-end var(--sn-dur-2) var(--sn-ease);
+}
+.sn-foot-tools-dd[open] ~ .sn-foot-toollist {
+	block-size: auto; opacity: 1; margin-block-end: var(--sn-s-2);
+}
+
+/* El summary se ve como un enlace de .sn-foot-places (mismo color, tamaño y
+   peso normal), sin el marcador del UA, con su ícono de estado delante:
+   `+` colapsado, `↑` (chevron-up) abierto con la lista ya asomada arriba. */
 .sn-foot-tools-summary {
 	cursor: pointer; list-style: none;
+	display: inline-flex; align-items: center; gap: var(--sn-s-1);
 	color: var(--sn-ink-soft);
 	font-size: calc(var(--sn-fs-sm) * .8);
 	font-weight: 400;
@@ -1742,6 +1773,9 @@ canvas, iframe,
 .sn-foot-tools-summary::-webkit-details-marker { display: none; }
 .sn-foot-tools-summary::marker { content: ""; }
 .sn-foot-tools-summary:hover { color: var(--sn-nova); }
+.sn-foot-tools-up { display: none; }
+.sn-foot-tools-dd[open] .sn-foot-tools-plus { display: none; }
+.sn-foot-tools-dd[open] .sn-foot-tools-up { display: inline-block; }
 
 /* ── Disclosure animado (GENÉRICO, para todo <details> del skin) ──
    Anima apertura/cierre con la API moderna: ::details-content envuelve el
@@ -2219,7 +2253,8 @@ details[open]::details-content { block-size: auto; opacity: 1; }
    fondo papel, filete `--sn-hairline-soft` casi imperceptible, esquinas
    `--sn-radius` y mismo ritmo de padding/margen. El `float: right` que
    trae core en `.mw-changeslist-legend` se respeta (es el patrón
-   esperado en Cambios Recientes); aquí solo cambia su vestimenta. */
+   esperado en Cambios Recientes); aquí cambiamos su vestimenta Y la
+   desflotamos (ver `.mw-changeslist-legend` abajo). */
 .sn-body :is(.mw-changeslist-legend, .mw-specialpages-notes) {
 	margin: var(--sn-s-4) 0 var(--sn-s-6);
 	padding: var(--sn-s-3) var(--sn-s-4);
@@ -2230,11 +2265,15 @@ details[open]::details-content { block-size: auto; opacity: 1; }
 	font-size: var(--sn-fs-sm);
 	line-height: var(--sn-leading);
 }
-/* Cuando va flotada (cambios recientes), respeta la separación lateral
-   del bloque editorial sin pegarse al texto. */
+/* Desflotada: el core la trae `float: right; clear: right; margin-left: 1em`
+   (mediawiki.special.changeslist.legend.less) y rcfilters la flota también.
+   La queremos como bloque normal de ancho completo, no pegada a la derecha
+   sobre la lista. */
 .sn-body .mw-changeslist-legend {
-	margin-left: var(--sn-s-4);
-	max-width: 26rem;
+	float: none;
+	clear: none;
+	margin-left: 0;
+	max-width: none;
 }
 .sn-body :is(.mw-changeslist-legend, .mw-specialpages-notes) summary {
 	cursor: pointer;

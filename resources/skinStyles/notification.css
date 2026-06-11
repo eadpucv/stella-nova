@@ -1,0 +1,124 @@
+/* ============================================================
+ * skinStyles/notification.css — Stella Nova
+ *
+ * Tokeniza y REUBICA los avisos flotantes del CORE (mw.notify):
+ * el "Se guardó la edición", "Página marcada para borrado", avisos de
+ * vigilancia, etc. — toda la familia mediawiki.notification.
+ *
+ * DOS PROBLEMAS QUE RESUELVE (ambos vienen del core, no del skin):
+ *
+ *   1. POSICIÓN. El core ancla `.mw-notification-area` arriba a la
+ *      derecha (`position: absolute|fixed; top:0; right:0; width:20em`,
+ *      ver resources/src/mediawiki.notification/{common,default}.less del
+ *      core). En Stella Nova esa esquina la ocupa el `.sn-header` sticky
+ *      con la barra de acciones (editar, historial, menús). El toast la
+ *      tapaba y, como cada `.mw-notification` lleva `pointer-events:auto`
+ *      + `cursor:pointer` (un clic la cierra), los clics sobre la barra
+ *      caían en el toast en vez de en los botones → "impide cualquier
+ *      acción mientras esté activo". Lo bajamos al ZÓCALO INFERIOR
+ *      DERECHO (patrón toast), lejos del header; la barra de acciones
+ *      queda siempre operable.
+ *
+ *   2. ESTILO. El core compila sus colores desde variables Less de
+ *      WikimediaUI en build-time (@background-color-base, @border-color-…):
+ *      hex congelados que NO pasan por var() → ignoran los tokens del skin
+ *      y no voltean con el tema. Aquí reescribimos caja, borde, sombra,
+ *      tipografía y las variantes (éxito/aviso/error) con var(--sn-…), de
+ *      modo que el aviso obedece al papel, la tinta y el flip claro/oscuro.
+ *
+ * Cargado vía ResourceModuleSkinStyles con prefijo `+mediawiki.notification`:
+ * este CSS se concatena DESPUÉS del core dentro del mismo módulo, así que
+ * a igualdad de especificidad (selectores de una sola clase, igual que el
+ * core) gana por orden de cascada.
+ * ============================================================ */
+
+/* ─── Posición: zócalo inferior derecho, fuera del header sticky ─── */
+/* Forzamos `fixed` en los DOS estados que alterna el JS del core
+   (.mw-notification-area-layout cuando estás arriba, .-floating tras
+   hacer scroll): así el aviso vive siempre pegado al viewport abajo a la
+   derecha y no salta al desplazarte. El overlay padre (absolute, full-body,
+   overflow:hidden, pointer-events:none) deja de importar: un descendiente
+   `fixed` escapa a su recorte, de modo que la sombra ya no se corta y no
+   necesitamos el padding-colchón de 1em del core. */
+.mw-notification-area,
+.mw-notification-area-layout,
+.mw-notification-area-floating {
+	position: fixed;
+	top: auto;
+	left: auto;
+	right: var(--sn-s-4);
+	bottom: var(--sn-s-4);
+	width: auto;
+	max-width: min(24em, calc(100vw - var(--sn-s-4) * 2));
+	padding: 0;
+	z-index: 10000;
+	font-size: var(--sn-fs-sm);
+	line-height: var(--sn-leading);
+}
+
+/* ─── La caja del aviso ─── */
+.mw-notification {
+	box-sizing: border-box;
+	margin: 0 0 var(--sn-s-2);
+	padding: var(--sn-s-3) var(--sn-s-4);
+	background-color: var(--sn-paper);
+	color: var(--sn-ink);
+	border: 1px solid var(--sn-paper-edge);
+	/* Filete lateral de acento — neutro por defecto, coloreado por variante. */
+	border-left: 3px solid var(--sn-ink-faint);
+	border-radius: var(--sn-radius);
+	box-shadow: var(--sn-lift);
+	word-break: break-word;
+}
+
+.mw-notification-title {
+	font-weight: 600;
+	color: var(--sn-ink);
+}
+
+.mw-notification a {
+	color: var(--sn-link);
+	text-decoration: none;
+}
+
+.mw-notification a:hover {
+	color: var(--sn-link-hover);
+	text-decoration: underline;
+}
+
+/* ─── Variantes por tipo — filete + tinte de fondo con los washes ─── */
+.mw-notification.mw-notification-type-success {
+	border-left-color: var(--sn-ok);
+	background-color: var(--sn-ok-wash);
+}
+
+.mw-notification.mw-notification-type-warn {
+	border-left-color: var(--sn-warn);
+	background-color: var(--sn-warn-wash);
+}
+
+.mw-notification.mw-notification-type-error {
+	border-left-color: var(--sn-danger);
+	background-color: var(--sn-danger-wash);
+}
+
+/* El aviso de "Se guardó la edición" sale por mw.notify SIN type (solo
+   classes:['postedit'], ver mediawiki.action.view.postEdit.js del core),
+   así que por sí mismo caería en el estilo neutro. Es una confirmación:
+   le damos el mismo acento de éxito que la variante success. */
+.mw-notification.postedit {
+	border-left-color: var(--sn-ok);
+}
+
+/* ─── Movimiento: la diapositiva entra desde la derecha (coherente con el
+   nuevo anclaje). Respetamos prefers-reduced-motion. ─── */
+@media ( prefers-reduced-motion: reduce ) {
+	.mw-notification {
+		transition: opacity 0.2s ease-in-out;
+		transform: none;
+	}
+
+	.mw-notification-replaced {
+		transform: none;
+	}
+}
