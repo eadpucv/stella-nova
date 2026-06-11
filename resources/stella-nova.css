@@ -869,7 +869,9 @@ html[data-sn-notice-hide] .sn-notice { display: none; }
 	margin: var(--sn-s-7) 0;
 }
 .sn-body :is(img, video) { max-width: 100%; height: auto; }
-.sn-body figure { margin: var(--sn-s-5) 0; }
+/* Solo margen vertical: margin-block en vez de margin para NO pisar el
+   margin-inline:auto con que content-media centra .mw-halign-center. */
+.sn-body figure { margin-block: var(--sn-s-5); }
 
 /* .img-circle: override de MediaWiki:Common.css.
    En Common.css la regla aplica clip-path:circle() al <figure>, NO al <img>.
@@ -2168,7 +2170,7 @@ details[open]::details-content { block-size: auto; opacity: 1; }
 	   grilla, así que la ficha va fuera de grilla a 1.4 × fs-table. */
 	line-height: 1.4;
 }
-.sn-body table:is(.template, .plantilla) > tbody > tr { vertical-align: top; text-transform: uppercase; font-size: 89%; letter-spacing: 0.045ex;}
+.sn-body table:is(.template, .plantilla) > tbody > tr { vertical-align: top; font-size: 89%; letter-spacing: 0.045ex;}
 .sn-body table:is(.template, .plantilla) > tbody > tr > :is(th, td) { border: 0; }
 /* `:first-child` para empatar la especificidad (0,3,4) de la regla de
    "fila de cabecera" de wikitable, que si no marca esta primera th a 600.
@@ -2176,7 +2178,8 @@ details[open]::details-content { block-size: auto; opacity: 1; }
 .sn-body table:is(.template, .plantilla) > tbody > tr > th,
 .sn-body table:is(.template, .plantilla) > tbody > tr:first-child > th {
 	width: 20%; min-width: 110px;
-	padding-right: 1.5ex;
+	padding-right: 1ex;
+	text-transform: uppercase;
 	text-align: right;
 	font-weight: 355;
 	letter-spacing: .03ex;
@@ -2330,7 +2333,7 @@ details[open]::details-content { block-size: auto; opacity: 1; }
    Modificadores combinables:
      · Columnas .......... cols-1…6 · cols-auto · cols1-2 · cols2-1
      · Espaciado ......... gap-0 · gap-s · gap-m (=def) · gap-l
-     · Flujo ............. (horizontal por defecto) · flujo-v / stack
+     · Flujo ............. por filas (default) · flujo-v (llena columnas) · stack (1 col)
      · Alineación celda .. align-top/center/bottom/baseline (+ arriba/centro/abajo)
      · Margen contenedor . sin-margen / flush (anula el margen vertical)
      · Ancho ............. full / completa (rompe --sn-measure a todo el campo)
@@ -2368,10 +2371,35 @@ details[open]::details-content { block-size: auto; opacity: 1; }
 .sn-body :is(.grid, .grilla).gap-m { --sn-grid-gap: var(--sn-s-4); }
 .sn-body :is(.grid, .grilla).gap-l { --sn-grid-gap: var(--sn-s-6); }
 
-/* Flujo vertical: pila las celdas en una sola columna con el mismo gap.
-   Gana sobre cols-* (más específico por la 2ª clase) si se combinan por
-   error; pensado para usarse solo, sin cols. */
-.sn-body :is(.grid, .grilla):is(.flujo-v, .stack) {
+/* Flujo vertical (column-major): los elementos LLENAN cada columna de
+   arriba abajo y al terminarla saltan a la siguiente, en vez de ir por
+   filas (que es como reparte `grid` por defecto). Comparar:
+       por filas (default):   por columnas (flujo-v):
+         1 2 3                   1 4 7
+         4 5 6                   2 5 8
+   Se apoya en columnas CSS (multicol), NO en `grid-auto-flow: column`,
+   porque grid no reparte un nº arbitrario de celdas en vertical sin que
+   le fijes las filas a mano (ceil(n/cols), que CSS no sabe calcular);
+   multicol balancea solo. El nº de columnas lo toma de cols-N; sin
+   cols-N usa 2. Para apilar en UNA sola columna usa `.stack`, no esto. */
+.sn-body :is(.grid, .grilla).flujo-v {
+	display: block;
+	column-count: 2;
+	column-gap: var(--sn-grid-gap);
+}
+.sn-body :is(.grid, .grilla).flujo-v.cols-1 { column-count: 1; }
+.sn-body :is(.grid, .grilla).flujo-v.cols-2 { column-count: 2; }
+.sn-body :is(.grid, .grilla).flujo-v.cols-3 { column-count: 3; }
+.sn-body :is(.grid, .grilla).flujo-v.cols-4 { column-count: 4; }
+.sn-body :is(.grid, .grilla).flujo-v.cols-5 { column-count: 5; }
+.sn-body :is(.grid, .grilla).flujo-v.cols-6 { column-count: 6; }
+/* No partir una celda (tarjeta, figura, lista) entre dos columnas. */
+.sn-body :is(.grid, .grilla).flujo-v > * { break-inside: avoid; }
+
+/* Pila vertical: una sola columna apilada (alias retrocompat `.stack`).
+   A diferencia de `.flujo-v`, esto NO reparte en varias columnas: fuerza
+   1 columna aunque haya cols-N. Pensado para usarse solo. */
+.sn-body :is(.grid, .grilla).stack {
 	grid-template-columns: minmax(0, 1fr);
 	grid-auto-flow: row;
 }
@@ -2399,15 +2427,27 @@ details[open]::details-content { block-size: auto; opacity: 1; }
 	.sn-body :is(.grid, .grilla).cols-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 	.sn-body :is(.grid, .grilla).cols-5,
 	.sn-body :is(.grid, .grilla).cols-6 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+	/* Mismo desescalado para el flujo vertical (multicol). */
+	.sn-body :is(.grid, .grilla).flujo-v.cols-4 { column-count: 2; }
+	.sn-body :is(.grid, .grilla).flujo-v.cols-5,
+	.sn-body :is(.grid, .grilla).flujo-v.cols-6 { column-count: 3; }
 }
 @media (max-width: 48rem) {
-	.sn-body :is(.grid, .grilla).cols-2,
-	.sn-body :is(.grid, .grilla).cols-3,
-	.sn-body :is(.grid, .grilla).cols-4,
-	.sn-body :is(.grid, .grilla).cols-5,
-	.sn-body :is(.grid, .grilla).cols-6,
-	.sn-body :is(.grid, .grilla).cols1-2,
-	.sn-body :is(.grid, .grilla).cols2-1 { grid-template-columns: minmax(0, 1fr); }
+	/* Móvil: TODO a una sola columna —grid o flujo vertical (multicol),
+	   simétrico o asimétrico—. Sin esto, una grilla densa queda ilegible en
+	   teléfono. Las asimétricas cols1-2 / cols2-1 también colapsan. */
+	.sn-body :is(.grid, .grilla):is(.cols-2, .cols-3, .cols-4, .cols-5, .cols-6, .cols1-2, .cols2-1) {
+		grid-template-columns: minmax(0, 1fr);
+	}
+	/* OJO especificidad: la regla de 64rem `.flujo-v.cols-4` lleva 2 clases
+	   (0,4,0); para ganarle aquí y forzar 1 columna, estos selectores deben
+	   igualar esa especificidad (`.flujo-v` + `:is(.cols-N)` = 0,4,0) y venir
+	   DESPUÉS en la fuente. Un simple `.flujo-v` (0,3,0) NO basta: perdería
+	   contra el desescalado a 2 col y nunca bajaría a 1. */
+	.sn-body :is(.grid, .grilla).flujo-v,
+	.sn-body :is(.grid, .grilla).flujo-v:is(.cols-1, .cols-2, .cols-3, .cols-4, .cols-5, .cols-6, .cols1-2, .cols2-1) {
+		column-count: 1;
+	}
 }
 
 /* ─── Editor: tipografía monoespaciada recién instalada (IBM Plex Mono),

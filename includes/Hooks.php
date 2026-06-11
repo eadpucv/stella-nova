@@ -75,6 +75,10 @@ class Hooks {
 				'elements'       => true,
 				'content-links'  => true,
 				'content-tables' => true,
+				// content-media trae los floats del markup estándar de imagen
+				// (.mw-halign-*, .tright/.tleft, thumb): sin esta feature
+				// left|right|center|none en [[Archivo:...]] no tienen efecto.
+				'content-media'  => true,
 				'toc'            => true,
 			],
 			'styles' => [
