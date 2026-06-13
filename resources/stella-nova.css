@@ -2245,11 +2245,61 @@ details[open]::details-content { block-size: auto; opacity: 1; }
 	color: inherit;
 	line-height: inherit;
 }
+/* ── Marcos de imagen, miniaturas y galerías — tokenización + modo oscuro ──
+   El módulo de medios del core (mediawiki.skinning.content.media y
+   mediawiki.page.gallery.styles) hornea sus colores como LITERALES claros
+   (`#ccc`, `#f9f9f9`, `#eaecf0`, `#efefef`) compilados desde LESS — NO como
+   `var(--…)`. Por eso el remapeo Codex→--sn-* de tokens.css (que sí voltea
+   vía light-dark) no los alcanza: en oscuro el marco quedaba gris claro y la
+   leyenda como texto claro sobre fondo casi blanco (ilegible). Aquí
+   reescribimos marco + leyenda con tokens --sn-* que SÍ voltean, y subimos la
+   especificidad lo justo para ganarle a los selectores del core.
+   `border-color` (no `border`) preserva los `border-bottom:0`/`border-top:0`
+   con que el core une imagen y leyenda en una sola tarjeta. La superficie
+   `--sn-sunk 60%` es la MISMA que usa la miniatura legacy → paridad visual
+   entre miniaturas Parsoid (figure) y de wikitexto clásico (.thumbinner). */
+
+/* Miniaturas Parsoid: <figure typeof="mw:File/Thumb|Frame"> + su leyenda. */
+.sn-body :is(figure[typeof~="mw:File/Thumb"], figure[typeof~="mw:File/Frame"]),
+.sn-body :is(figure[typeof~="mw:File/Thumb"], figure[typeof~="mw:File/Frame"]) > figcaption {
+	background-color: color-mix(in oklab, var(--sn-sunk) 60%, transparent);
+	border-color: var(--sn-hairline);
+	/* El marco del core es CONTINUO: el <figure> lleva borde salvo abajo y la
+	   leyenda (table-caption) lleva borde salvo arriba, y ambas se tocan. El
+	   `margin-top` genérico de `.sn-body figcaption` (pensado para imágenes SIN
+	   marco) abre un hueco que parte el frame en dos y "descontinúa" el borde.
+	   Aquí lo anulamos: la leyenda va pegada al pie de la imagen. */
+	margin-top: 0;
+}
+
+/* La "lupa de ampliar" del core (magnify-clip*.svg, un SVG claro fijo que no
+   voltea) la flotaba en cada leyenda enmarcada vía `figcaption::before` +
+   `.mw-file-description::after`. Es cromo heredado que Vector moderno ya
+   quitó; lo retiramos para que no aparezca el ícono claro sobre el marco. */
+.sn-body figure[typeof~="mw:File/Thumb"] > figcaption::before,
+.sn-body figure[typeof~="mw:File/Thumb"] > :is(.mw-file-description, .mw-file-magnify)::after {
+	content: none;
+}
+
+/* Miniaturas de wikitexto clásico (.thumbinner) y tamaños por defecto. */
 .sn-body :is(.thumbinner, .mw-default-size, figure.mw-default-size) {
 	background: color-mix(in oklab, var(--sn-sunk) 60%, transparent);
 	border-color: var(--sn-hairline);
 }
-.sn-body :is(.thumbimage, figure img, .mw-image-border img) {
+
+/* Filete de la imagen interna (mw-file-element / .thumbimage / border=). */
+.sn-body :is(.thumbimage, .thumbborder, figure img, .mw-image-border img) {
+	border-color: var(--sn-hairline);
+}
+
+/* Galerías tradicionales (mediawiki.page.gallery.styles, carga on-demand en
+   páginas con <gallery>): cada caja `li.gallerybox div.thumb` trae
+   `border:@border-subtle; background:@background-color-neutral-subtle`
+   horneados a literal claro. Las variantes packed/nolines los ponen a
+   `transparent`/`border:0` con mayor especificidad (0,3,3), así que esta
+   regla (0,3,2) sólo viste la galería tradicional y las deja intactas. */
+.sn-body li.gallerybox div.thumb {
+	background-color: color-mix(in oklab, var(--sn-sunk) 60%, transparent);
 	border-color: var(--sn-hairline);
 }
 /* Bordes/fondos genéricos de wikitexto de uso común. (El <hr> ya se define
