@@ -9,6 +9,13 @@ ajustes editoriales. La fuente de verdad del comportamiento es
 [`specs/stella-nova.allium`](specs/stella-nova.allium); cada entrada que toque
 comportamiento debería reflejarse también ahí.
 
+## [0.4.2] — 2026-06-15
+
+### Changed
+- **Pie de miniatura de galería (`.gallerytext`).** Baja al grado más pequeño
+  del skin (`--sn-fs-xs`), ganando al `font-size: 94%` del core por
+  especificidad (`.sn-body .gallerytext`).
+
 ## [0.4.1] — 2026-06-15
 
 ### Added

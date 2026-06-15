@@ -2325,6 +2325,10 @@ details[open]::details-content { block-size: auto; opacity: 1; }
 	background-color: color-mix(in oklab, var(--sn-sunk) 60%, transparent);
 	border-color: var(--sn-hairline);
 }
+/* Pie de cada miniatura de galería: al grado más pequeño del skin. */
+.sn-body .gallerytext {
+	font-size: var(--sn-fs-xs);
+}
 /* Bordes/fondos genéricos de wikitexto de uso común. (El <hr> ya se define
    arriba, en `.sn-body hr`; aquí no se repite.) */
 .sn-body :is(.mw-references-wrap, .reflist, .references) {
