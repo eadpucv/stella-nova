@@ -761,6 +761,14 @@ html[data-sn-notice-hide] .sn-notice { display: none; }
 	hyphens: auto;
 	hyphenate-limit-chars: 6 3 3;
 }
+/* Párrafo vacío que MW (core: `Parser::removeP`/limpieza de bloques) marca con
+   `.mw-empty-elt` cuando un bloque —p.ej. el `<div class="full-width">` de un
+   Widget, precedido por el salto de línea inicial que emite la extensión— deja
+   un <p></p> huérfano como primer hijo de .mw-parser-output. El CSS de core lo
+   oculta con `.mw-empty-elt{display:none}`, pero esta skin no carga esos
+   módulos, así que replicamos la regla: sin esto el <p> hereda el `margin` de
+   `.sn-body p` y abre un hueco fantasma sobre el contenido. */
+.sn-body .mw-empty-elt { display: none; }
 /* La medida de lectura ahora la fija --sn-measure en la hoja (.sn-paper-wrap),
    una sola restricción de ancho. (Antes había aquí un `width:80%` sobre los <p>
    de nivel superior; se retiró porque max-width:--sn-measure ya hace el trabajo
@@ -975,11 +983,24 @@ html[data-sn-notice-hide] .sn-notice { display: none; }
    diseñadas con hero al tope, o no marcar la primera imagen como full-width.
    .sn-indicators está ahora position:absolute (ver más arriba) y no ocupa
    flujo, por lo que .sn-body es siempre el primer elemento de flujo dentro
-   del paper en páginas con __NOTITLE__. */
+   del paper en páginas con __NOTITLE__.
+
+   Variante .mw-empty-elt: los Widgets emiten un salto de línea inicial antes de
+   su HTML de bloque, y MW deja un `<p class="mw-empty-elt">` vacío como primer
+   hijo de .mw-parser-output, justo antes del `.full-width` (p.ej. Widget:P5 como
+   hero en Discusión:Casiopea). Ese <p> va `display:none` (ver arriba) pero NO
+   sale del cómputo de :first-child, así que el `.full-width` deja de ser
+   :first-child y la cadena de arriba no dispara. Reconocemos el patrón con
+   `p.mw-empty-elt:first-child + .full-width` en cada nivel de wrapper, mismas
+   declaraciones. */
 .sn-body > :is(.full-width, [class~="'full-width'"]):first-child,
 .sn-body > *:first-child > :is(.full-width, [class~="'full-width'"]):first-child,
 .sn-body > *:first-child > *:first-child > :is(.full-width, [class~="'full-width'"]):first-child,
-.sn-body > *:first-child > *:first-child > *:first-child > :is(.full-width, [class~="'full-width'"]):first-child {
+.sn-body > *:first-child > *:first-child > *:first-child > :is(.full-width, [class~="'full-width'"]):first-child,
+.sn-body > p.mw-empty-elt:first-child + :is(.full-width, [class~="'full-width'"]),
+.sn-body > *:first-child > p.mw-empty-elt:first-child + :is(.full-width, [class~="'full-width'"]),
+.sn-body > *:first-child > *:first-child > p.mw-empty-elt:first-child + :is(.full-width, [class~="'full-width'"]),
+.sn-body > *:first-child > *:first-child > *:first-child > p.mw-empty-elt:first-child + :is(.full-width, [class~="'full-width'"]) {
 	margin-block-start: calc(-1 * var(--sn-paper-py));
 	border-start-start-radius: var(--sn-radius-paper);
 	border-start-end-radius:   var(--sn-radius-paper);
