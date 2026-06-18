@@ -353,6 +353,11 @@ html[data-sn-modal] .sn-header {
 
 /* Página: grupos (espacios · vistas · acciones · variantes) con filete */
 .sn-mm-grp { padding: var(--sn-s-1) 0; }
+/* Un grupo vacío (p. ej. `data-variants` cuando la página no tiene variantes de
+   idioma) se emite como `<ul class="sn-mm-grp"></ul>`: sin esto seguía contando
+   como `.sn-mm-grp + .sn-mm-grp` y arrastraba el filete, dejando un divisor
+   colgando al final del menú. Ocultarlo lo saca del flujo y del filete. */
+.sn-mm-grp:empty { display: none; }
 .sn-mm-grp + .sn-mm-grp {
 	border-top: 1px solid var(--sn-hairline-soft); margin-top: var(--sn-s-1);
 }
@@ -1018,6 +1023,32 @@ html[data-sn-notice-hide] .sn-notice { display: none; }
 	border-start-end-radius:   var(--sn-radius-paper);
 	overflow: hidden;
 }
+/* Variante Widget solo-scripts: los Widgets (p.ej. Widget:P5 como hero/canvas
+   de la portada) emiten su <script> inline, y MW lo envuelve en un <p> que pasa
+   a ser :first-child de .mw-parser-output, justo antes del `.full-width`. Ese
+   <p> es invisible pero NO es `mw-empty-elt` (contiene <script>, no es whitespace
+   puro), así que ni la regla base ni la variante mw-empty-elt disparan y el
+   canvas queda con el hueco del padding superior. Reconocemos el patrón con
+   `p:has(>script)` cuyos únicos hijos-elemento son scripts —`:not(:has(>:not(script)))`
+   evita el caso legítimo "párrafo de texto + imagen full-width a media página".
+   Mismo cuerpo de declaraciones que la regla base. */
+.sn-body :is(p):first-child:has(> script):not(:has(> :not(script)))
+	+ :is(.full-width, [class~="'full-width'"]) {
+	margin-block-start: calc(-1 * var(--sn-paper-py));
+	border-start-start-radius: var(--sn-radius-paper);
+	border-start-end-radius:   var(--sn-radius-paper);
+	overflow: hidden;
+}
+/* …y ese mismo <p> solo-scripts DEBE además colapsar: no renderiza nada (los
+   <script> son display:none) pero como bloque SÍ ocupa caja, dejando un hueco
+   sobre el canvas y, peor, impidiendo que el margen negativo de arriba alcance
+   el borde (el bleed-top colapsa hasta el padding del papel solo si el
+   `.full-width` es el primer elemento DE FLUJO). Se oculta igual que
+   `.mw-empty-elt`; el <script> se ejecuta de todas formas (display:none no
+   impide la ejecución), así que el Widget P5 sigue inicializándose. */
+.sn-body :is(p):first-child:has(> script):not(:has(> :not(script))) {
+	display: none;
+}
 .sn-body > :is(.full-width, [class~="'full-width'"]):last-child,
 .sn-body > *:last-child > :is(.full-width, [class~="'full-width'"]):last-child,
 .sn-body > *:last-child > *:last-child > :is(.full-width, [class~="'full-width'"]):last-child,
@@ -1491,28 +1522,83 @@ canvas, iframe,
 	pointer-events: none;
 }
 .sn-fs-md > * { pointer-events: auto; }
+/* Disparador del menú a pantalla completa: el glifo de la constelación flota
+   arriba a la derecha sobre el lienzo (que va de claro a oscuro con la
+   animación P5 y con el tema). Para garantizar contraste sobre CUALQUIER fondo
+   —sin un halo blanco fijo que no escala con el modo— el glifo se pinta como el
+   NEGATIVO del cielo que tiene detrás (ver `.sn-fs-glyph`): oscuro sobre fondo
+   claro, claro sobre fondo oscuro, color complementario sobre las órbitas. */
 .sn-fs-trigger {
+	position: relative; z-index: 0;       /* contiene el disco ::before detrás del glifo */
 	display: inline-flex; align-items: center; justify-content: center;
-	width: 2.5rem; height: 2.5rem; padding: 0;
+	width: 3rem; height: 3rem; padding: 0;
 	background: transparent; border: 0; cursor: pointer;
-	color: var(--sn-ink);                /* el glifo SVG usa currentColor */
-	border-radius: var(--sn-radius);
-	transition: color var(--sn-dur-1), transform var(--sn-dur-1);
+	border-radius: 50%;
+	transition: transform var(--sn-dur-2) var(--sn-ease);
+}
+/* Afordancia de hover/focus en DOS capas, ambas círculos del 110% del botón
+   (`inset` negativo), holgadas alrededor del glifo, que entran escalando:
+     · ::before — el FROST: el círculo completo aplica el mismo efecto de
+       desenfoque + saturación de la barra de menú, PERO sin relleno de color
+       (solo `backdrop-filter`), así el cristal se nota aunque no haya disco.
+     · ::after  — el ARO: un hilo finísimo (~0.75px) en `--sn-nova`, pintado y
+       recortado a un anillo con `mask` radial; pinta SOBRE el frost.
+   Un disco con relleno opaco pesaba sobre fondos claros; el frost sin color no. */
+.sn-fs-trigger::before,
+.sn-fs-trigger::after {
+	content: "";
+	position: absolute; inset: -0.15rem; z-index: -1;   /* 3rem → 3.3rem (110%) */
+	border-radius: 50%;
+	opacity: 0; transform: scale(.7);
+	transition: opacity var(--sn-dur-1) var(--sn-ease),
+	            transform var(--sn-dur-2) var(--sn-ease);
+	pointer-events: none;
+}
+.sn-fs-trigger::before {
+	-webkit-backdrop-filter: saturate(1.6) blur(2px);
+	backdrop-filter: saturate(1.6) blur(2px);
+}
+.sn-fs-trigger::after {
+	background: var(--sn-nova);
+	-webkit-mask: radial-gradient(closest-side, transparent calc(100% - 0.75px), #000 calc(100% - 0.75px));
+	        mask: radial-gradient(closest-side, transparent calc(100% - 0.75px), #000 calc(100% - 0.75px));
+}
+.sn-fs-trigger:hover::before, .sn-fs-trigger:focus-visible::before,
+.sn-fs-trigger:hover::after,  .sn-fs-trigger:focus-visible::after {
+	opacity: 1; transform: scale(1);
 }
 .sn-fs-trigger:hover, .sn-fs-trigger:focus-visible {
-	color: var(--sn-nova);
+	transform: scale(1.05);
 }
 .sn-fs-trigger:focus-visible {
-	outline: 2px solid var(--sn-nova); outline-offset: 2px;
+	outline: 2px solid var(--sn-nova); outline-offset: 3px;
 }
 .sn-fs-glyph, .sn-fs-glyph svg {
-	display: block; width: 2.5rem; height: 2.5rem;
+	display: block; width: 2.4rem; height: 2.4rem;
 }
-.sn-fs-glyph svg {
-	border-radius: var(--sn-radius);
-	/* Cuño seco: brillo blanco duro y muy cercano bajo la constelación, como
-	   el relieve del papel embossed (el isotipo como sello en seco). */
-	filter: drop-shadow(1px 1px 0 rgba(255, 255, 255, .8));
+/* Fallback (navegadores sin backdrop-filter): glifo temático plano (el <svg>
+   inline usa currentColor = --sn-ink, oscuro en claro / claro en oscuro). */
+.sn-fs-glyph { color: var(--sn-ink); }
+.sn-fs-glyph {
+	/* Silueta de la constelación como máscara (mismas coordenadas que
+	   casiopea-icon.svg; estrellas opacas, líneas conectoras al 50%). */
+	--sn-glyph-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 148 148'%3E%3Cg transform='matrix(0.892,0,0,0.892,7.41,23.33)'%3E%3Cg transform='matrix(1.1172,0,0,1.1172,-8.92,-3.72)'%3E%3Cpath d='M 22.676 21.837 L 45.501 59.142 L 77.973 52.747 C 77.973 52.747 98.206 93.357 97.975 93.357 C 97.744 93.357 130.013 63.639 130.013 63.639' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round' opacity='0.5'/%3E%3Ccircle cx='22.613' cy='21.911' r='6'/%3E%3Ccircle cx='45.826' cy='57.671' r='6'/%3E%3Ccircle cx='77.438' cy='52.751' r='6'/%3E%3Ccircle cx='97.134' cy='92.888' r='6'/%3E%3Ccircle cx='129.396' cy='63.714' r='6'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+/* El glifo ES el negativo del cielo: `backdrop-filter: invert(1)` invierte el
+   backdrop real (lienzo P5, órbitas, papel) y el `mask` lo recorta a la silueta
+   de la constelación. Funciona a través del contenedor `fixed` porque
+   backdrop-filter muestrea el backdrop COMPUESTO —a diferencia de
+   `mix-blend-mode`, que queda atrapado en el stacking context del `.sn-fs-md`
+   fijo y blendearía contra transparente. Contraste universal sin halo y sin
+   variante por tema; el <svg> inline se oculta (la silueta viene del mask). */
+@supports ((backdrop-filter: invert(1)) or (-webkit-backdrop-filter: invert(1))) {
+	.sn-fs-glyph {
+		-webkit-backdrop-filter: invert(1);
+		backdrop-filter: invert(1);
+		-webkit-mask: var(--sn-glyph-mask) center / contain no-repeat;
+		        mask: var(--sn-glyph-mask) center / contain no-repeat;
+	}
+	.sn-fs-glyph svg { display: none; }
 }
 
 /* — Modal único de pantalla completa — replica el patrón modal unificado

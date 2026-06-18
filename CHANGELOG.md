@@ -9,6 +9,65 @@ ajustes editoriales. La fuente de verdad del comportamiento es
 [`specs/stella-nova.allium`](specs/stella-nova.allium); cada entrada que toque
 comportamiento debería reflejarse también ahí.
 
+## [0.4.5] — 2026-06-17
+
+### Fixed
+- **Divisor colgando al final del menú de Página (barra superior).** El último
+  grupo (`data-variants`, cuando la página no tiene variantes de idioma) se emite
+  como `<ul class="sn-mm-grp"></ul>` vacío pero seguía contando como
+  `.sn-mm-grp + .sn-mm-grp` y arrastraba el `border-top`, dejando un filete sin
+  nada debajo. Se ocultan los grupos vacíos (`.sn-mm-grp:empty { display:none }`).
+- **El canvas full-width de la portada no topaba arriba (bleed-top no disparaba).**
+  La portada corre en modo pantalla completa y su hero es el Widget P5
+  (`<div id="p5" class="full-width">`). El Widget emite su `<script>` inline y MW
+  lo envuelve en un `<p>` que queda como `:first-child` de `.mw-parser-output`,
+  justo antes del canvas. Ese `<p>` es invisible pero **no** es `mw-empty-elt`
+  (contiene `<script>`, no es whitespace puro), así que ni la regla base de
+  bleed-top ni la variante `mw-empty-elt` (0.4.4) disparaban: el bleed horizontal
+  funcionaba pero el vertical no, dejando el canvas a `--sn-paper-py` del borde.
+  Se añade una variante que reconoce el `<p>` líder solo-scripts vía
+  `p:first-child:has(> script):not(:has(> :not(script)))` y aplica el mismo
+  `margin-block-start` negativo + radios de esquina. El `:not(:has(…))` evita el
+  caso legítimo «párrafo de texto + imagen full-width a media página».
+  Como el `<p>` de scripts **no** es `display:none` (a diferencia de
+  `.mw-empty-elt`), seguía ocupando caja y dejando el hueco aunque el margen
+  negativo aplicara; se le añade `display:none` (el `<script>` se ejecuta igual)
+  para que el `.full-width` sea el primer elemento de flujo y el bleed alcance el
+  borde.
+
+### Changed
+- **Disparador del menú a pantalla completa (`.sn-fs-trigger`).** Se elimina el
+  halo blanco fijo (`drop-shadow` rgba blanco) que no escalaba con el fondo ni
+  con claro/oscuro. El glifo de la constelación pasa a ser el **negativo del
+  cielo**: `backdrop-filter: invert(1)` invierte el backdrop real (lienzo P5,
+  órbitas, papel) y un `mask` con la silueta de la constelación lo recorta —
+  oscuro sobre fondo claro, claro sobre fondo oscuro, color complementario sobre
+  las órbitas. Contraste garantizado sin variante por tema. (Se descartó
+  `mix-blend-mode: difference`: queda atrapado en el stacking context del
+  `.sn-fs-md` fijo y blendea contra transparente, no contra el lienzo —
+  verificado en headless. `backdrop-filter` sí muestrea el backdrop compuesto a
+  través del `fixed`.) Fallback temático plano (`currentColor`/`--sn-ink`) bajo
+  `@supports` para navegadores sin `backdrop-filter`.
+  El hover ya no tiñe el glifo de rojo. La afordancia de hover son DOS capas
+  circulares (110% del botón vía `inset` negativo, entran escalando): un
+  **frost** sin relleno de color (`::before` con `backdrop-filter: saturate(1.6)
+  blur(2px)`, el mismo cristal de la barra de menú, que se nota aunque no haya
+  disco) y, encima, un **aro finísimo** (~0.75px) en `--sn-nova` (`::after`,
+  color recortado a anillo con `mask` radial). (Se descartaron los rellenos
+  opacos previos: `--sn-field` al 60% caía en el gris medio sobre el lienzo
+  casi-negro y, al invertirlo el glifo, daba contraste nulo; un relleno oscuro
+  arreglaba el lienzo oscuro pero pesaba sobre fondos claros — de ahí el frost
+  sin color.)
+
+## [0.4.4] — 2026-06-17
+
+### Fixed
+- **`<p class="mw-empty-elt">` de Widgets abría hueco y rompía el bleed-top.** Los
+  Widgets emiten un salto de línea inicial y MW deja un `<p>` vacío como primer
+  hijo de `.mw-parser-output`, desplazando al `.full-width` del slot `:first-child`.
+  Se reconoce el patrón `p.mw-empty-elt:first-child + .full-width` en cada nivel de
+  wrapper para que el bleed-top siga disparando.
+
 ## [0.4.3] — 2026-06-15
 
 ### Fixed
