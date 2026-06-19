@@ -9,6 +9,29 @@ ajustes editoriales. La fuente de verdad del comportamiento es
 [`specs/stella-nova.allium`](specs/stella-nova.allium); cada entrada que toque
 comportamiento debería reflejarse también ahí.
 
+## [0.4.6] — 2026-06-19
+
+### Added
+- **Filete inferior en las cabeceras de sección colapsables.** La cabecera que
+  contiene `.title-toggle` dibuja un `::after` a todo el ancho, asentado dentro de
+  su `margin-bottom` (centrado en el hueco de 1 baseline), para distinguir los
+  títulos "que abren algo" sin gastar una fila de la retícula. Reemplaza a los
+  `<hr>` entre secciones, que metían un baseline propio y descuadraban el grid.
+
+### Changed
+- **Aro de hover del botón de pantalla completa (`.sn-fs-trigger::after`):** pasa
+  de un hilo sólido (~0.75px, recortado con `mask` radial) a un `border: 2px
+  dotted var(--sn-nova)`. Más legible como afordancia y más simple de mantener.
+
+### Fixed
+- **Switch de Familia (tipografía) más chato que los de Tema y Tamaño en el menú
+  de usuario.** Los segmentos de Tema (`.sn-seg-icon`) y Tamaño (`.sn-seg-sz`)
+  recibían `min-height` + centrado flex, pero el de Familia (`.sn-seg-fam`) no, y
+  encima su `padding: 0` lo achataba. Se mueve el alto uniforme y el centrado a la
+  base `.sn-seg button` (`min-height: 1.9rem`, padding vertical 0 dominado por el
+  min-height) para que los tres switches queden igual de holgados sin importar el
+  alto del glifo.
+
 ## [0.4.5] — 2026-06-17
 
 ### Fixed

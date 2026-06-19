@@ -1423,9 +1423,14 @@ canvas, iframe,
 }
 .sn-seg button {
 	flex: 1; min-width: 0; cursor: pointer;
+	/* Centrado + alto UNIFORME para los tres segmentos (tema · tamaño · familia):
+	   el min-height domina y el contenido (íconos/letras) se centra, así todos
+	   los switches quedan igual de holgados sin importar el alto del glifo. */
+	display: inline-flex; align-items: center; justify-content: center;
+	min-height: 1.9rem;
 	background: transparent; border: 0; color: var(--sn-ink-soft);
 	font: inherit; font-size: var(--sn-fs-sm);
-	padding: .4rem .5rem; border-radius: calc(var(--sn-radius) - 2px);
+	padding: 0 .5rem; border-radius: calc(var(--sn-radius) - 2px);
 	transition: background var(--sn-dur-1), color var(--sn-dur-1);
 }
 .sn-seg button:hover { color: var(--sn-ink); }
@@ -1434,14 +1439,10 @@ canvas, iframe,
 	box-shadow: var(--sn-lift-soft);
 }
 
-/* Segmentos con contenido no-textual (íconos / letras de talla): el botón
-   centra su contenido y, en el caso del ícono, éste sigue el color del
-   botón (ink-soft en reposo, ink al activo/hover) en vez de la política
-   global de íconos — aquí el ícono ES el control. */
-.sn-seg-icon button, .sn-seg-sz button {
-	display: inline-flex; align-items: center; justify-content: center;
-	min-height: 1.6rem;
-}
+/* Segmentos con contenido no-textual (íconos / letras de talla): el ícono sigue
+   el color del botón (ink-soft en reposo, ink al activo/hover) en vez de la
+   política global de íconos — aquí el ícono ES el control. (El centrado y el
+   alto uniforme viven en `.sn-seg button`.) */
 .sn-seg-icon .sn-i { color: inherit; }
 /* Tallas S·M·L: letra que crece con la talla (guiño dimensional). */
 .sn-seg-sz button { font-weight: 600; letter-spacing: .02em; line-height: 1; }
@@ -1455,7 +1456,7 @@ canvas, iframe,
    --sn-font-quote — esos cambian con la preferencia y los specimens
    quedarían iguales al alternar (el bug a evitar). El glifo va a mayor
    tamaño que las S·M·L para que el contraste de familia se lea bien. */
-.sn-seg-fam button { line-height: 1; padding: 0; }
+.sn-seg-fam button { line-height: 1; }
 .sn-fam-spec {
 	font-size: calc(var(--sn-fs-sm) * 1.3);
 	font-weight: 500; line-height: 1;
@@ -1541,8 +1542,8 @@ canvas, iframe,
      · ::before — el FROST: el círculo completo aplica el mismo efecto de
        desenfoque + saturación de la barra de menú, PERO sin relleno de color
        (solo `backdrop-filter`), así el cristal se nota aunque no haya disco.
-     · ::after  — el ARO: un hilo finísimo (~0.75px) en `--sn-nova`, pintado y
-       recortado a un anillo con `mask` radial; pinta SOBRE el frost.
+     · ::after  — el ARO: un `border` punteado (2px dotted) en `--sn-nova`;
+       pinta SOBRE el frost.
    Un disco con relleno opaco pesaba sobre fondos claros; el frost sin color no. */
 .sn-fs-trigger::before,
 .sn-fs-trigger::after {
@@ -1559,9 +1560,7 @@ canvas, iframe,
 	backdrop-filter: saturate(1.6) blur(2px);
 }
 .sn-fs-trigger::after {
-	background: var(--sn-nova);
-	-webkit-mask: radial-gradient(closest-side, transparent calc(100% - 0.75px), #000 calc(100% - 0.75px));
-	        mask: radial-gradient(closest-side, transparent calc(100% - 0.75px), #000 calc(100% - 0.75px));
+	border: 2px dotted var(--sn-nova);
 }
 .sn-fs-trigger:hover::before, .sn-fs-trigger:focus-visible::before,
 .sn-fs-trigger:hover::after,  .sn-fs-trigger:focus-visible::after {
@@ -2781,4 +2780,26 @@ textarea.mw-editfont-monospace {
 }
 .sn-body :is(h1, h2, h3, h4, h5, h6) .title-toggle:hover::after {
 	transform: scale(1.18);
+}
+/* ─── Filete inferior de las cabeceras toggle (reemplaza al <hr>) ───
+   Antes cada sección colapsable se separaba con un <hr>, que metía un baseline
+   propio y descuadraba la retícula. En su lugar, la cabecera que ESCONDE algo
+   (la que contiene `.title-toggle`) dibuja ella misma un filete a todo el ancho,
+   asentado DENTRO de su margin-bottom (= 1 baseline en h2/h3, ver arriba), a
+   media interlínea de la línea de base siguiente. Así el título "que abre" se
+   distingue sin gastar una fila del grid, y al quitar los <hr> el ritmo vertical
+   queda intacto. El `::after` del heading está libre — el icono ± vive en
+   `.title-toggle::after`, no aquí. */
+.sn-body :is(h1, h2, h3, h4, h5, h6):has(.title-toggle) {
+	position: relative;
+}
+.sn-body :is(h1, h2, h3, h4, h5, h6):has(.title-toggle)::after {
+	content: "";
+	position: absolute;
+	left: 0; right: 0;
+	/* Centrado en el margin-bottom. A `0` lo pega bajo el texto;
+	   a `calc(var(--sn-baseline) * -1)` lo lleva a la línea de base siguiente. */
+	bottom: calc(var(--sn-baseline) * -0.5);
+	border-top: var(--sn-hair);                /* 1px solid var(--sn-hairline) */
+	pointer-events: none;
 }
