@@ -9,6 +9,47 @@ ajustes editoriales. La fuente de verdad del comportamiento es
 [`specs/stella-nova.allium`](specs/stella-nova.allium); cada entrada que toque
 comportamiento debería reflejarse también ahí.
 
+## [0.4.8] — 2026-06-19
+
+### Changed
+- **Menú único de pantalla completa (`.sn-md-fs`) ahora es un _top-sheet_.**
+  Antes cubría todo el viewport (`height: 100dvh`); ahora se ancla arriba a
+  ancho completo pero ocupa **solo la altura que necesita su contenido** (con
+  tope `max-height: 100dvh` y scroll interno si lo excede). Lleva filete
+  inferior (`--sn-hairline`) y una sombra suave para despegarlo del lienzo.
+- **Enlaces de Navegación del menú de pantalla completa → nav-pills.** La
+  sección Navegación (Portada + subgrupos del `Sidebar`) dejó de renderizar
+  como lista inline separada por comas y ahora usa las mismas cápsulas
+  (`.sn-fs-pills`) que las secciones "Esta página" y "Usuario". Se eliminó el
+  bloque CSS muerto `.sn-fs-menu .sn-fs-links`.
+- **`h1` del cuerpo ahora en rojo (`--sn-nova`), no en tinta negra.** Iguala el
+  color del `firstHeading` (que ya era nova); el `h1` interno (`=…=`) deja de
+  pintarse `--sn-ink`.
+- **Referencias (`.reference-text`) un grado más pequeñas** (`--sn-fs-sm` →
+  `--sn-fs-xs`, tracking `0.0483ex` → `0.03ex`). Además se fija
+  `font-size: var(--sn-fs-xs)` en `ol.references` para que la **numeración
+  (`::marker`)** herede ese mismo tamaño y deje de verse más grande que el
+  texto de la nota.
+- **Sección toggle expandida: se retira el borde vertical derecho** (la
+  afordancia EXPERIMENTAL de 0.4.7). Al expandir, cabecera y cuerpo siguen
+  pegados y sin filete inferior (se leen como un bloque), pero ya no comparten
+  el borde `--sn-hair` por la derecha ni el `padding-right` que lo despejaba.
+
+### Added
+- **Click fuera del menú de pantalla completa lo cierra.** Al ser ahora un
+  top-sheet hay un "fuera" debajo: una activación (click/tap) sobre el lienzo
+  cierra el menú, además del botón ✕ y de Escape. Realiza el invariante
+  `DismissableByOutsideActivation` de `TransientPanel`, antes excluido para
+  `.sn-md-fs` por presentarse a viewport completo.
+
+### Fixed
+- **Flecha de retorno (`↑`) de las referencias reaparece en pantalla.** La regla
+  `.mw-cite-backlink { display: none }` provenía del módulo `ext.cite.print`
+  (servido solo en `@media print`), pero al capturar el snapshot de Cite se
+  perdió el envoltorio `@media print` y el backlink quedaba oculto también en
+  pantalla — sin forma de volver desde la nota a la cita en el texto. Restaurado
+  el `@media print`: la flecha se ve en pantalla y solo se oculta al imprimir.
+
 ## [0.4.7] — 2026-06-19
 
 ### Added

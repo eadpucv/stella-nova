@@ -196,14 +196,15 @@
 				closeAll();
 			}
 		} );
-		// Click fuera del panel (sólo aplica en desktop, donde es popover;
-		// en compact y en `.sn-md-fs` el modal es fullscreen y no hay
-		// "fuera"). El cierre se hace por X o por ESC.
+		// Click fuera del panel → cerrar. Aplica al popover desktop y al
+		// top-sheet de pantalla completa (`.sn-md-fs`, anclado arriba y solo
+		// tan alto como su contenido → hay "fuera" debajo). El bottom-sheet
+		// modal de compact (no-fs) cierra por X/ESC, no por aquí.
 		doc.addEventListener( 'click', function ( e ) {
 			if ( !activeMenu ) { return; }
-			if ( isCompact() ) { return; }
 			var md = activeMenu.closest( '.sn-md' );
-			if ( md && md.classList.contains( 'sn-md-fs' ) ) { return; }
+			var isFs = !!( md && md.classList.contains( 'sn-md-fs' ) );
+			if ( !isFs && isCompact() ) { return; }
 			if ( activeMenu.contains( e.target ) ) { return; }
 			if ( e.target.closest && e.target.closest( '[data-sn-menu]' ) ) { return; }
 			closeAll();

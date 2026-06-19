@@ -717,7 +717,7 @@ html[data-sn-notice-hide] .sn-notice { display: none; }
 .sn-body :is(h1, .mw-heading1) {
 	font-family: var(--sn-font-text);
 	font-weight: 400; line-height: var(--sn-baseline-2);
-	letter-spacing: -.016em; color: var(--sn-ink);
+	letter-spacing: -.016em; color: var(--sn-nova);   /* rojo, no tinta negra */
 	font-size: var(--sn-fs-display);
 	margin: var(--sn-baseline-2) 0 var(--sn-baseline);
 }
@@ -1606,8 +1606,11 @@ canvas, iframe,
    presentarse fullscreen INCLUSO en desktop, porque vivimos dentro de
    __PANTALLACOMPLETA__ y no hay cabecera donde anclar un popover. */
 .sn-md.sn-md-fs[data-sn-open] .sn-menu-list {
-	position: fixed; inset: 0;
-	width: 100%; height: 100dvh;
+	/* Top-sheet: anclado arriba, ancho completo, pero SOLO la altura que
+	   necesita el contenido (hasta un tope de viewport). El área por debajo
+	   queda libre → un click ahí cierra el menú (lo cablea skin.js). */
+	position: fixed;
+	width: 100%; height: auto; max-height: 100dvh;
 	max-width: none; min-width: 0;
 	display: flex; flex-direction: column;
 	/* Traslúcido: desenfoca y satura el fondo, MISMO lenguaje que la barra
@@ -1617,7 +1620,9 @@ canvas, iframe,
 	-webkit-backdrop-filter: saturate(1.5) blur(16px);
 	backdrop-filter: saturate(1.5) blur(16px);
 	color: var(--sn-ink);
-	border: 0; border-radius: 0; box-shadow: none;
+	border: 0; border-bottom: 1px solid var(--sn-hairline);
+	border-radius: 0;
+	box-shadow: 0 12px 32px -16px rgb(0 0 0 / .35);
 	margin: 0; padding: 0;
 	z-index: 1000;
 	overflow: hidden;
@@ -1665,7 +1670,10 @@ canvas, iframe,
 	grid-template-columns: 1fr;
 	align-content: start;
 	gap: var(--sn-s-6) var(--sn-s-8);   /* row-gap · column-gap (gutter ancho) */
-	flex: 1; min-height: 0;
+	/* Top-sheet: el cuerpo se dimensiona a su contenido (no estira el panel a
+	   pantalla completa) y solo scrollea cuando el panel topa con max-height
+	   (`flex-shrink: 1` + `min-height: 0`). */
+	flex: 0 1 auto; min-height: 0;
 	overflow-y: auto; overscroll-behavior: contain;
 	padding: calc(var(--sn-s-7) + var(--sn-s-2)) var(--sn-s-5) calc(var(--sn-s-6) + env(safe-area-inset-bottom));
 	max-width: var(--sn-shell);
@@ -1721,58 +1729,6 @@ canvas, iframe,
    chrome normal) tiene especificidad (0,2,0) y sobreescribe a nuestras
    reglas de pills/links. Anidamos bajo `.sn-fs-menu` para subir a
    (0,2,1)+ y devolver el control. Aplica a links comunes y a botones. */
-
-/* Lista inline de enlaces separados por coma — usada en la sección
-   Navegación: lectura corrida, sin afordancia de "botón". Cada <li> es
-   inline; `::before` inserta la coma entre items (no antes del primero
-   ni después del último). El link se ve como texto del cuerpo en
-   `--sn-link` (carmín). */
-.sn-fs-menu .sn-fs-links {
-	list-style: none; margin: 0; padding: 0;
-	display: block;
-	line-height: var(--sn-leading);
-}
-.sn-fs-menu .sn-fs-links li {
-	display: inline; margin: 0; padding: 0;
-}
-.sn-fs-menu .sn-fs-links li:not(:last-child)::after {
-	/* Coma PEGADA al enlace que la precede (en su ::after, no en el ::before del
-	   siguiente): así enlace+coma nunca se separan, y el ÚNICO punto de salto es
-	   el espacio que sigue a la coma → ninguna fila empieza con ",". OJO: el
-	   espacio va ESCAPADO (`\0020`), porque el minificador de ResourceLoader
-	   borra el espacio literal de `content: ", "` y dejaría la lista sin punto
-	   de quiebre. El navegador lee `\0020` como espacio normal (quebrable). */
-	content: ",\0020";
-	color: var(--sn-ink-faint);
-}
-.sn-fs-menu .sn-fs-links a {
-	display: inline;                  /* anula display:flex del .sn-menu-list a */
-	padding: 0;                       /* anula padding del .sn-menu-list a */
-	background: transparent;
-	color: var(--sn-link);            /* carmín del skin */
-	text-decoration: none;
-	border: 0;
-	border-radius: 0;
-	font: inherit;
-	/* Mismo tamaño y ancho que los nav-pills (antes heredaba ~--sn-fs-base del
-	   modal, mucho más grande, y por eso desbordaba). Al achicar a --sn-fs-xs
-	   los enlaces caben en su columna en una sola línea. */
-	font-size: var(--sn-fs-xs);
-	font-stretch: normal;
-	/* Enlace ATÓMICO: nunca se parte en dos filas. El salto ocurre ENTRE
-	   enlaces, en el espacio que sigue a la coma (ver el ::after de arriba), y
-	   la coma viaja pegada al enlace → ninguna fila empieza con ",". */
-	white-space: nowrap;
-	transition: color var(--sn-dur-1);
-}
-.sn-fs-menu .sn-fs-links a:hover,
-.sn-fs-menu .sn-fs-links a:focus-visible {
-	color: var(--sn-link-hover);
-	background: transparent;
-	text-decoration: underline;
-	text-underline-offset: 2px;
-}
-.sn-fs-menu .sn-fs-links li.new a { color: var(--sn-link); opacity: .7; }
 
 /* Nav-pills — el lenguaje secundario del modal (acciones). Cada ítem
    es una cápsula compacta; los grupos se acomodan con flex-wrap y gap. */
@@ -2820,25 +2776,16 @@ textarea.mw-editfont-monospace {
 }
 /* ─── EXPERIMENTAL: estado expandido de la sección toggle ───
    Al dejar de estar `.mw-collapsed` el collapsible hermano (mismo selector que
-   usa el icono ±):
-     1. El filete inferior de la cabecera DESAPARECE (ya no separa).
-     2. La cabecera y su collapsible comparten un BORDE VERTICAL por la derecha
-        —misma ley que el filete inferior y el <hr>: `var(--sn-hair)` (1px
-        hairline)— que corre continuo de arriba abajo y los aúna como un bloque,
-        en vez de un fondo. Van pegados (margin 0 entre ambos) y SIN esquinas
-        redondeadas. El borde se asienta en el borde derecho de la columna; el
-        texto se separa de él con padding-right. El padding vertical del cuerpo es
-        múltiplo entero de baseline para no romper la retícula. */
+   usa el icono ±): el filete inferior de la cabecera DESAPARECE (ya no separa)
+   y cabecera + cuerpo quedan pegados (margin 0 entre ambos), leyéndose como un
+   solo bloque. (El borde vertical derecho que aunaba ambos se retiró por
+   decisión de diseño.) */
 .sn-body :is(h1, h2, h3, h4, h5, h6):has(.title-toggle):has(+ .mw-collapsible:not(.mw-collapsed))::after {
-	display: none;                              /* (1) sin filete cuando está abierto */
+	display: none;                              /* sin filete cuando está abierto */
 }
 .sn-body :is(h1, h2, h3, h4, h5, h6):has(.title-toggle):has(+ .mw-collapsible:not(.mw-collapsed)) {
-	margin-bottom: 0;                           /* (2) cierra el hueco hacia el cuerpo */
-	padding-right: var(--sn-s-3);               /* separa el texto del filete */
-	border-right: var(--sn-hair);               /* 1px solid var(--sn-hairline) */
+	margin-bottom: 0;                           /* cierra el hueco hacia el cuerpo */
 }
 .sn-body :is(h1, h2, h3, h4, h5, h6):has(.title-toggle) + .mw-collapsible:not(.mw-collapsed) {
 	margin-top: 0;
-	padding: var(--sn-baseline) var(--sn-s-3) var(--sn-baseline) 0;  /* baseline arriba/abajo, hueco a la derecha */
-	border-right: var(--sn-hair);
 }

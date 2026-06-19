@@ -41,6 +41,11 @@
 }
 
 ol.references {
+	/* La numeración (::marker) hereda el tamaño del <li>; lo fijamos al mismo
+	   grado que .reference-text (--sn-fs-xs) para que el número no quede más
+	   grande que el texto de la nota. */
+	font-size: var(--sn-fs-xs);
+
 	/**
 	 * Resetting *any* counter on an <ol> element messes up the built-in numbering in Firefox.
 	 * Explicitly resetting the built-in "list-item" counter fixes this.
@@ -126,15 +131,21 @@ sup.reference:target {
    compensar la densidad del cuerpo pequeño. */
 .reference-text {
 	font-stretch: 100%;
-	font-size: var(--sn-fs-sm);
-	letter-spacing: 0.0483ex;
+	font-size: var(--sn-fs-xs);
+	letter-spacing: 0.03ex;
 	color: var(--sn-ink);
 }
 
 /* archivo origen: modules/ext.cite.print.less */
-/* opciones del módulo: {'media': 'print'} */
-.mw-cite-backlink {
-	display: none;
+/* opciones del módulo: {'media': 'print'} — el módulo original se sirve
+   SOLO en `@media print`. Al capturar el snapshot se perdió el envoltorio y
+   la regla ocultaba el backlink (la flecha `↑` que vuelve a la cita en el
+   texto) también en pantalla. Restaurado: en pantalla la flecha se ve; solo
+   en impresión se oculta (en papel no hay adónde "saltar"). */
+@media print {
+	.mw-cite-backlink {
+		display: none;
+	}
 }
 
 
