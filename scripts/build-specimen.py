@@ -385,8 +385,11 @@ def body_components():
   — IBM Plex Sans, familia única. Sus alturas de línea son múltiplos enteros
   de <code>--sn-baseline</code> (la interlínea del cuerpo): H1/H2 ocupan
   2 baselines, H3–H6 uno. Escala: <code>--sn-fs-display</code>
-  (1.5–2.0 rem) → <code>--sn-fs-sm</code> (0.82–0.90 rem). El acento de
-  color (carmín <code>--sn-nova</code>) sólo aparece en H3.</p>
+  (1.5–2.0 rem) → <code>--sn-fs-base</code> (el cuerpo, en H5/H6, que nunca
+  bajan del tamaño de lectura). El acento carmín (<code>--sn-nova</code>) recae
+  en los niveles <strong>impares</strong> — H1, H3 y H5; los pares (H2, H4, H6)
+  van en tinta. Ese acento es <strong>transversal</strong>: el H5 sale carmín en
+  cualquier contexto del skin (cuerpo, pie, modales), no sólo en el artículo.</p>
   <div class="grilla cols-2 spec-usage">
 <pre class="howto-code">== Sección principal ==
 === Sub-sección ===
@@ -648,10 +651,16 @@ Filete horizontal: cuatro guiones al inicio: ----</pre>
 
 <section class="comp">
   <h2>Tablas</h2>
-  <p class="meta">Clase <code>.wikitable</code>: encabezados sobre
-  <code>--sn-sunk</code> · filas alternas <code>--sn-hairline-soft</code> ·
-  filete inferior <code>--sn-hairline</code> · caption en
-  <code>--sn-font-display</code>.</p>
+  <p class="meta">Clase <code>.wikitable</code> (y las de consulta semántica
+  <code>.smwtable</code> / <code>.broadtable</code>): diseño minimalista de
+  <strong>solo filetes horizontales</strong> — nunca verticales ni contorno
+  exterior. Cabecera <em>transparente</em> con un filete normal
+  (<code>--sn-hairline</code>) que la separa del cuerpo; entre filas, filete fino
+  (<code>--sn-hairline-soft</code>) uniforme — <strong>sin colores alternados</strong>.
+  Texto a <code>--sn-fs-table</code> (≈80% del cuerpo), todo alineado a la
+  izquierda, sobre la grilla de línea base. En tablas anchas la
+  <code>&lt;table&gt;</code> se vuelve su propia caja de scroll horizontal. Las de
+  resultados (<code>smwtable</code>) realzan la fila bajo el cursor.</p>
   <div class="grilla cols-2 spec-usage">
 <pre class="howto-code">{| class="wikitable"
 |+ Título descriptivo de la tabla
@@ -680,6 +689,40 @@ Filete horizontal: cuatro guiones al inicio: ----</pre>
       </table>
     </div>
   </div>
+
+  <h3 class="spec-subh">Ficha — <code>class="wikitable plantilla"</code></h3>
+  <p class="meta">El modificador <code>plantilla</code> (alias inglés
+  <code>template</code>) convierte la tabla en una <strong>ficha vertical
+  clave→valor</strong> (perfil, ficha técnica): sin filetes, la etiqueta a la
+  derecha en versalita tenue y el valor a la izquierda. Llena el ancho y corre a
+  ¾ de la línea base. Es lo que usan las fichas migradas desde
+  <code>MediaWiki:Common.css</code>.</p>
+  <div class="grilla cols-2 spec-usage">
+<pre class="howto-code">{| class="wikitable plantilla"
+! Tipo de Proyecto
+| Proyecto de Curso
+|-
+! Año
+| 2016
+|-
+! Carrera
+| Diseño Gráfico
+|-
+! Profesor
+| Herbert Spencer
+|}</pre>
+    <div class="sn-paper sn-body demo">
+      <table class="wikitable plantilla">
+        <tbody>
+          <tr><th>Tipo de Proyecto</th><td>Proyecto de Curso</td></tr>
+          <tr><th>Año</th><td>2016</td></tr>
+          <tr><th>Carrera</th><td>Diseño Gráfico</td></tr>
+          <tr><th>Profesor</th><td>Herbert Spencer</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
   <div class="spec-notes">
     <p>Estructura: <code>{|</code> abre la tabla y va con la clase
     <code>wikitable</code> para heredar los estilos del skin.
@@ -687,9 +730,10 @@ Filete horizontal: cuatro guiones al inicio: ----</pre>
     <code>!</code> son celdas de encabezado, <code>|</code> son celdas
     de datos. <code>|-</code> separa filas. <code>|}</code> cierra.</p>
     <p>Atajos: <code>!!</code> y <code>||</code> permiten poner varias
-    celdas en una sola línea. Modificador
-    <code>class="wikitable plantilla"</code> retira los bordes internos
-    para fichas (perfil, ficha técnica).</p>
+    celdas en una sola línea. El modificador
+    <code>class="wikitable plantilla"</code> (arriba) reconvierte la tabla en
+    ficha vertical clave→valor. Para tablas ordenables, añadir
+    <code>sortable</code>: el skin pinta sus propios chevrones de orden.</p>
   </div>
 </section>
 
@@ -1882,16 +1926,12 @@ body.spec { display: flex; flex-direction: column; min-height: 100vh; }
 .sn-toc .num { font-family: var(--sn-font-mono); font-size: var(--sn-fs-xs);
                color: var(--sn-ink-faint); min-width: 1.5em; }
 
-/* Tablas wikitable mínimas (la wiki tiene más reglas; aquí el espécimen) */
-.wikitable { width: 100%; border-collapse: collapse; margin: var(--sn-s-3) 0;
-             font-size: var(--sn-fs-sm); }
-.wikitable caption { caption-side: top; text-align: start; color: var(--sn-ink-soft);
-                     font-size: var(--sn-fs-xs); padding-bottom: var(--sn-s-2);
-                     font-family: var(--sn-font-display); }
-.wikitable :is(th, td) { padding: var(--sn-s-2) var(--sn-s-3); text-align: start;
-                         border-bottom: var(--sn-hair); }
-.wikitable th { font-weight: 500; color: var(--sn-ink); background: var(--sn-sunk); }
-.wikitable tbody tr:nth-child(even) { background: var(--sn-hairline-soft); }
+/* Tablas: SIN andamio propio del espécimen. El estilo real de
+   `.wikitable` / `.smwtable` / `.broadtable` y de las fichas
+   `table.plantilla` vive en stella-nova.css (que el espécimen carga) y se
+   aplica dentro de `.sn-body`. Una regla `.wikitable` local aquí solo
+   introduciría inexactitudes (p.ej. filas alternadas, que el skin NO usa:
+   su diseño son filetes horizontales uniformes, cabecera transparente). */
 
 /* Footer del simulacro de layout */
 .demo-app .sn-footer { padding: var(--sn-s-6) 0; border-top: var(--sn-hair);

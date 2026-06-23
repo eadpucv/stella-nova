@@ -283,16 +283,12 @@ body.spec { display: flex; flex-direction: column; min-height: 100vh; }
 .sn-toc .num { font-family: var(--sn-font-mono); font-size: var(--sn-fs-xs);
                color: var(--sn-ink-faint); min-width: 1.5em; }
 
-/* Tablas wikitable mínimas (la wiki tiene más reglas; aquí el espécimen) */
-.wikitable { width: 100%; border-collapse: collapse; margin: var(--sn-s-3) 0;
-             font-size: var(--sn-fs-sm); }
-.wikitable caption { caption-side: top; text-align: start; color: var(--sn-ink-soft);
-                     font-size: var(--sn-fs-xs); padding-bottom: var(--sn-s-2);
-                     font-family: var(--sn-font-display); }
-.wikitable :is(th, td) { padding: var(--sn-s-2) var(--sn-s-3); text-align: start;
-                         border-bottom: var(--sn-hair); }
-.wikitable th { font-weight: 500; color: var(--sn-ink); background: var(--sn-sunk); }
-.wikitable tbody tr:nth-child(even) { background: var(--sn-hairline-soft); }
+/* Tablas: SIN andamio propio del espécimen. El estilo real de
+   `.wikitable` / `.smwtable` / `.broadtable` y de las fichas
+   `table.plantilla` vive en stella-nova.css (que el espécimen carga) y se
+   aplica dentro de `.sn-body`. Una regla `.wikitable` local aquí solo
+   introduciría inexactitudes (p.ej. filas alternadas, que el skin NO usa:
+   su diseño son filetes horizontales uniformes, cabecera transparente). */
 
 /* Footer del simulacro de layout */
 .demo-app .sn-footer { padding: var(--sn-s-6) 0; border-top: var(--sn-hair);

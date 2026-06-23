@@ -782,12 +782,25 @@ html[data-sn-notice-hide] .sn-notice { display: none; }
 }
 .sn-body :is(h5, .mw-heading5) {
 	font-size: var(--sn-fs-base);
-	margin: var(--sn-baseline) 0 0; font-weight: 500;
+	margin: var(--sn-baseline) 0 0; font-weight: 500;   /* mismo tamaño que h6; el acento rojo lo da la regla transversal de abajo */
 }
 .sn-body :is(h6, .mw-heading6) {
 	font-size: var(--sn-fs-base);          /* no menor que el cuerpo */
-	margin: var(--sn-baseline) 0 0; font-weight: 500;   /* igual que h5; jerarquía por color */
-	color: var(--sn-nova);                 /* rojo */
+	margin: var(--sn-baseline) 0 0; font-weight: 500;
+	/* tinta del contexto: el nivel más bajo del par no lleva acento. */
+}
+/* Acento carmín del h5 — TRANSVERSAL: el h5 va en --sn-nova en CUALQUIER
+   contexto del skin (cuerpo, pie editable Stella-Nova:Pie, modales, drawer
+   .sn-prefs), no sólo dentro de .sn-body; el h6 hereda la tinta del contexto.
+   Con h1 y h3 también carmín, el rojo recae en los niveles IMPARES (h1/h3/h5)
+   y la tinta en los pares (h2/h4/h6). Va al final del bloque de cabeceras para
+   ganar por orden, a igual especificidad (0,2,0), al reset `color:inherit` de
+   la chrome y al color de cuerpo de arriba. */
+.sn-body   :is(h5, .mw-heading5),
+.sn-app    :is(h5, .mw-heading5),
+.sn-canvas :is(h5, .mw-heading5),
+.sn-prefs  :is(h5, .mw-heading5) {
+	color: var(--sn-nova);
 }
 .sn-body :is(h1, h2, h3, h4, h5, h6, .mw-heading1, .mw-heading2, .mw-heading3, .mw-heading4, .mw-heading5, .mw-heading6):first-child {
 	margin-top: 0;
