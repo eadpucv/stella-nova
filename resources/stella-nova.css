@@ -760,14 +760,14 @@ html[data-sn-notice-hide] .sn-notice { display: none; }
 }
 .sn-body :is(h2, .mw-heading2) {
 	font-family: var(--sn-font-text);
-	font-weight: 500; line-height: var(--sn-baseline-2);
+	font-weight: 700; line-height: var(--sn-baseline-2);
 	letter-spacing: -.012em; color: var(--sn-ink);
 	font-size: var(--sn-fs-xl);
 	margin: var(--sn-baseline-2) 0 var(--sn-baseline);
 }
 .sn-body :is(h3, .mw-heading3) {
 	font-family: var(--sn-font-text);
-	font-weight: 500; line-height: var(--sn-baseline);
+	font-weight: 600; line-height: var(--sn-baseline);
 	letter-spacing: 0; color: var(--sn-nova);
 	font-size: var(--sn-fs-lg);
 	margin: var(--sn-baseline-2) 0 var(--sn-baseline);
@@ -778,7 +778,7 @@ html[data-sn-notice-hide] .sn-notice { display: none; }
 }
 .sn-body :is(h4, .mw-heading4) {
 	font-size: var(--sn-fs-md);
-	margin: var(--sn-baseline) 0 0; font-weight: 700;
+	margin: var(--sn-baseline) 0 0; font-weight: 600;
 }
 .sn-body :is(h5, .mw-heading5) {
 	font-size: var(--sn-fs-base);
@@ -786,7 +786,7 @@ html[data-sn-notice-hide] .sn-notice { display: none; }
 }
 .sn-body :is(h6, .mw-heading6) {
 	font-size: var(--sn-fs-base);          /* no menor que el cuerpo */
-	margin: var(--sn-baseline) 0 0; font-weight: 400;   /* un punto más liviano */
+	margin: var(--sn-baseline) 0 0; font-weight: 500;   /* igual que h5; jerarquía por color */
 	color: var(--sn-nova);                 /* rojo */
 }
 .sn-body :is(h1, h2, h3, h4, h5, h6, .mw-heading1, .mw-heading2, .mw-heading3, .mw-heading4, .mw-heading5, .mw-heading6):first-child {
@@ -826,21 +826,28 @@ html[data-sn-notice-hide] .sn-notice { display: none; }
 .sn-body a:visited { color: var(--sn-link-visited); }
 .sn-body a:visited:hover { color: var(--sn-link-hover); }
 
-/* Enlaces externos: mismos tokens que los internos (carmín) — el ícono
-   `external-link` basta como señal de "sale del sitio". Hay que sobrescribir
-   el azul que impone la feature `content-links` de core
-   (`.mw-parser-output a.external`, especificidad 0,0,2,1). El ÍCONO lo
-   define el skin (Feather external-link) y se pinta como ::after con mask,
-   así que hereda currentColor automáticamente. */
+/* Enlaces externos E INTERWIKI: mismos tokens que los internos (carmín) — el
+   ícono `external-link` basta como señal de "sale del sitio". Hay que
+   sobrescribir el azul que impone la feature `content-links` de core
+   (`.mw-parser-output a.external` Y `a.extiw`, especificidad 0,0,2,1). Sin la
+   variante `.extiw`, los enlaces interwiki (p. ej. `[[mw:…]]`) se quedaban en
+   el azul de core (#3366bb). El ÍCONO lo define el skin (Feather external-link)
+   y se pinta como ::after con mask, así que hereda currentColor automáticamente. */
 .sn-body a.external,
-.sn-body .mw-parser-output a.external {
+.sn-body a.extiw,
+.sn-body .mw-parser-output a.external,
+.sn-body .mw-parser-output a.extiw {
 	color: var(--sn-link);
 	background: none !important; padding-right: 0 !important;
 }
 .sn-body a.external:hover,
-.sn-body .mw-parser-output a.external:hover { color: var(--sn-link-hover); }
+.sn-body a.extiw:hover,
+.sn-body .mw-parser-output a.external:hover,
+.sn-body .mw-parser-output a.extiw:hover { color: var(--sn-link-hover); }
 .sn-body a.external:visited,
-.sn-body .mw-parser-output a.external:visited { color: var(--sn-link-visited); }
+.sn-body a.extiw:visited,
+.sn-body .mw-parser-output a.external:visited,
+.sn-body .mw-parser-output a.extiw:visited { color: var(--sn-link-visited); }
 .sn-body a.external:visited:hover,
 .sn-body .mw-parser-output a.external:visited:hover { color: var(--sn-link-hover); }
 .sn-body a.external::after {
@@ -1133,8 +1140,8 @@ canvas, iframe,
 .p5m-sketch:focus, .p5m-sketch:focus-visible { outline: 0 !important; }
 .p5m-sketch { background: transparent; }
 .sn-body figcaption, .sn-body .thumbcaption {
-	font-size: var(--sn-fs-sm); color: var(--sn-ink-soft);
-	font-style: italic; margin-top: var(--sn-s-2);
+	font-size: calc(var(--sn-fs-xs) * 0.88); color: var(--sn-ink-soft);
+	font-style: normal; margin-top: var(--sn-s-2);
 }
 
 /* — Badge — chip de metadatos (estado, etiqueta, categoría). Estaba
@@ -2410,14 +2417,20 @@ details[open]::details-content { block-size: auto; opacity: 1; }
 /* Miniaturas Parsoid: <figure typeof="mw:File/Thumb|Frame"> + su leyenda. */
 .sn-body :is(figure[typeof~="mw:File/Thumb"], figure[typeof~="mw:File/Frame"]),
 .sn-body :is(figure[typeof~="mw:File/Thumb"], figure[typeof~="mw:File/Frame"]) > figcaption {
-	background-color: color-mix(in oklab, var(--sn-sunk) 60%, transparent);
-	border-color: var(--sn-hairline);
+	background-color: var(--sn-papel-100);
+	border: 0;
 	/* El marco del core es CONTINUO: el <figure> lleva borde salvo abajo y la
 	   leyenda (table-caption) lleva borde salvo arriba, y ambas se tocan. El
 	   `margin-top` genérico de `.sn-body figcaption` (pensado para imágenes SIN
-	   marco) abre un hueco que parte el frame en dos y "descontinúa" el borde.
-	   Aquí lo anulamos: la leyenda va pegada al pie de la imagen. */
+	   marco) abre un hueco que parte el frame en dos. Aquí lo anulamos: la
+	   leyenda va pegada al pie de la imagen sobre el mismo fondo de papel. */
 	margin-top: 0;
+}
+/* Esquinas apenas redondeadas en toda la tarjeta. El radio va al <figure>
+   contenedor con overflow:hidden para que recorte imagen + leyenda juntas. */
+.sn-body :is(figure[typeof~="mw:File/Thumb"], figure[typeof~="mw:File/Frame"]) {
+	border-radius: var(--sn-radius-s);
+	overflow: hidden;
 }
 
 /* La "lupa de ampliar" del core (magnify-clip*.svg, un SVG claro fijo que no
@@ -2431,13 +2444,16 @@ details[open]::details-content { block-size: auto; opacity: 1; }
 
 /* Miniaturas de wikitexto clásico (.thumbinner) y tamaños por defecto. */
 .sn-body :is(.thumbinner, .mw-default-size, figure.mw-default-size) {
-	background: color-mix(in oklab, var(--sn-sunk) 60%, transparent);
-	border-color: var(--sn-hairline);
+	background: var(--sn-papel-100);
+	border: 0;
+	border-radius: var(--sn-radius-s);
+	overflow: hidden;
 }
 
-/* Filete de la imagen interna (mw-file-element / .thumbimage / border=). */
+/* Sin filete en la imagen interna (mw-file-element / .thumbimage / border=):
+   solo el fondo de papel enmarca, ningún borde de píxel. */
 .sn-body :is(.thumbimage, .thumbborder, figure img, .mw-image-border img) {
-	border-color: var(--sn-hairline);
+	border: 0;
 }
 
 /* Galerías tradicionales (mediawiki.page.gallery.styles, carga on-demand en
@@ -2447,12 +2463,14 @@ details[open]::details-content { block-size: auto; opacity: 1; }
    `transparent`/`border:0` con mayor especificidad (0,3,3), así que esta
    regla (0,3,2) sólo viste la galería tradicional y las deja intactas. */
 .sn-body li.gallerybox div.thumb {
-	background-color: color-mix(in oklab, var(--sn-sunk) 60%, transparent);
-	border-color: var(--sn-hairline);
+	background-color: var(--sn-papel-100);
+	border: 0;
+	border-radius: var(--sn-radius-s);
+	overflow: hidden;
 }
 /* Pie de cada miniatura de galería: al grado más pequeño del skin. */
 .sn-body .gallerytext {
-	font-size: var(--sn-fs-xs);
+	font-size: calc(var(--sn-fs-xs) * 0.88);
 }
 /* Bordes/fondos genéricos de wikitexto de uso común. (El <hr> ya se define
    arriba, en `.sn-body hr`; aquí no se repite.) */
@@ -2599,7 +2617,7 @@ details[open]::details-content { block-size: auto; opacity: 1; }
    (tablet vertical) todas caen a una sola columna — las asimétricas
    cols1-2 / cols2-1 también colapsan a una columna ahí. */
 .sn-body :is(.grid, .grilla) {
-	--sn-grid-gap: var(--sn-s-4);
+	--sn-grid-gap: var(--sn-s-5);   /* default generoso (1.5rem); gap-s/m/l ajustan */
 	display: grid;
 	gap: var(--sn-grid-gap);
 	margin: var(--sn-s-4) 0;
@@ -2618,7 +2636,7 @@ details[open]::details-content { block-size: auto; opacity: 1; }
 .sn-body :is(.grid, .grilla).cols1-2 { grid-template-columns: 1fr 2fr; }
 .sn-body :is(.grid, .grilla).cols2-1 { grid-template-columns: 2fr 1fr; }
 
-/* Espaciado entre celdas (override del default --sn-s-4). */
+/* Espaciado entre celdas (override del default --sn-s-5). */
 .sn-body :is(.grid, .grilla).gap-0 { --sn-grid-gap: 0; }
 .sn-body :is(.grid, .grilla).gap-s { --sn-grid-gap: var(--sn-s-2); }
 .sn-body :is(.grid, .grilla).gap-m { --sn-grid-gap: var(--sn-s-4); }

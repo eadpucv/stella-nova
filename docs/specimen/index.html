@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Fundamentos — Stella Nova v0.3.0</title>
+<title>Fundamentos — Stella Nova v0.5.0</title>
 <link rel="icon" href="assets/icons/casiopea-icon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/fonts.css">
 <link rel="stylesheet" href="assets/tokens.css">
@@ -28,6 +28,8 @@
 	<symbol id="sn-i-x" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></symbol>
 	<symbol id="sn-i-list" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></symbol>
 	<symbol id="sn-i-chevron-down" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></symbol>
+	<symbol id="sn-i-chevron-up" viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></symbol>
+	<symbol id="sn-i-plus" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>
 	<symbol id="sn-i-file" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></symbol>
 	<symbol id="sn-i-edit" viewBox="0 0 24 24"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></symbol>
 	<symbol id="sn-i-file-plus" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></symbol>
@@ -36,6 +38,8 @@
 	<symbol id="sn-i-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></symbol>
 	<symbol id="sn-i-external-link" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></symbol>
 	<symbol id="sn-i-arrow-right" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></symbol>
+	<symbol id="sn-i-arrow-up" viewBox="0 0 24 24"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></symbol>
+	<symbol id="sn-i-rss" viewBox="0 0 24 24"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></symbol>
 	<symbol id="sn-i-git-merge" viewBox="0 0 24 24"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M6 21V9a9 9 0 0 0 9 9"/></symbol>
 	<symbol id="sn-i-upload" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></symbol>
 	<symbol id="sn-i-printer" viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></symbol>
@@ -66,7 +70,7 @@
 	</g>
 </svg>
     <span class="spec-brand-name">Stella Nova</span>
-    <span class="spec-brand-ver">v0.3.0</span>
+    <span class="spec-brand-ver">v0.5.0</span>
   </a>
   <nav class="spec-nav" aria-label="Secciones del espécimen"><a href="index.html" aria-current="page">Fundamentos</a><a href="components.html">Componentes</a><a href="layout.html">Layout</a></nav>
   <div class="spec-controls">
@@ -778,14 +782,14 @@
   <span class="ts-sample">Lorem ipsum dolor sit amet</span>
   <figcaption>
     <code class="ts-var">--sn-fs-base</code>
-    <span class="ts-val">calc(clamp(1rem, .97rem + .16vw, 1.05rem) * var(--sn-font-scale))</span>
+    <span class="ts-val">calc(clamp(1.04rem, 1rem + .18vw, 1.1rem) * var(--sn-font-scale))</span>
     
   </figcaption>
 </figure><figure class="ts" style="font-size: var(--sn-fs-md);">
   <span class="ts-sample">Lorem ipsum dolor sit amet</span>
   <figcaption>
     <code class="ts-var">--sn-fs-md</code>
-    <span class="ts-val">calc(clamp(1.05rem, 1.01rem + .22vw, 1.18rem) * var(--sn-font-scale))</span>
+    <span class="ts-val">calc(clamp(1.15rem, 1.1rem + .24vw, 1.28rem) * var(--sn-font-scale))</span>
     
   </figcaption>
 </figure><figure class="ts" style="font-size: var(--sn-fs-lg);">
@@ -820,7 +824,7 @@
   <span class="ts-sample">Lorem ipsum dolor sit amet</span>
   <figcaption>
     <code class="ts-var">--sn-fs-table</code>
-    <span class="ts-val">calc(var(--sn-fs-base) * .8)</span>
+    <span class="ts-val">calc(var(--sn-fs-base) * .85)</span>
     
   </figcaption>
 </figure>
@@ -932,6 +936,13 @@
     <code class="sz-var">--sn-shell</code>
     <span class="sz-val">81rem</span>
     <span class="sz-note">ancho máximo del conjunto (header/pie)</span>
+  </figcaption>
+</figure><figure class="sz">
+  <span class="sz-bar" style="--sz-w: var(--sn-header-h);"></span>
+  <figcaption>
+    <code class="sz-var">--sn-header-h</code>
+    <span class="sz-val">3.5rem</span>
+    
   </figcaption>
 </figure><div class="kv">
   <code class="kv-var">--sn-ext-icon</code>
@@ -1059,7 +1070,7 @@
 <footer class="spec-foot">
   <p>
     Espécimen generado por <code>scripts/build-specimen.py</code> ·
-    Stella Nova v0.3.0 ·
+    Stella Nova v0.5.0 ·
     <a href="notes.md">notes.md</a> (notas del taller de diseño) ·
     <a href="https://wiki.ead.pucv.cl">wiki.ead.pucv.cl</a>
   </p>

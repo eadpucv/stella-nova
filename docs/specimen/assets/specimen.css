@@ -435,3 +435,109 @@ pre code { background: transparent; padding: 0; }
               color var(--sn-dur-1), border-color var(--sn-dur-1); }
 .sn-iconbtn:hover { background: var(--sn-sunk); color: var(--sn-icon-active);
                     border-color: var(--sn-hairline); }
+
+/* === Helpers tipográficos de contenido (espejo de MediaWiki:Common.css) ===
+   Clases utilitarias que el editor teclea en el wikitexto (<span>, <div> o el
+   atributo class= de una plantilla). Referencian los tokens de Stella Nova con
+   fallback → se ven igual bajo Stella Nova y degradan a stacks/valores
+   equivalentes en otros skins. Son ORTOGONALES: se combinan libremente
+   (class="lg serif center nova"). Alcance .mw-parser-output .clase para
+   ganarle a las reglas de cuerpo del skin.
+
+   Pensadas para envolver el <p> que genera la wiki: una clase en el <div>
+   contenedor (tamaño, familia, énfasis, color) se HEREDA al párrafo interno;
+   la ALINEACIÓN se propaga explícitamente al <p> porque `.sn-body p` fija
+   text-align: justify y, sin esto, ganaría por especificidad. */
+
+/* — Tamaño — escala tipográfica; respeta la preferencia S/M/L del lector
+     (--sn-font-scale). `jumbo` es el titular; lg/sm/xs afinan alrededor del
+     cuerpo (que es el tamaño por defecto, sin clase). */
+.mw-parser-output .jumbo {
+	font-size: calc(clamp(2rem, 1.5rem + 2.2vw, 3.25rem) * var(--sn-font-scale, 1));
+	line-height: 1.12;
+}
+.mw-parser-output .lg { font-size: var(--sn-fs-lg, 1.35rem); }
+.mw-parser-output .sm { font-size: var(--sn-fs-sm, .88rem); }
+.mw-parser-output .xs { font-size: var(--sn-fs-xs, .76rem); }
+
+/* — Familia — fuerzan la familia (heredan a los hijos). */
+.mw-parser-output .serif {
+	font-family: var(--sn-font-serif, 'Roboto Serif','Iowan Old Style',Palatino,'Times New Roman',Georgia,serif);
+}
+.mw-parser-output .sans {
+	font-family: var(--sn-font-sans, 'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif);
+}
+.mw-parser-output .mono {
+	font-family: var(--sn-font-mono, 'IBM Plex Mono',ui-monospace,'SFMono-Regular','Cascadia Code',Menlo,Consolas,monospace);
+}
+
+/* — Énfasis — transformaciones que heredan al texto interno. */
+.mw-parser-output .uppercase { text-transform: uppercase; letter-spacing: .04ex; }
+.mw-parser-output .italic    { font-style: italic; }
+.mw-parser-output .bold      { font-weight: 700; }
+
+/* — Alineación — aplica al elemento Y a los <p>/<li>/leyendas que genera la
+     wiki dentro (gana a `.sn-body p { text-align: justify }`). Las
+     alineaciones no justificadas apagan la división de palabras. */
+.mw-parser-output :is(.left, .center, .right) :is(p, li, figcaption) { hyphens: none; }
+.mw-parser-output .left,    .mw-parser-output .left    :is(p, li) { text-align: left; }
+.mw-parser-output .center,  .mw-parser-output .center  :is(p, li) { text-align: center; }
+.mw-parser-output .right,   .mw-parser-output .right   :is(p, li) { text-align: right; }
+.mw-parser-output .justify, .mw-parser-output .justify :is(p, li) { text-align: justify; }
+
+/* — Color semántico — color de texto por rol (hereda al texto interno; voltea
+     claro/oscuro porque los tokens usan light-dark). Para fondos y avisos en
+     bloque, ver las cajas .wash del skin, no estas clases. */
+.mw-parser-output .nova   { color: var(--sn-nova,   #c4361f); }
+.mw-parser-output .ok     { color: var(--sn-ok,     #2e7d32); }
+.mw-parser-output .warn   { color: var(--sn-warn,   #b26a00); }
+.mw-parser-output .danger { color: var(--sn-danger, #b21e3e); }
+
+/* === Galería nativa <gallery> (layout base) ============================
+   El módulo del core `mediawiki.page.gallery.styles` aporta el LAYOUT de
+   `ul.gallery.mw-gallery-traditional`; carga on-demand sólo en páginas con
+   <gallery>, así que el espécimen estático lo replica. El COLOR/recuadro de
+   cada caja y el tamaño de la leyenda ya los viste el skin
+   (`.sn-body li.gallerybox div.thumb`, `.sn-body .gallerytext`). */
+.mw-parser-output ul.gallery {
+	list-style: none; margin: var(--sn-s-3) 0; padding: 0;
+	display: flex; flex-wrap: wrap; gap: var(--sn-s-3);
+}
+.mw-parser-output li.gallerybox { display: flex; flex-direction: column; }
+.mw-parser-output li.gallerybox div.thumb {
+	display: flex; align-items: center; justify-content: center; margin: 0;
+}
+.mw-parser-output li.gallerybox div.thumb img { display: block; max-width: 100%; height: auto; }
+.mw-parser-output .gallerytext { padding: var(--sn-s-1) .25rem 0; text-align: center; }
+
+/* === Tarjeta .portafolio (espejo de Plantilla:Portafolio/style.css) =====
+   Miniatura + título + alumnos + palabras clave. Suelta (p.ej. #ask inline)
+   se auto-acomoda en filas con ancho base 16rem; dentro de una grilla pasa a
+   celda (width:auto) y la separación la da el gap. */
+.mw-parser-output .portafolio {
+	display: inline-block; vertical-align: top; width: 16rem;
+	margin: 0 var(--sn-s-3) var(--sn-s-3) 0; padding: var(--sn-s-2);
+	background: var(--sn-paper-edge); border-radius: var(--sn-radius);
+	position: relative;
+}
+/* Toda la tarjeta enlaza a su página (patrón "stretched link"). */
+.mw-parser-output .portafolio .title a::after { content: ""; position: absolute; inset: 0; z-index: 1; }
+.mw-parser-output :is(.grilla, .grid) .portafolio { width: auto; margin: 0; }
+.mw-parser-output .portafolio .thumb img { width: 100%; height: auto; }
+.mw-parser-output .portafolio .text { font-size: var(--sn-fs-sm); line-height: 1em; margin: 0; text-align: left !important; }
+.mw-parser-output .portafolio .text .title { display: block; margin: var(--sn-s-4) 0; font-weight: bold !important; }
+
+/* === Ficha Personal (espejo de Plantilla:Ficha Personal/style.css) ======
+   Foto circular + bio en dos columnas; típica de los #ask format=template
+   que listan profesores (Categoría:Persona). */
+.mw-parser-output .ficha-personal {
+	display: grid; align-items: center; min-height: 10rem;
+	grid-template-columns: 1fr 2fr; gap: 1rem; column-gap: 1rem;
+	font-size: var(--sn-fs-sm); line-height: 120%; max-width: 24rem;
+}
+.mw-parser-output .ficha-personal > .foto > img { border-radius: 50%; }
+.mw-parser-output .ficha-personal > .bio > h3.name {
+	font-size: var(--sn-fs-xs) !important; line-height: 110%;
+	text-transform: uppercase; font-weight: 500; letter-spacing: .08ex; margin: 0;
+}
+.mw-parser-output .ficha-personal > .bio > span.text { font-size: var(--sn-fs-xs); }

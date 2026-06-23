@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Componentes — Stella Nova v0.3.0</title>
+<title>Componentes — Stella Nova v0.5.0</title>
 <link rel="icon" href="assets/icons/casiopea-icon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/fonts.css">
 <link rel="stylesheet" href="assets/tokens.css">
@@ -28,6 +28,8 @@
 	<symbol id="sn-i-x" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></symbol>
 	<symbol id="sn-i-list" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></symbol>
 	<symbol id="sn-i-chevron-down" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></symbol>
+	<symbol id="sn-i-chevron-up" viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></symbol>
+	<symbol id="sn-i-plus" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>
 	<symbol id="sn-i-file" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></symbol>
 	<symbol id="sn-i-edit" viewBox="0 0 24 24"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></symbol>
 	<symbol id="sn-i-file-plus" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></symbol>
@@ -36,6 +38,8 @@
 	<symbol id="sn-i-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></symbol>
 	<symbol id="sn-i-external-link" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></symbol>
 	<symbol id="sn-i-arrow-right" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></symbol>
+	<symbol id="sn-i-arrow-up" viewBox="0 0 24 24"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></symbol>
+	<symbol id="sn-i-rss" viewBox="0 0 24 24"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></symbol>
 	<symbol id="sn-i-git-merge" viewBox="0 0 24 24"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M6 21V9a9 9 0 0 0 9 9"/></symbol>
 	<symbol id="sn-i-upload" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></symbol>
 	<symbol id="sn-i-printer" viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></symbol>
@@ -66,7 +70,7 @@
 	</g>
 </svg>
     <span class="spec-brand-name">Stella Nova</span>
-    <span class="spec-brand-ver">v0.3.0</span>
+    <span class="spec-brand-ver">v0.5.0</span>
   </a>
   <nav class="spec-nav" aria-label="Secciones del espécimen"><a href="index.html">Fundamentos</a><a href="components.html" aria-current="page">Componentes</a><a href="layout.html">Layout</a></nav>
   <div class="spec-controls">
@@ -161,6 +165,137 @@
     <p>Con tres o más cabeceras, MediaWiki inserta automáticamente la
     tabla de contenidos. Se puede forzar con <code>__TOC__</code> o
     desactivar con <code>__NOTOC__</code>.</p>
+  </div>
+</section>
+
+<section class="comp">
+  <h2>Helpers de contenido</h2>
+  <p class="meta">Clases utilitarias para el wikitexto — viven en
+  <code>MediaWiki:Common.css</code> (replicadas aquí para el espécimen).
+  <strong>Ortogonales</strong>: se combinan en cualquier orden
+  (<code>class="lg serif center nova"</code>). Pensadas para envolver el
+  <code>&lt;p&gt;</code> que genera la wiki: una clase en el <code>&lt;div&gt;</code>
+  contenedor se hereda al párrafo interno (tamaño, familia, énfasis, color); la
+  <strong>alineación</strong> se propaga al <code>&lt;p&gt;</code> de forma
+  explícita porque <code>.sn-body p</code> fija <code>justify</code>. Alcance
+  <code>.mw-parser-output .clase</code> para ganarle a las reglas de cuerpo del
+  skin.</p>
+
+  <h3 class="spec-subh">Tamaño — <code>jumbo</code> · <code>lg</code> · <code>sm</code> · <code>xs</code></h3>
+  <p class="meta">Escala alrededor del cuerpo (que es el tamaño por defecto, sin
+  clase). Respetan la preferencia S/M/L del lector
+  (<code>--sn-font-scale</code>); <code>jumbo</code> es el titular.</p>
+  <div class="grilla cols-2 spec-usage">
+<pre class="howto-code">&lt;p class="jumbo"&gt;Titular jumbo&lt;/p&gt;
+&lt;p class="lg"&gt;Destacado (lg)&lt;/p&gt;
+Cuerpo normal, sin clase.
+&lt;p class="sm"&gt;Secundario (sm)&lt;/p&gt;
+&lt;p class="xs"&gt;Pie / nota (xs)&lt;/p&gt;</pre>
+    <div class="sn-paper sn-body demo">
+      <div class="mw-parser-output">
+        <p class="jumbo">Titular jumbo</p>
+        <p class="lg">Destacado (lg)</p>
+        <p>Cuerpo normal, sin clase.</p>
+        <p class="sm">Secundario (sm)</p>
+        <p class="xs">Pie / nota (xs)</p>
+      </div>
+    </div>
+  </div>
+
+  <h3 class="spec-subh">Familia — <code>serif</code> · <code>sans</code> · <code>mono</code></h3>
+  <div class="grilla cols-2 spec-usage">
+<pre class="howto-code">&lt;span class="serif"&gt;Forzado a serif&lt;/span&gt;
+&lt;span class="sans"&gt;Forzado a sans&lt;/span&gt;
+&lt;span class="mono"&gt;Forzado a mono&lt;/span&gt;</pre>
+    <div class="sn-paper sn-body demo">
+      <div class="mw-parser-output">
+        <p><span class="serif">Forzado a serif</span> ·
+           <span class="sans">Forzado a sans</span> ·
+           <span class="mono">Forzado a mono</span></p>
+      </div>
+    </div>
+  </div>
+
+  <h3 class="spec-subh">Énfasis — <code>uppercase</code> · <code>italic</code> · <code>bold</code></h3>
+  <div class="grilla cols-2 spec-usage">
+<pre class="howto-code">&lt;span class="uppercase"&gt;Versalita real&lt;/span&gt;
+&lt;span class="italic"&gt;Cursiva&lt;/span&gt;
+&lt;span class="bold"&gt;Negrita&lt;/span&gt;</pre>
+    <div class="sn-paper sn-body demo">
+      <div class="mw-parser-output">
+        <p><span class="uppercase">Versalita real</span> ·
+           <span class="italic">Cursiva</span> ·
+           <span class="bold">Negrita</span></p>
+      </div>
+    </div>
+  </div>
+
+  <h3 class="spec-subh">Alineación — <code>left</code> · <code>center</code> · <code>right</code> · <code>justify</code></h3>
+  <p class="meta">En un <code>&lt;div&gt;</code> alcanzan el <code>&lt;p&gt;</code>
+  interno que produce la wiki (por eso funcionan sobre bloques de párrafos, no
+  sólo sobre el texto suelto).</p>
+  <div class="grilla cols-2 spec-usage">
+<pre class="howto-code">&lt;div class="center"&gt;
+Texto centrado. Aunque la wiki lo
+envuelva en su &lt;p&gt;, queda centrado.
+&lt;/div&gt;
+
+&lt;div class="right"&gt;Alineado a la derecha&lt;/div&gt;</pre>
+    <div class="sn-paper sn-body demo">
+      <div class="mw-parser-output">
+        <div class="center"><p>Texto centrado. Aunque la wiki lo envuelva en su <code>&lt;p&gt;</code>, queda centrado.</p></div>
+        <div class="right"><p>Alineado a la derecha.</p></div>
+        <div class="left"><p>Alineado a la izquierda (apaga la división de palabras).</p></div>
+      </div>
+    </div>
+  </div>
+
+  <h3 class="spec-subh">Color semántico — <code>nova</code> · <code>ok</code> · <code>warn</code> · <code>danger</code></h3>
+  <p class="meta">Color de texto por rol; voltean claro/oscuro con el tema. Para
+  fondos y avisos en bloque, usar las cajas <code>.wash</code> del skin, no estas
+  clases.</p>
+  <div class="grilla cols-2 spec-usage">
+<pre class="howto-code">&lt;span class="nova"&gt;Marca / acento&lt;/span&gt;
+&lt;span class="ok"&gt;Correcto&lt;/span&gt;
+&lt;span class="warn"&gt;Atención&lt;/span&gt;
+&lt;span class="danger"&gt;Error&lt;/span&gt;</pre>
+    <div class="sn-paper sn-body demo">
+      <div class="mw-parser-output">
+        <p><span class="nova bold">Marca / acento</span> ·
+           <span class="ok bold">Correcto</span> ·
+           <span class="warn bold">Atención</span> ·
+           <span class="danger bold">Error</span></p>
+      </div>
+    </div>
+  </div>
+
+  <h4 class="spec-subh">Muestrario de roles</h4>
+  <div class="grilla cols-2 gap-m">
+    <figure class="sw" style="--sw-c: var(--sn-nova);">
+      <span class="sw-chip" aria-hidden="true"></span>
+      <figcaption><code class="sw-var">--sn-nova</code><span class="sw-note">marca · enlaces · clase <code>.nova</code></span></figcaption>
+    </figure>
+    <figure class="sw" style="--sw-c: var(--sn-ok);">
+      <span class="sw-chip" aria-hidden="true"></span>
+      <figcaption><code class="sw-var">--sn-ok</code><span class="sw-note">correcto · «ok» del taller · <code>.ok</code></span></figcaption>
+    </figure>
+    <figure class="sw" style="--sw-c: var(--sn-warn);">
+      <span class="sw-chip" aria-hidden="true"></span>
+      <figcaption><code class="sw-var">--sn-warn</code><span class="sw-note">atención · aviso · <code>.warn</code></span></figcaption>
+    </figure>
+    <figure class="sw" style="--sw-c: var(--sn-danger);">
+      <span class="sw-chip" aria-hidden="true"></span>
+      <figcaption><code class="sw-var">--sn-danger</code><span class="sw-note">error · acción destructiva · <code>.danger</code></span></figcaption>
+    </figure>
+  </div>
+
+  <div class="spec-notes">
+    <p>Cada eje es independiente: tamaño (<code>jumbo/lg/sm/xs</code>), familia
+    (<code>serif/sans/mono</code>), énfasis (<code>uppercase/italic/bold</code>),
+    alineación (<code>left/center/right/justify</code>) y color
+    (<code>nova/ok/warn/danger</code>) → se componen libremente. En el wikitexto
+    se aplican con <code>&lt;span&gt;</code> / <code>&lt;div&gt;</code> o, en una
+    plantilla, con el atributo <code>class</code>.</p>
   </div>
 </section>
 
@@ -902,11 +1037,172 @@ Bloque angosto (un tercio)
   </div>
 </section>
 
+<section class="comp">
+  <h2>Imagen con leyenda (thumb)</h2>
+  <p class="meta">Miniatura enmarcada con pie, el patrón
+  <code>[[Archivo:…|thumb|…]]</code>. MediaWiki moderno (Parsoid) emite
+  <code>&lt;figure typeof="mw:File/Thumb"&gt;</code> con su
+  <code>&lt;figcaption&gt;</code>; el skin une imagen y leyenda en una sola
+  tarjeta sobre papel, esquinas <code>--sn-radius-s</code>, y la leyenda voltea
+  con el tema. <code>tright</code>/<code>tleft</code> la flotan.</p>
+  <div class="grilla cols-2 spec-usage">
+<pre class="howto-code">[[Archivo:Obra.jpg|thumb|right|
+  Leyenda: describe la imagen.]]
+
+Texto del cuerpo que fluye alrededor
+de la miniatura flotada…</pre>
+    <div class="sn-paper sn-body demo">
+      <div class="mw-parser-output">
+        <figure typeof="mw:File/Thumb" class="mw-default-size tright" style="float:right;width:200px;margin:0 0 .5rem 1rem;">
+          <a href="#"><img class="mw-file-element" decoding="async" width="200" height="125" alt="" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='320'%20height='200'%3E%3Crect%20width='320'%20height='200'%20fill='%23cfc9c0'/%3E%3Ccircle%20cx='240'%20cy='56'%20r='22'%20fill='%23b7afa3'/%3E%3Cpath%20d='M0%20200%20110%2096%20168%20150%20214%20110%20320%20200Z'%20fill='%23a79f93'/%3E%3C/svg%3E"></a>
+          <figcaption>Leyenda de la imagen: describe lo que se ve.</figcaption>
+        </figure>
+        <p>Texto del cuerpo que fluye alrededor de la miniatura flotada a la
+        derecha. La leyenda queda pegada al pie de la imagen, sobre el mismo
+        fondo de papel, sin la «lupa de ampliar» heredada del core. El resto del
+        párrafo sigue su curso justificado hasta cerrar el bloque y reconquistar
+        el ancho completo de la hoja.</p>
+      </div>
+    </div>
+  </div>
+  <div class="spec-notes">
+    <p>Vale tanto para la forma Parsoid (<code>figure.mw-default-size</code>)
+    como para el wikitexto clásico (<code>.thumbinner</code> /
+    <code>.thumbcaption</code>): el skin homologa ambas a la misma tarjeta de
+    papel.</p>
+  </div>
+</section>
+
+<section class="comp">
+  <h2>Galería (<code>&lt;gallery&gt;</code> nativa)</h2>
+  <p class="meta">El tag <code>&lt;gallery&gt;</code> del core produce
+  <code>ul.gallery.mw-gallery-traditional</code> con una
+  <code>li.gallerybox</code> por imagen. El <em>layout</em> lo aporta el módulo
+  <code>mediawiki.page.gallery.styles</code> (replicado aquí); el skin viste el
+  recuadro de cada caja (papel + <code>--sn-radius-s</code>) y achica el pie al
+  grado más pequeño.</p>
+  <div class="grilla cols-2 spec-usage">
+<pre class="howto-code">&lt;gallery&gt;
+Archivo:A.jpg|Primera obra
+Archivo:B.jpg|Segunda obra
+Archivo:C.jpg|Tercera obra
+&lt;/gallery&gt;</pre>
+    <div class="sn-paper sn-body demo">
+      <div class="mw-parser-output">
+        <ul class="gallery mw-gallery-traditional">
+          <li class="gallerybox" style="width: 130px;">
+            <div class="thumb" style="width: 130px; height: 90px;"><img class="mw-file-element" width="120" height="84" alt="" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='320'%20height='200'%3E%3Crect%20width='320'%20height='200'%20fill='%23cfc9c0'/%3E%3Ccircle%20cx='240'%20cy='56'%20r='22'%20fill='%23b7afa3'/%3E%3Cpath%20d='M0%20200%20110%2096%20168%20150%20214%20110%20320%20200Z'%20fill='%23a79f93'/%3E%3C/svg%3E"></div>
+            <div class="gallerytext">Primera obra</div>
+          </li>
+          <li class="gallerybox" style="width: 130px;">
+            <div class="thumb" style="width: 130px; height: 90px;"><img class="mw-file-element" width="120" height="84" alt="" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='320'%20height='200'%3E%3Crect%20width='320'%20height='200'%20fill='%23c7c1b6'/%3E%3Crect%20x='40'%20y='52'%20width='240'%20height='96'%20fill='%23a79f93'/%3E%3C/svg%3E"></div>
+            <div class="gallerytext">Segunda obra</div>
+          </li>
+          <li class="gallerybox" style="width: 130px;">
+            <div class="thumb" style="width: 130px; height: 90px;"><img class="mw-file-element" width="120" height="84" alt="" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='320'%20height='200'%3E%3Crect%20width='320'%20height='200'%20fill='%23cfc9c0'/%3E%3Ccircle%20cx='160'%20cy='100'%20r='56'%20fill='%23a79f93'/%3E%3C/svg%3E"></div>
+            <div class="gallerytext">Tercera obra</div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="spec-notes">
+    <p>Las variantes <code>packed</code> / <code>nolines</code>
+    (<code>mode=</code> del tag) ponen las cajas a borde transparente con mayor
+    especificidad, así que el recuadro de papel sólo viste la galería
+    tradicional.</p>
+  </div>
+</section>
+
+<section class="comp">
+  <h2>Tarjeta Portafolio (formato <code>#ask</code>)</h2>
+  <p class="meta">Origen: <code>Plantilla:Portafolio/style.css</code>
+  (TemplateStyles, no el skin). Miniatura + título + datos que muestra una tarea
+  o proyecto como tarjeta. Se invoca directa o, lo habitual, desde una consulta
+  semántica <code>{{#ask:… |format=template |template=Portafolio}}</code> que
+  lista proyectos. Suelta se autoacomoda (ancho base 16&nbsp;rem); dentro de una
+  <code>grilla cols-auto</code> pasa a celda y llena la columna. Toda la tarjeta
+  enlaza a su página (<em>stretched link</em>).</p>
+  <div class="grilla cols-2 spec-usage">
+<pre class="howto-code">{{#ask: [[Categoría:Proyecto]]
+ | ?Imagen
+ | ?Alumnos
+ | format=template
+ | template=Portafolio
+}}</pre>
+    <div class="sn-paper sn-body demo">
+      <div class="mw-parser-output">
+        <div class="grilla cols-auto gap-m">
+          <div class="portafolio">
+            <div class="thumb"><div class="photo"><span class="mw-default-size img-responsive" typeof="mw:File"><span><img class="mw-file-element" width="240" height="150" alt="" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='320'%20height='200'%3E%3Crect%20width='320'%20height='200'%20fill='%23cfc9c0'/%3E%3Ccircle%20cx='240'%20cy='56'%20r='22'%20fill='%23b7afa3'/%3E%3Cpath%20d='M0%20200%20110%2096%20168%20150%20214%20110%20320%20200Z'%20fill='%23a79f93'/%3E%3C/svg%3E"></span></span></div></div>
+            <div class="text"><span class="title"><a href="#">Atmósfera de colores afectados</a></span>Andrés Aliaga · <span class="xs">Taller Luz y Color</span></div>
+          </div>
+          <div class="portafolio">
+            <div class="thumb"><div class="photo"><span class="mw-default-size img-responsive" typeof="mw:File"><span><img class="mw-file-element" width="240" height="150" alt="" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='320'%20height='200'%3E%3Crect%20width='320'%20height='200'%20fill='%23c7c1b6'/%3E%3Crect%20x='40'%20y='52'%20width='240'%20height='96'%20fill='%23a79f93'/%3E%3C/svg%3E"></span></span></div></div>
+            <div class="text"><span class="title"><a href="#">Portafolio Web</a></span>Martín Araneda · <span class="xs">Construcción 4º DG</span></div>
+          </div>
+          <div class="portafolio">
+            <div class="thumb"><div class="photo"><span class="mw-default-size img-responsive" typeof="mw:File"><span><img class="mw-file-element" width="240" height="150" alt="" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='320'%20height='200'%3E%3Crect%20width='320'%20height='200'%20fill='%23cfc9c0'/%3E%3Ccircle%20cx='160'%20cy='100'%20r='56'%20fill='%23a79f93'/%3E%3C/svg%3E"></span></span></div></div>
+            <div class="text"><span class="title"><a href="#">Ciclo Proyecto Final</a></span>Andrea Leiva · <span class="xs">Módulo Investigación</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="spec-notes">
+    <p>Hermanas en la wiki: <code>Plantilla:Mi Portafolio</code> y
+    <code>Plantilla:Mis Obras</code> la envuelven en <code>grilla cols-auto</code>;
+    <code>Plantilla:Ficha Personal</code> es el equivalente para personas.</p>
+  </div>
+</section>
+
+<section class="comp">
+  <h2>Ficha Personal</h2>
+  <p class="meta">Origen: <code>Plantilla:Ficha Personal/style.css</code>
+  (TemplateStyles). Foto circular + bio en dos columnas
+  (<code>1fr&nbsp;2fr</code>); el nombre va en versalita. Aparece en los
+  <code>#ask format=template</code> que listan profesores
+  (<code>Categoría:Persona</code>), normalmente dentro de una
+  <code>grilla cols-auto</code>.</p>
+  <div class="grilla cols-2 spec-usage">
+<pre class="howto-code">{{#ask: [[Categoría:Persona]]
+ | ?Imagen
+ | format=template
+ | template=Ficha Personal
+}}</pre>
+    <div class="sn-paper sn-body demo">
+      <div class="mw-parser-output">
+        <div class="grilla cols-auto gap-m">
+          <div class="ficha-personal">
+            <div class="foto"><img class="img-circle" width="96" height="96" alt="" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='120'%20height='120'%3E%3Crect%20width='120'%20height='120'%20fill='%23cfc9c0'/%3E%3Ccircle%20cx='60'%20cy='48'%20r='22'%20fill='%23a79f93'/%3E%3Cpath%20d='M24%20112c0-22%2016-34%2036-34s36%2012%2036%2034Z'%20fill='%23a79f93'/%3E%3C/svg%3E"></div>
+            <div class="bio">
+              <h3 class="name"><span class="mw-headline">Óscar Andrade</span></h3>
+              <span class="text">Profesor Jerarquizado, Arquitecto PUCV<br>Magíster en Arquitectura y Diseño PUCV</span>
+            </div>
+          </div>
+          <div class="ficha-personal">
+            <div class="foto"><img class="img-circle" width="96" height="96" alt="" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='120'%20height='120'%3E%3Crect%20width='120'%20height='120'%20fill='%23c7c1b6'/%3E%3Ccircle%20cx='60'%20cy='48'%20r='22'%20fill='%23a79f93'/%3E%3Cpath%20d='M24%20112c0-22%2016-34%2036-34s36%2012%2036%2034Z'%20fill='%23a79f93'/%3E%3C/svg%3E"></div>
+            <div class="bio">
+              <h3 class="name"><span class="mw-headline">Katherine Exss</span></h3>
+              <span class="text">Profesora, Diseñadora PUCV<br>Magíster en Diseño de Interacción</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="spec-notes">
+    <p>La foto se recorta en círculo (<code>.img-circle</code> del skin +
+    <code>border-radius:50%</code> de la plantilla); el nombre usa
+    <code>--sn-fs-xs</code> en versalita y la bio el mismo grado pequeño.</p>
+  </div>
+</section>
+
 </main>
 <footer class="spec-foot">
   <p>
     Espécimen generado por <code>scripts/build-specimen.py</code> ·
-    Stella Nova v0.3.0 ·
+    Stella Nova v0.5.0 ·
     <a href="notes.md">notes.md</a> (notas del taller de diseño) ·
     <a href="https://wiki.ead.pucv.cl">wiki.ead.pucv.cl</a>
   </p>

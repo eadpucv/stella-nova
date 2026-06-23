@@ -416,6 +416,137 @@ def body_components():
 </section>
 
 <section class="comp">
+  <h2>Helpers de contenido</h2>
+  <p class="meta">Clases utilitarias para el wikitexto — viven en
+  <code>MediaWiki:Common.css</code> (replicadas aquí para el espécimen).
+  <strong>Ortogonales</strong>: se combinan en cualquier orden
+  (<code>class="lg serif center nova"</code>). Pensadas para envolver el
+  <code>&lt;p&gt;</code> que genera la wiki: una clase en el <code>&lt;div&gt;</code>
+  contenedor se hereda al párrafo interno (tamaño, familia, énfasis, color); la
+  <strong>alineación</strong> se propaga al <code>&lt;p&gt;</code> de forma
+  explícita porque <code>.sn-body p</code> fija <code>justify</code>. Alcance
+  <code>.mw-parser-output .clase</code> para ganarle a las reglas de cuerpo del
+  skin.</p>
+
+  <h3 class="spec-subh">Tamaño — <code>jumbo</code> · <code>lg</code> · <code>sm</code> · <code>xs</code></h3>
+  <p class="meta">Escala alrededor del cuerpo (que es el tamaño por defecto, sin
+  clase). Respetan la preferencia S/M/L del lector
+  (<code>--sn-font-scale</code>); <code>jumbo</code> es el titular.</p>
+  <div class="grilla cols-2 spec-usage">
+<pre class="howto-code">&lt;p class="jumbo"&gt;Titular jumbo&lt;/p&gt;
+&lt;p class="lg"&gt;Destacado (lg)&lt;/p&gt;
+Cuerpo normal, sin clase.
+&lt;p class="sm"&gt;Secundario (sm)&lt;/p&gt;
+&lt;p class="xs"&gt;Pie / nota (xs)&lt;/p&gt;</pre>
+    <div class="sn-paper sn-body demo">
+      <div class="mw-parser-output">
+        <p class="jumbo">Titular jumbo</p>
+        <p class="lg">Destacado (lg)</p>
+        <p>Cuerpo normal, sin clase.</p>
+        <p class="sm">Secundario (sm)</p>
+        <p class="xs">Pie / nota (xs)</p>
+      </div>
+    </div>
+  </div>
+
+  <h3 class="spec-subh">Familia — <code>serif</code> · <code>sans</code> · <code>mono</code></h3>
+  <div class="grilla cols-2 spec-usage">
+<pre class="howto-code">&lt;span class="serif"&gt;Forzado a serif&lt;/span&gt;
+&lt;span class="sans"&gt;Forzado a sans&lt;/span&gt;
+&lt;span class="mono"&gt;Forzado a mono&lt;/span&gt;</pre>
+    <div class="sn-paper sn-body demo">
+      <div class="mw-parser-output">
+        <p><span class="serif">Forzado a serif</span> ·
+           <span class="sans">Forzado a sans</span> ·
+           <span class="mono">Forzado a mono</span></p>
+      </div>
+    </div>
+  </div>
+
+  <h3 class="spec-subh">Énfasis — <code>uppercase</code> · <code>italic</code> · <code>bold</code></h3>
+  <div class="grilla cols-2 spec-usage">
+<pre class="howto-code">&lt;span class="uppercase"&gt;Versalita real&lt;/span&gt;
+&lt;span class="italic"&gt;Cursiva&lt;/span&gt;
+&lt;span class="bold"&gt;Negrita&lt;/span&gt;</pre>
+    <div class="sn-paper sn-body demo">
+      <div class="mw-parser-output">
+        <p><span class="uppercase">Versalita real</span> ·
+           <span class="italic">Cursiva</span> ·
+           <span class="bold">Negrita</span></p>
+      </div>
+    </div>
+  </div>
+
+  <h3 class="spec-subh">Alineación — <code>left</code> · <code>center</code> · <code>right</code> · <code>justify</code></h3>
+  <p class="meta">En un <code>&lt;div&gt;</code> alcanzan el <code>&lt;p&gt;</code>
+  interno que produce la wiki (por eso funcionan sobre bloques de párrafos, no
+  sólo sobre el texto suelto).</p>
+  <div class="grilla cols-2 spec-usage">
+<pre class="howto-code">&lt;div class="center"&gt;
+Texto centrado. Aunque la wiki lo
+envuelva en su &lt;p&gt;, queda centrado.
+&lt;/div&gt;
+
+&lt;div class="right"&gt;Alineado a la derecha&lt;/div&gt;</pre>
+    <div class="sn-paper sn-body demo">
+      <div class="mw-parser-output">
+        <div class="center"><p>Texto centrado. Aunque la wiki lo envuelva en su <code>&lt;p&gt;</code>, queda centrado.</p></div>
+        <div class="right"><p>Alineado a la derecha.</p></div>
+        <div class="left"><p>Alineado a la izquierda (apaga la división de palabras).</p></div>
+      </div>
+    </div>
+  </div>
+
+  <h3 class="spec-subh">Color semántico — <code>nova</code> · <code>ok</code> · <code>warn</code> · <code>danger</code></h3>
+  <p class="meta">Color de texto por rol; voltean claro/oscuro con el tema. Para
+  fondos y avisos en bloque, usar las cajas <code>.wash</code> del skin, no estas
+  clases.</p>
+  <div class="grilla cols-2 spec-usage">
+<pre class="howto-code">&lt;span class="nova"&gt;Marca / acento&lt;/span&gt;
+&lt;span class="ok"&gt;Correcto&lt;/span&gt;
+&lt;span class="warn"&gt;Atención&lt;/span&gt;
+&lt;span class="danger"&gt;Error&lt;/span&gt;</pre>
+    <div class="sn-paper sn-body demo">
+      <div class="mw-parser-output">
+        <p><span class="nova bold">Marca / acento</span> ·
+           <span class="ok bold">Correcto</span> ·
+           <span class="warn bold">Atención</span> ·
+           <span class="danger bold">Error</span></p>
+      </div>
+    </div>
+  </div>
+
+  <h4 class="spec-subh">Muestrario de roles</h4>
+  <div class="grilla cols-2 gap-m">
+    <figure class="sw" style="--sw-c: var(--sn-nova);">
+      <span class="sw-chip" aria-hidden="true"></span>
+      <figcaption><code class="sw-var">--sn-nova</code><span class="sw-note">marca · enlaces · clase <code>.nova</code></span></figcaption>
+    </figure>
+    <figure class="sw" style="--sw-c: var(--sn-ok);">
+      <span class="sw-chip" aria-hidden="true"></span>
+      <figcaption><code class="sw-var">--sn-ok</code><span class="sw-note">correcto · «ok» del taller · <code>.ok</code></span></figcaption>
+    </figure>
+    <figure class="sw" style="--sw-c: var(--sn-warn);">
+      <span class="sw-chip" aria-hidden="true"></span>
+      <figcaption><code class="sw-var">--sn-warn</code><span class="sw-note">atención · aviso · <code>.warn</code></span></figcaption>
+    </figure>
+    <figure class="sw" style="--sw-c: var(--sn-danger);">
+      <span class="sw-chip" aria-hidden="true"></span>
+      <figcaption><code class="sw-var">--sn-danger</code><span class="sw-note">error · acción destructiva · <code>.danger</code></span></figcaption>
+    </figure>
+  </div>
+
+  <div class="spec-notes">
+    <p>Cada eje es independiente: tamaño (<code>jumbo/lg/sm/xs</code>), familia
+    (<code>serif/sans/mono</code>), énfasis (<code>uppercase/italic/bold</code>),
+    alineación (<code>left/center/right/justify</code>) y color
+    (<code>nova/ok/warn/danger</code>) → se componen libremente. En el wikitexto
+    se aplican con <code>&lt;span&gt;</code> / <code>&lt;div&gt;</code> o, en una
+    plantilla, con el atributo <code>class</code>.</p>
+  </div>
+</section>
+
+<section class="comp">
   <h2>Cuerpo de texto</h2>
   <p class="meta">Familia <code>--sn-font-text</code> · cuerpo
   <code>--sn-fs-base</code> (1.00–1.05 rem fluido) · interlínea
@@ -1152,6 +1283,167 @@ Bloque angosto (un tercio)
     sola columna), revisar que esté dentro de <code>.sn-body</code>.</p>
   </div>
 </section>
+
+<section class="comp">
+  <h2>Imagen con leyenda (thumb)</h2>
+  <p class="meta">Miniatura enmarcada con pie, el patrón
+  <code>[[Archivo:…|thumb|…]]</code>. MediaWiki moderno (Parsoid) emite
+  <code>&lt;figure typeof="mw:File/Thumb"&gt;</code> con su
+  <code>&lt;figcaption&gt;</code>; el skin une imagen y leyenda en una sola
+  tarjeta sobre papel, esquinas <code>--sn-radius-s</code>, y la leyenda voltea
+  con el tema. <code>tright</code>/<code>tleft</code> la flotan.</p>
+  <div class="grilla cols-2 spec-usage">
+<pre class="howto-code">[[Archivo:Obra.jpg|thumb|right|
+  Leyenda: describe la imagen.]]
+
+Texto del cuerpo que fluye alrededor
+de la miniatura flotada…</pre>
+    <div class="sn-paper sn-body demo">
+      <div class="mw-parser-output">
+        <figure typeof="mw:File/Thumb" class="mw-default-size tright" style="float:right;width:200px;margin:0 0 .5rem 1rem;">
+          <a href="#"><img class="mw-file-element" decoding="async" width="200" height="125" alt="" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='320'%20height='200'%3E%3Crect%20width='320'%20height='200'%20fill='%23cfc9c0'/%3E%3Ccircle%20cx='240'%20cy='56'%20r='22'%20fill='%23b7afa3'/%3E%3Cpath%20d='M0%20200%20110%2096%20168%20150%20214%20110%20320%20200Z'%20fill='%23a79f93'/%3E%3C/svg%3E"></a>
+          <figcaption>Leyenda de la imagen: describe lo que se ve.</figcaption>
+        </figure>
+        <p>Texto del cuerpo que fluye alrededor de la miniatura flotada a la
+        derecha. La leyenda queda pegada al pie de la imagen, sobre el mismo
+        fondo de papel, sin la «lupa de ampliar» heredada del core. El resto del
+        párrafo sigue su curso justificado hasta cerrar el bloque y reconquistar
+        el ancho completo de la hoja.</p>
+      </div>
+    </div>
+  </div>
+  <div class="spec-notes">
+    <p>Vale tanto para la forma Parsoid (<code>figure.mw-default-size</code>)
+    como para el wikitexto clásico (<code>.thumbinner</code> /
+    <code>.thumbcaption</code>): el skin homologa ambas a la misma tarjeta de
+    papel.</p>
+  </div>
+</section>
+
+<section class="comp">
+  <h2>Galería (<code>&lt;gallery&gt;</code> nativa)</h2>
+  <p class="meta">El tag <code>&lt;gallery&gt;</code> del core produce
+  <code>ul.gallery.mw-gallery-traditional</code> con una
+  <code>li.gallerybox</code> por imagen. El <em>layout</em> lo aporta el módulo
+  <code>mediawiki.page.gallery.styles</code> (replicado aquí); el skin viste el
+  recuadro de cada caja (papel + <code>--sn-radius-s</code>) y achica el pie al
+  grado más pequeño.</p>
+  <div class="grilla cols-2 spec-usage">
+<pre class="howto-code">&lt;gallery&gt;
+Archivo:A.jpg|Primera obra
+Archivo:B.jpg|Segunda obra
+Archivo:C.jpg|Tercera obra
+&lt;/gallery&gt;</pre>
+    <div class="sn-paper sn-body demo">
+      <div class="mw-parser-output">
+        <ul class="gallery mw-gallery-traditional">
+          <li class="gallerybox" style="width: 130px;">
+            <div class="thumb" style="width: 130px; height: 90px;"><img class="mw-file-element" width="120" height="84" alt="" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='320'%20height='200'%3E%3Crect%20width='320'%20height='200'%20fill='%23cfc9c0'/%3E%3Ccircle%20cx='240'%20cy='56'%20r='22'%20fill='%23b7afa3'/%3E%3Cpath%20d='M0%20200%20110%2096%20168%20150%20214%20110%20320%20200Z'%20fill='%23a79f93'/%3E%3C/svg%3E"></div>
+            <div class="gallerytext">Primera obra</div>
+          </li>
+          <li class="gallerybox" style="width: 130px;">
+            <div class="thumb" style="width: 130px; height: 90px;"><img class="mw-file-element" width="120" height="84" alt="" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='320'%20height='200'%3E%3Crect%20width='320'%20height='200'%20fill='%23c7c1b6'/%3E%3Crect%20x='40'%20y='52'%20width='240'%20height='96'%20fill='%23a79f93'/%3E%3C/svg%3E"></div>
+            <div class="gallerytext">Segunda obra</div>
+          </li>
+          <li class="gallerybox" style="width: 130px;">
+            <div class="thumb" style="width: 130px; height: 90px;"><img class="mw-file-element" width="120" height="84" alt="" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='320'%20height='200'%3E%3Crect%20width='320'%20height='200'%20fill='%23cfc9c0'/%3E%3Ccircle%20cx='160'%20cy='100'%20r='56'%20fill='%23a79f93'/%3E%3C/svg%3E"></div>
+            <div class="gallerytext">Tercera obra</div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="spec-notes">
+    <p>Las variantes <code>packed</code> / <code>nolines</code>
+    (<code>mode=</code> del tag) ponen las cajas a borde transparente con mayor
+    especificidad, así que el recuadro de papel sólo viste la galería
+    tradicional.</p>
+  </div>
+</section>
+
+<section class="comp">
+  <h2>Tarjeta Portafolio (formato <code>#ask</code>)</h2>
+  <p class="meta">Origen: <code>Plantilla:Portafolio/style.css</code>
+  (TemplateStyles, no el skin). Miniatura + título + datos que muestra una tarea
+  o proyecto como tarjeta. Se invoca directa o, lo habitual, desde una consulta
+  semántica <code>{{#ask:… |format=template |template=Portafolio}}</code> que
+  lista proyectos. Suelta se autoacomoda (ancho base 16&nbsp;rem); dentro de una
+  <code>grilla cols-auto</code> pasa a celda y llena la columna. Toda la tarjeta
+  enlaza a su página (<em>stretched link</em>).</p>
+  <div class="grilla cols-2 spec-usage">
+<pre class="howto-code">{{#ask: [[Categoría:Proyecto]]
+ | ?Imagen
+ | ?Alumnos
+ | format=template
+ | template=Portafolio
+}}</pre>
+    <div class="sn-paper sn-body demo">
+      <div class="mw-parser-output">
+        <div class="grilla cols-auto gap-m">
+          <div class="portafolio">
+            <div class="thumb"><div class="photo"><span class="mw-default-size img-responsive" typeof="mw:File"><span><img class="mw-file-element" width="240" height="150" alt="" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='320'%20height='200'%3E%3Crect%20width='320'%20height='200'%20fill='%23cfc9c0'/%3E%3Ccircle%20cx='240'%20cy='56'%20r='22'%20fill='%23b7afa3'/%3E%3Cpath%20d='M0%20200%20110%2096%20168%20150%20214%20110%20320%20200Z'%20fill='%23a79f93'/%3E%3C/svg%3E"></span></span></div></div>
+            <div class="text"><span class="title"><a href="#">Atmósfera de colores afectados</a></span>Andrés Aliaga · <span class="xs">Taller Luz y Color</span></div>
+          </div>
+          <div class="portafolio">
+            <div class="thumb"><div class="photo"><span class="mw-default-size img-responsive" typeof="mw:File"><span><img class="mw-file-element" width="240" height="150" alt="" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='320'%20height='200'%3E%3Crect%20width='320'%20height='200'%20fill='%23c7c1b6'/%3E%3Crect%20x='40'%20y='52'%20width='240'%20height='96'%20fill='%23a79f93'/%3E%3C/svg%3E"></span></span></div></div>
+            <div class="text"><span class="title"><a href="#">Portafolio Web</a></span>Martín Araneda · <span class="xs">Construcción 4º DG</span></div>
+          </div>
+          <div class="portafolio">
+            <div class="thumb"><div class="photo"><span class="mw-default-size img-responsive" typeof="mw:File"><span><img class="mw-file-element" width="240" height="150" alt="" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='320'%20height='200'%3E%3Crect%20width='320'%20height='200'%20fill='%23cfc9c0'/%3E%3Ccircle%20cx='160'%20cy='100'%20r='56'%20fill='%23a79f93'/%3E%3C/svg%3E"></span></span></div></div>
+            <div class="text"><span class="title"><a href="#">Ciclo Proyecto Final</a></span>Andrea Leiva · <span class="xs">Módulo Investigación</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="spec-notes">
+    <p>Hermanas en la wiki: <code>Plantilla:Mi Portafolio</code> y
+    <code>Plantilla:Mis Obras</code> la envuelven en <code>grilla cols-auto</code>;
+    <code>Plantilla:Ficha Personal</code> es el equivalente para personas.</p>
+  </div>
+</section>
+
+<section class="comp">
+  <h2>Ficha Personal</h2>
+  <p class="meta">Origen: <code>Plantilla:Ficha Personal/style.css</code>
+  (TemplateStyles). Foto circular + bio en dos columnas
+  (<code>1fr&nbsp;2fr</code>); el nombre va en versalita. Aparece en los
+  <code>#ask format=template</code> que listan profesores
+  (<code>Categoría:Persona</code>), normalmente dentro de una
+  <code>grilla cols-auto</code>.</p>
+  <div class="grilla cols-2 spec-usage">
+<pre class="howto-code">{{#ask: [[Categoría:Persona]]
+ | ?Imagen
+ | format=template
+ | template=Ficha Personal
+}}</pre>
+    <div class="sn-paper sn-body demo">
+      <div class="mw-parser-output">
+        <div class="grilla cols-auto gap-m">
+          <div class="ficha-personal">
+            <div class="foto"><img class="img-circle" width="96" height="96" alt="" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='120'%20height='120'%3E%3Crect%20width='120'%20height='120'%20fill='%23cfc9c0'/%3E%3Ccircle%20cx='60'%20cy='48'%20r='22'%20fill='%23a79f93'/%3E%3Cpath%20d='M24%20112c0-22%2016-34%2036-34s36%2012%2036%2034Z'%20fill='%23a79f93'/%3E%3C/svg%3E"></div>
+            <div class="bio">
+              <h3 class="name"><span class="mw-headline">Óscar Andrade</span></h3>
+              <span class="text">Profesor Jerarquizado, Arquitecto PUCV<br>Magíster en Arquitectura y Diseño PUCV</span>
+            </div>
+          </div>
+          <div class="ficha-personal">
+            <div class="foto"><img class="img-circle" width="96" height="96" alt="" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='120'%20height='120'%3E%3Crect%20width='120'%20height='120'%20fill='%23c7c1b6'/%3E%3Ccircle%20cx='60'%20cy='48'%20r='22'%20fill='%23a79f93'/%3E%3Cpath%20d='M24%20112c0-22%2016-34%2036-34s36%2012%2036%2034Z'%20fill='%23a79f93'/%3E%3C/svg%3E"></div>
+            <div class="bio">
+              <h3 class="name"><span class="mw-headline">Katherine Exss</span></h3>
+              <span class="text">Profesora, Diseñadora PUCV<br>Magíster en Diseño de Interacción</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="spec-notes">
+    <p>La foto se recorta en círculo (<code>.img-circle</code> del skin +
+    <code>border-radius:50%</code> de la plantilla); el nombre usa
+    <code>--sn-fs-xs</code> en versalita y la bio el mismo grado pequeño.</p>
+  </div>
+</section>
 """
 
 
@@ -1188,12 +1480,15 @@ def body_layout():
         </a>
       </div>
       <div class="sn-usertools">
-        <button type="button" class="sn-usermenu-trigger" aria-haspopup="menu" aria-expanded="false" aria-label="Usuaria">
-          <svg class="sn-i" aria-hidden="true" width="20" height="20" viewBox="0 0 24 24"><use href="#sn-i-user"/></svg>
-        </button>
-        <button type="button" class="sn-prefs-trigger" aria-haspopup="dialog" aria-label="Preferencias">
-          <svg class="sn-i" aria-hidden="true" width="20" height="20" viewBox="0 0 24 24"><use href="#sn-i-sliders"/></svg>
-        </button>
+        <!-- Un solo control: el menú de usuaria. Las preferencias de lectura
+             (Tema · Tamaño · Familia) viven DENTRO de este menú tras un
+             separador — ya no hay botón de "sliders" aparte (espejo de
+             skin.mustache · .sn-usermenu). -->
+        <div class="sn-md sn-usermenu">
+          <button type="button" class="sn-usermenu-trigger" aria-haspopup="true" aria-expanded="false" aria-label="Usuaria">
+            <svg class="sn-i" aria-hidden="true" width="20" height="20" viewBox="0 0 24 24"><use href="#sn-i-user"/></svg>
+          </button>
+        </div>
       </div>
     </div>
   </header>
@@ -1741,6 +2036,126 @@ pre code { background: transparent; padding: 0; }
                     border-color: var(--sn-hairline); }
 """
 
+# ── helpers tipográficos ───────────────────────────────────────────────────
+# ESPEJO de MediaWiki:Common.css. Estas clases utilitarias son de CONTENIDO
+# (las teclea el editor en el wikitexto), no chrome del skin, por eso su hogar
+# vivo es Common.css. Se replican aquí para que el espécimen las demuestre.
+# Si cambias una, cambia también la otra copia.
+HELPERS_CSS = r"""
+/* === Helpers tipográficos de contenido (espejo de MediaWiki:Common.css) ===
+   Clases utilitarias que el editor teclea en el wikitexto (<span>, <div> o el
+   atributo class= de una plantilla). Referencian los tokens de Stella Nova con
+   fallback → se ven igual bajo Stella Nova y degradan a stacks/valores
+   equivalentes en otros skins. Son ORTOGONALES: se combinan libremente
+   (class="lg serif center nova"). Alcance .mw-parser-output .clase para
+   ganarle a las reglas de cuerpo del skin.
+
+   Pensadas para envolver el <p> que genera la wiki: una clase en el <div>
+   contenedor (tamaño, familia, énfasis, color) se HEREDA al párrafo interno;
+   la ALINEACIÓN se propaga explícitamente al <p> porque `.sn-body p` fija
+   text-align: justify y, sin esto, ganaría por especificidad. */
+
+/* — Tamaño — escala tipográfica; respeta la preferencia S/M/L del lector
+     (--sn-font-scale). `jumbo` es el titular; lg/sm/xs afinan alrededor del
+     cuerpo (que es el tamaño por defecto, sin clase). */
+.mw-parser-output .jumbo {
+	font-size: calc(clamp(2rem, 1.5rem + 2.2vw, 3.25rem) * var(--sn-font-scale, 1));
+	line-height: 1.12;
+}
+.mw-parser-output .lg { font-size: var(--sn-fs-lg, 1.35rem); }
+.mw-parser-output .sm { font-size: var(--sn-fs-sm, .88rem); }
+.mw-parser-output .xs { font-size: var(--sn-fs-xs, .76rem); }
+
+/* — Familia — fuerzan la familia (heredan a los hijos). */
+.mw-parser-output .serif {
+	font-family: var(--sn-font-serif, 'Roboto Serif','Iowan Old Style',Palatino,'Times New Roman',Georgia,serif);
+}
+.mw-parser-output .sans {
+	font-family: var(--sn-font-sans, 'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif);
+}
+.mw-parser-output .mono {
+	font-family: var(--sn-font-mono, 'IBM Plex Mono',ui-monospace,'SFMono-Regular','Cascadia Code',Menlo,Consolas,monospace);
+}
+
+/* — Énfasis — transformaciones que heredan al texto interno. */
+.mw-parser-output .uppercase { text-transform: uppercase; letter-spacing: .04ex; }
+.mw-parser-output .italic    { font-style: italic; }
+.mw-parser-output .bold      { font-weight: 700; }
+
+/* — Alineación — aplica al elemento Y a los <p>/<li>/leyendas que genera la
+     wiki dentro (gana a `.sn-body p { text-align: justify }`). Las
+     alineaciones no justificadas apagan la división de palabras. */
+.mw-parser-output :is(.left, .center, .right) :is(p, li, figcaption) { hyphens: none; }
+.mw-parser-output .left,    .mw-parser-output .left    :is(p, li) { text-align: left; }
+.mw-parser-output .center,  .mw-parser-output .center  :is(p, li) { text-align: center; }
+.mw-parser-output .right,   .mw-parser-output .right   :is(p, li) { text-align: right; }
+.mw-parser-output .justify, .mw-parser-output .justify :is(p, li) { text-align: justify; }
+
+/* — Color semántico — color de texto por rol (hereda al texto interno; voltea
+     claro/oscuro porque los tokens usan light-dark). Para fondos y avisos en
+     bloque, ver las cajas .wash del skin, no estas clases. */
+.mw-parser-output .nova   { color: var(--sn-nova,   #c4361f); }
+.mw-parser-output .ok     { color: var(--sn-ok,     #2e7d32); }
+.mw-parser-output .warn   { color: var(--sn-warn,   #b26a00); }
+.mw-parser-output .danger { color: var(--sn-danger, #b21e3e); }
+"""
+
+
+# Formatos de CONTENIDO de la wiki que NO viven en el skin sino en
+# MediaWiki:Common.css o en TemplateStyles de cada plantilla. Se replican aquí
+# SOLO para que el espécimen los demuestre con su markup real; el origen vivo de
+# cada uno está anotado en su comentario. Si cambian en la wiki, sincronizar.
+CONTENT_CSS = r"""
+/* === Galería nativa <gallery> (layout base) ============================
+   El módulo del core `mediawiki.page.gallery.styles` aporta el LAYOUT de
+   `ul.gallery.mw-gallery-traditional`; carga on-demand sólo en páginas con
+   <gallery>, así que el espécimen estático lo replica. El COLOR/recuadro de
+   cada caja y el tamaño de la leyenda ya los viste el skin
+   (`.sn-body li.gallerybox div.thumb`, `.sn-body .gallerytext`). */
+.mw-parser-output ul.gallery {
+	list-style: none; margin: var(--sn-s-3) 0; padding: 0;
+	display: flex; flex-wrap: wrap; gap: var(--sn-s-3);
+}
+.mw-parser-output li.gallerybox { display: flex; flex-direction: column; }
+.mw-parser-output li.gallerybox div.thumb {
+	display: flex; align-items: center; justify-content: center; margin: 0;
+}
+.mw-parser-output li.gallerybox div.thumb img { display: block; max-width: 100%; height: auto; }
+.mw-parser-output .gallerytext { padding: var(--sn-s-1) .25rem 0; text-align: center; }
+
+/* === Tarjeta .portafolio (espejo de Plantilla:Portafolio/style.css) =====
+   Miniatura + título + alumnos + palabras clave. Suelta (p.ej. #ask inline)
+   se auto-acomoda en filas con ancho base 16rem; dentro de una grilla pasa a
+   celda (width:auto) y la separación la da el gap. */
+.mw-parser-output .portafolio {
+	display: inline-block; vertical-align: top; width: 16rem;
+	margin: 0 var(--sn-s-3) var(--sn-s-3) 0; padding: var(--sn-s-2);
+	background: var(--sn-paper-edge); border-radius: var(--sn-radius);
+	position: relative;
+}
+/* Toda la tarjeta enlaza a su página (patrón "stretched link"). */
+.mw-parser-output .portafolio .title a::after { content: ""; position: absolute; inset: 0; z-index: 1; }
+.mw-parser-output :is(.grilla, .grid) .portafolio { width: auto; margin: 0; }
+.mw-parser-output .portafolio .thumb img { width: 100%; height: auto; }
+.mw-parser-output .portafolio .text { font-size: var(--sn-fs-sm); line-height: 1em; margin: 0; text-align: left !important; }
+.mw-parser-output .portafolio .text .title { display: block; margin: var(--sn-s-4) 0; font-weight: bold !important; }
+
+/* === Ficha Personal (espejo de Plantilla:Ficha Personal/style.css) ======
+   Foto circular + bio en dos columnas; típica de los #ask format=template
+   que listan profesores (Categoría:Persona). */
+.mw-parser-output .ficha-personal {
+	display: grid; align-items: center; min-height: 10rem;
+	grid-template-columns: 1fr 2fr; gap: 1rem; column-gap: 1rem;
+	font-size: var(--sn-fs-sm); line-height: 120%; max-width: 24rem;
+}
+.mw-parser-output .ficha-personal > .foto > img { border-radius: 50%; }
+.mw-parser-output .ficha-personal > .bio > h3.name {
+	font-size: var(--sn-fs-xs) !important; line-height: 110%;
+	text-transform: uppercase; font-weight: 500; letter-spacing: .08ex; margin: 0;
+}
+.mw-parser-output .ficha-personal > .bio > span.text { font-size: var(--sn-fs-xs); }
+"""
+
 
 # ── build steps ────────────────────────────────────────────────────────────
 NOTES_TEMPLATE = """# Notas de diseño — Stella Nova v{version}
@@ -1868,7 +2283,7 @@ def copy_assets():
 
 
 def write_specimen_css():
-    (ASSETS / "specimen.css").write_text(SPECIMEN_CSS)
+    (ASSETS / "specimen.css").write_text(SPECIMEN_CSS + HELPERS_CSS + CONTENT_CSS)
 
 
 def write_pages(version):
