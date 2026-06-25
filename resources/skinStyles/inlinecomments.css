@@ -280,6 +280,17 @@ html { scroll-behavior: smooth; }   /* salto suave al navegar a una anotación *
 }
 #mw-inlinecomments-addicon span { margin: 0; opacity: .7; }
 #mw-inlinecomments-addicon:hover span { opacity: 1; }
+/* El ícono OOUI (speechBubbleAdd) es un SVG oscuro: sobre el papel oscuro se
+   pierde. Se invierte en oscuro, mismo patrón que la wikiEditor-ui-toolbar
+   (tema explícito + `auto` bajo prefers-color-scheme; en claro no se toca). */
+:root[data-sn-theme="dark"] #mw-inlinecomments-addicon .oo-ui-iconElement-icon:not( .oo-ui-image-invert ) {
+	filter: invert( 1 ) brightness( 1.1 );
+}
+@media ( prefers-color-scheme: dark ) {
+	:root[data-sn-theme="auto"] #mw-inlinecomments-addicon .oo-ui-iconElement-icon:not( .oo-ui-image-invert ) {
+		filter: invert( 1 ) brightness( 1.1 );
+	}
+}
 
 /* ─────────────────────── Vista de diff (historial de comentarios) ───────────────────────
    Las burbujas de cambio se enrutan a los lavados semánticos del skin: añadido =
