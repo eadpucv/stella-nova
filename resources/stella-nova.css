@@ -253,6 +253,74 @@ html[data-sn-modal] .sn-header {
 	background: var(--sn-sunk); color: var(--sn-icon-active);
 }
 
+/* — Autocomplete del buscador (módulo clásico mediawiki.searchSuggest) —
+   La caja .suggestions la posiciona el JS con `top` = borde inferior del
+   #searchInput (no del pill). Como el input va centrado dentro del pill de
+   --sn-ctl de alto, ese `top` cae ~dentro del pill y el borde superior de la
+   caja queda "sobre" el input. Compensamos con margin-top = mitad del hueco
+   input↔pill + un respiro, para que cuelgue inmediatamente debajo del pill.
+   Sin prefijo .skin-stellanova el CSS del módulo (selectores de 1 clase)
+   ganaría por especificidad. */
+.skin-stellanova .suggestions {
+	margin-top: calc((var(--sn-ctl) - 1.25rem) / 2 + var(--sn-s-1));
+	padding: var(--sn-s-1);
+	background: var(--sn-paper); color: var(--sn-ink);
+	border: 1px solid var(--sn-hairline);
+	border-radius: var(--sn-radius-l);
+	box-shadow: var(--sn-lift-soft);
+	overflow: hidden;
+	font-family: var(--sn-font-text); font-size: var(--sn-fs-sm);
+}
+/* Matar borde + fondo blanco de los wrappers internos del módulo (el borde
+   externo ya lo pone .suggestions): así no hay doble borde y el --sn-paper
+   tokenizado del contenedor manda en claro/oscuro. */
+.skin-stellanova .suggestions-results,
+.skin-stellanova .suggestions-special {
+	background: transparent; border: 0; margin: 0;
+}
+/* CLAVE: el JS pone el texto en el <div.suggestions-result> y LUEGO lo envuelve
+   en <a.mw-searchSuggest-link> (el <a> es el PADRE, no el que lleva el texto).
+   El módulo cablea el color SOBRE EL DIV — .suggestions-result{color:#000} y
+   .suggestions-result-current{color:#fff} — y un color propio del div gana a la
+   herencia desde el <a>. Por eso hay que pintar el DIV: un selector
+   .skin-stellanova .suggestions-result (0,2,0) le gana al (0,1,0) del módulo,
+   sin empates ni pseudo-clases de por medio. (Intentar colorear el <a> no hace
+   nada: el div tiene color propio.) */
+.skin-stellanova .suggestions-result {
+	padding: var(--sn-s-2) var(--sn-s-3);
+	border-radius: var(--sn-radius); cursor: pointer;
+	color: var(--sn-ink); line-height: 1.3;
+	white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+/* El <a> solo envuelve la fila: que la ocupe entera y no subraye; el color lo
+   manda el div de adentro (color:inherit lo deja en paz). */
+.skin-stellanova .suggestions a.mw-searchSuggest-link {
+	display: block; color: inherit; text-decoration: none;
+}
+/* Fila resaltada: el JS añade -current al DIV (teclado y ratón). */
+.skin-stellanova .suggestions-result-current,
+.skin-stellanova .suggestions-result:hover {
+	background: var(--sn-sunk); color: var(--sn-nova);
+}
+.skin-stellanova .suggestions-special {
+	position: relative;
+	padding: var(--sn-s-2) var(--sn-s-3);
+	margin-top: var(--sn-s-1);
+	border-top: 1px solid var(--sn-hairline-soft);
+	border-radius: var(--sn-radius); cursor: pointer;
+	color: var(--sn-ink-soft);
+}
+.skin-stellanova .suggestions-special .special-hover,
+.skin-stellanova .suggestions-special.suggestions-result-current {
+	background: var(--sn-sunk);
+}
+.skin-stellanova .suggestions-special .special-label {
+	color: var(--sn-ink-soft); font-size: var(--sn-fs-sm);
+}
+.skin-stellanova .suggestions-special .special-query {
+	color: var(--sn-ink); font-style: italic;
+}
+
 /* — Zona 5 · Herramientas del usuario —
    Se pega al .sn-pagecluster (mismo cluster de íconos a la derecha): el
    gap del header-bar es --sn-s-5, y aquí lo compensamos con un margen
@@ -782,11 +850,13 @@ html[data-sn-notice-hide] .sn-notice { display: none; }
 }
 .sn-body :is(h5, .mw-heading5) {
 	font-size: var(--sn-fs-base);
-	margin: var(--sn-baseline) 0 0; font-weight: 500;   /* mismo tamaño que h6; el acento rojo lo da la regla transversal de abajo */
+	margin: var(--sn-baseline) 0 0; font-weight: 500;   /* el acento rojo lo da la regla transversal de abajo */
+	text-transform: uppercase; font-stretch: 85%;
 }
 .sn-body :is(h6, .mw-heading6) {
-	font-size: var(--sn-fs-base);          /* no menor que el cuerpo */
-	margin: var(--sn-baseline) 0 0; font-weight: 500;
+	font-size: calc(var(--sn-fs-base) * 0.9);
+	margin: var(--sn-baseline) 0 0; font-weight: 400;
+	text-transform: uppercase; font-stretch: 85%;
 	/* tinta del contexto: el nivel más bajo del par no lleva acento. */
 }
 /* Acento carmín del h5 — TRANSVERSAL: el h5 va en --sn-nova en CUALQUIER
@@ -2247,7 +2317,7 @@ details[open]::details-content { block-size: auto; opacity: 1; }
 	   line-height absoluto = `--sn-baseline`, toda fila (de una o de
 	   muchas líneas, p. ej. listas con <br>) cae en la grilla, y su
 	   medio-interlineado reparte el aire arriba/abajo del texto. */
-	line-height: var(--sn-baseline);
+	line-height: var(--sn-leading-table);
 	margin: var(--sn-baseline-2) 0;  /* margen de bloque = múltiplo entero de baseline */
 	max-width: 100%;
 }
@@ -2256,7 +2326,7 @@ details[open]::details-content { block-size: auto; opacity: 1; }
 	   medio-interlineado del line-height = baseline. Un padding vertical
 	   tendría que ser un baseline ENTERO para no descuadrar la fila, lo
 	   que duplicaría el alto de celda; aquí el aire ya está en la línea. */
-	padding: 0 var(--sn-s-3);
+	padding: calc((var(--sn-fs-table) * var(--sn-leading-table)) / 2);
 	border: 0;
 	/* Ancho mínimo de celda: impide que una columna se estruje por debajo de
 	   lo legible cuando la tabla excede el viewport (es lo que disparaba el
@@ -2381,10 +2451,13 @@ details[open]::details-content { block-size: auto; opacity: 1; }
 	   a este tamaño, así que la ficha corre a 3/4 de baseline. La retícula se
 	   reencuentra cada 4 líneas (4 × 0.75 = 3 baselines), así que sigue on-grid
 	   en bloques de 4 — y los márgenes exteriores son baselines enteros. */
-	line-height: calc(var(--sn-baseline) * 3 / 4);
+	line-height: var(--sn-leading-table);
 }
 .sn-body table:is(.template, .plantilla) > tbody > tr { vertical-align: top; letter-spacing: 0.045ex;}
-.sn-body table:is(.template, .plantilla) > tbody > tr > :is(th, td) { border: 0; }
+.sn-body table:is(.template, .plantilla) > tbody > tr > :is(th, td) { 
+	border: 0; 
+	padding: 0 calc(var(--sn-baseline) / 4);
+}
 /* `:first-child` para empatar la especificidad (0,3,4) de la regla de
    "fila de cabecera" de wikitable, que si no marca esta primera th a 600.
    En una ficha la primera fila es un par clave→valor, no una cabecera. */
