@@ -297,8 +297,16 @@
 		// destino— con `stopImmediatePropagation`: el evento nunca llega al
 		// handler de core, y disparamos solo la previsualización. (Independiente
 		// del orden de carga de módulos, por eso captura y no en el elemento.) */
+		// Botón "Descargar/Exportar PDF" en CONTENIDO de la wiki. La extensión Mpdf
+		// quedó DESCARTADA (su motor CSS no entiende los tokens del skin), así que
+		// el PDF de una página se obtiene por la previsualización Vivliostyle (que
+		// honra print.css) → el usuario hace "Guardar como PDF" del navegador.
+		// Hooks que abren el preview de la página actual:
+		//   · `.sn-print-pdf` o `[data-sn-print]`  ← recomendado para markup nuevo
+		//   · `a[href*="action=mpdf"]`             ← compatibilidad con enlaces viejos
 		doc.addEventListener( 'click', function ( e ) {
-			var a = e.target.closest && e.target.closest( '#t-print a' );
+			var a = e.target.closest && e.target.closest(
+				'#t-print a, .sn-print-pdf, [data-sn-print], a[href*="action=mpdf"]' );
 			if ( !a ) { return; }
 			e.preventDefault();
 			e.stopImmediatePropagation();

@@ -1,26 +1,51 @@
 /* ============================================================
  * skinStyles/mermaid.css — Stella Nova
- * 
- * Snapshot inicial del CSS de la extensión Mermaid
- * versión 6.0.2, licencia upstream: GPL-2.0-or-later.
- * Capturado el 2026-05-19 desde Mermaid/extension.json para
- * absorber los estilos dentro del sistema visual de Stella Nova.
- * 
- * Estos bloques se reescribirán gradualmente usando los tokens del
- * skin (var(--sn-...)). Mientras tanto, sirven como referencia
- * exacta de lo que la extensión inyecta hoy.
- * 
- * Cargado vía ResourceModuleSkinStyles en skin.json con prefijo `+`,
- * lo que añade este CSS DESPUÉS del CSS original de la extensión
- * sin reemplazarlo: la cascada hace que estas reglas ganen.
+ *
+ * Integra los diagramas de la extensión Mermaid (6.0.2, GPL-2.0-or-later)
+ * dentro del sistema visual del skin. Mermaid renderiza a SVG inline dentro
+ * de `.ext-mermaid`; este archivo recolorea y re-tipografía ese SVG con los
+ * tokens --sn-* del skin.
+ *
+ * Por qué CSS y no themeVariables de Mermaid:
+ *   Mermaid pinta el diagrama UNA sola vez al cargar la página, con un tema
+ *   fijo (LocalSettings: $wgmermaidgDefaultTheme = 'neutral', lienzo gris
+ *   neutro). Si el lector alterna claro/oscuro, el SVG NO se vuelve a dibujar.
+ *   Recolorear por CSS con tokens --sn-* (que sí usan light-dark()) hace que
+ *   los diagramas acompañen el tema del skin sin re-render. Por eso casi todo
+ *   va con !important: gana a los estilos que Mermaid inyecta en un <style>
+ *   dentro del propio <svg> y a los `fill` inline (p.ej. los sectores del pie).
+ *
+ * Cargado vía ResourceModuleSkinStyles en skin.json con prefijo `+` y todas
+ * las reglas prefijadas `.skin-stellanova` para ganar la cascada
+ * (ver [[skinstyles-cascade-gotcha]]).
+ *
+ * ── Paleta del diagrama (capa local --mm-*) ──
+ *   Las SUPERFICIES (cajas, marcos, secciones) se basan en la escala de papel
+ *   del skin (--sn-papel-200/300/400/700). Como esas primitivas son solo del
+ *   modo claro, cada rol se envuelve en light-dark() apareándola con el peldaño
+ *   equivalente de tinta (--sn-tinta-*): en claro = escala de papel pedida; en
+ *   oscuro = escala de tinta espejada → el flip claro/oscuro se mantiene.
+ *   El TEXTO y las LÍNEAS/ARISTAS siguen en tinta semántica (--sn-ink /
+ *   --sn-ink-soft) por legibilidad; los acentos de datos (post-it de notas,
+ *   "hoy" del gantt, rampa categórica del pie) no son superficie y se dejan.
+ *
+ * ── Tipografía ──
+ *   El TAMAÑO y la familia se fijan EN EL RENDER, no aquí: el trap de <head>
+ *   (Hooks::onBeforePageDisplay, 'stellanova-mermaid-theme') fuerza
+ *   fontFamily = IBM Plex Sans y fontSize = 14px en la config de Mermaid, para
+ *   que la extensión DIMENSIONE las cajas midiendo con nuestra fuente (si no,
+ *   el texto no calza). Este CSS solo refuerza la familia y aplica
+ *   font-stretch: 85% — condensar SOLO angosta el texto por debajo de la caja
+ *   ya medida, nunca desborda. Plex Sans es la build de dos ejes (wght+wdth),
+ *   así que el 85% condensa de verdad. NO poner font-size aquí (lo posee el
+ *   render).
  * ============================================================ */
 
-/* ─── Módulo: ext.mermaid ─── */
+/* ─── Animación de carga (spinner de puntos) ─── */
 /* archivo origen: resources/styles/ext.mermaid.css */
 /*!
  * @file
  * @ingroup SMW
- *
  * @licence GNU GPL v2+
  * @author mwjames
  */
@@ -30,3 +55,278 @@
 	vertical-align: middle;
 }
 
+/* ════════════════════════════════════════════════════════════
+ * SVG renderizado — tokenización del diagrama
+ *   superficie de nodo   → --mm-node     (papel-200 / tinta-700)
+ *   superficie de marco  → --mm-frame    (papel-300 / tinta-650)
+ *   superficie alterna   → --mm-section  (papel-400 / tinta-600)
+ *   filete / borde       → --mm-edge     (papel-700 / tinta-400)
+ *   texto                → --sn-ink
+ *   líneas / aristas     → --sn-ink-soft
+ *   nota (post-it)       → --sn-warn-wash + --sn-warn (la cinta del taller)
+ *   acento (único)       → --sn-nova (solo "hoy" del gantt)
+ * ════════════════════════════════════════════════════════════ */
+
+.skin-stellanova .ext-mermaid {
+	/* Escala de papel del skin envuelta en light-dark() para que el diagrama
+	   siga el tema. Claro = papel pedido; oscuro = tinta espejada. */
+	--mm-node:    light-dark(var(--sn-papel-200), var(--sn-tinta-700));
+	--mm-frame:   light-dark(var(--sn-papel-300), var(--sn-tinta-650));
+	--mm-section: light-dark(var(--sn-papel-400), var(--sn-tinta-600));
+	--mm-edge:    light-dark(var(--sn-papel-700), var(--sn-tinta-400));
+}
+
+.skin-stellanova .ext-mermaid svg {
+	max-width: 100%;
+	height: auto;
+}
+
+/* — Tipografía: toda etiqueta del diagrama en la sans del skin (Plex Sans),
+   condensada al 85%. La build de Plex Sans es de DOS ejes (wght+wdth,
+   declarada font-stretch: 75% 100% en fonts.css), así que font-stretch: 85%
+   condensa de verdad — distinto de la mono, que es estática. — */
+.skin-stellanova .ext-mermaid svg,
+.skin-stellanova .ext-mermaid text,
+.skin-stellanova .ext-mermaid foreignObject div,
+.skin-stellanova .ext-mermaid foreignObject span,
+.skin-stellanova .ext-mermaid .nodeLabel,
+.skin-stellanova .ext-mermaid .edgeLabel,
+.skin-stellanova .ext-mermaid .label {
+	font-family: var(--sn-font-sans) !important;
+	font-stretch: 85% !important;
+}
+
+/* ─── Flowchart / grafos ─── */
+.skin-stellanova .ext-mermaid .node rect,
+.skin-stellanova .ext-mermaid .node circle,
+.skin-stellanova .ext-mermaid .node ellipse,
+.skin-stellanova .ext-mermaid .node polygon,
+.skin-stellanova .ext-mermaid .node path {
+	fill: var(--mm-node) !important;
+	stroke: var(--mm-edge) !important;
+}
+.skin-stellanova .ext-mermaid .nodeLabel,
+.skin-stellanova .ext-mermaid .node .label,
+.skin-stellanova .ext-mermaid .node text {
+	color: var(--sn-ink) !important;
+	fill: var(--sn-ink) !important;
+}
+
+/* Aristas y sus puntas de flecha */
+.skin-stellanova .ext-mermaid .edgePath .path,
+.skin-stellanova .ext-mermaid .edgePath path,
+.skin-stellanova .ext-mermaid .flowchart-link,
+.skin-stellanova .ext-mermaid .relation,
+.skin-stellanova .ext-mermaid .transition {
+	stroke: var(--sn-ink-soft) !important;
+}
+.skin-stellanova .ext-mermaid .arrowheadPath,
+.skin-stellanova .ext-mermaid marker path,
+.skin-stellanova .ext-mermaid .marker,
+.skin-stellanova .ext-mermaid #arrowhead path {
+	fill: var(--sn-ink-soft) !important;
+	stroke: var(--sn-ink-soft) !important;
+}
+
+/* Etiquetas sobre las aristas — fondo = papel (para que "tape" la línea) */
+.skin-stellanova .ext-mermaid .edgeLabel rect,
+.skin-stellanova .ext-mermaid .edgeLabel .labelBkg,
+.skin-stellanova .ext-mermaid .edgeLabel foreignObject {
+	background: var(--sn-paper) !important;
+	fill: var(--sn-paper) !important;
+}
+/* …y su TEXTO en tinta. Mermaid mete el texto de la arista en un
+   <span class="edgeLabel"> (a veces con <p> dentro, a veces no) y le hornea
+   un color oscuro: hay que cubrir span/p/div/text/tspan o el rótulo queda
+   negro en modo oscuro. */
+.skin-stellanova .ext-mermaid .edgeLabel,
+.skin-stellanova .ext-mermaid .edgeLabel .label,
+.skin-stellanova .ext-mermaid .edgeLabel span,
+.skin-stellanova .ext-mermaid .edgeLabel p,
+.skin-stellanova .ext-mermaid .edgeLabel div,
+.skin-stellanova .ext-mermaid .edgeLabel text,
+.skin-stellanova .ext-mermaid .edgeLabel tspan {
+	color: var(--sn-ink-soft) !important;
+	fill: var(--sn-ink-soft) !important;
+}
+
+/* Subgraph / cluster */
+.skin-stellanova .ext-mermaid .cluster rect {
+	fill: var(--mm-frame) !important;
+	stroke: var(--mm-edge) !important;
+}
+.skin-stellanova .ext-mermaid .cluster .nodeLabel,
+.skin-stellanova .ext-mermaid .cluster text {
+	color: var(--sn-ink) !important;
+	fill: var(--sn-ink) !important;
+}
+
+/* ─── Diagrama de secuencia ─── */
+.skin-stellanova .ext-mermaid .actor {
+	fill: var(--mm-node) !important;
+	stroke: var(--mm-edge) !important;
+}
+.skin-stellanova .ext-mermaid text.actor,
+.skin-stellanova .ext-mermaid text.actor > tspan {
+	fill: var(--sn-ink) !important;
+	stroke: none !important;
+}
+.skin-stellanova .ext-mermaid .actor-line {
+	stroke: var(--mm-edge) !important;
+}
+.skin-stellanova .ext-mermaid .messageLine0,
+.skin-stellanova .ext-mermaid .messageLine1 {
+	stroke: var(--sn-ink-soft) !important;
+}
+.skin-stellanova .ext-mermaid .messageText,
+.skin-stellanova .ext-mermaid .sequenceNumber {
+	fill: var(--sn-ink) !important;
+}
+/* Notas = post-it: la cinta amarilla del taller */
+.skin-stellanova .ext-mermaid .note {
+	fill: var(--sn-warn-wash) !important;
+	stroke: var(--sn-warn) !important;
+}
+.skin-stellanova .ext-mermaid .noteText,
+.skin-stellanova .ext-mermaid .noteText > tspan {
+	fill: var(--sn-ink) !important;
+}
+/* Bloques de control (loop / alt / opt) */
+.skin-stellanova .ext-mermaid .loopLine {
+	stroke: var(--mm-edge) !important;
+}
+.skin-stellanova .ext-mermaid .labelBox {
+	fill: var(--mm-node) !important;
+	stroke: var(--mm-edge) !important;
+}
+.skin-stellanova .ext-mermaid .loopText,
+.skin-stellanova .ext-mermaid .loopText > tspan,
+.skin-stellanova .ext-mermaid .labelText,
+.skin-stellanova .ext-mermaid .labelText > tspan {
+	fill: var(--sn-ink-soft) !important;
+}
+.skin-stellanova .ext-mermaid .activation0,
+.skin-stellanova .ext-mermaid .activation1,
+.skin-stellanova .ext-mermaid .activation2 {
+	fill: var(--mm-frame) !important;
+	stroke: var(--mm-edge) !important;
+}
+
+/* ─── Diagrama de clases ─── */
+.skin-stellanova .ext-mermaid .classGroup rect {
+	fill: var(--mm-node) !important;
+	stroke: var(--mm-edge) !important;
+}
+.skin-stellanova .ext-mermaid .classGroup text,
+.skin-stellanova .ext-mermaid .classGroup .title {
+	fill: var(--sn-ink) !important;
+}
+.skin-stellanova .ext-mermaid .classGroup line {
+	stroke: var(--mm-edge) !important;
+}
+
+/* ─── Diagrama de estados ─── */
+.skin-stellanova .ext-mermaid .statediagram-state .basic,
+.skin-stellanova .ext-mermaid .statediagram-state rect,
+.skin-stellanova .ext-mermaid .statediagram-cluster rect {
+	fill: var(--mm-node) !important;
+	stroke: var(--mm-edge) !important;
+}
+.skin-stellanova .ext-mermaid .statediagram-state text,
+.skin-stellanova .ext-mermaid .stateLabel {
+	fill: var(--sn-ink) !important;
+}
+/* Pseudo-estados inicial (relleno) y final (anillo) */
+.skin-stellanova .ext-mermaid circle.state-start,
+.skin-stellanova .ext-mermaid .statediagram-state .start-state {
+	fill: var(--sn-ink) !important;
+	stroke: var(--sn-ink) !important;
+}
+.skin-stellanova .ext-mermaid .state-end circle,
+.skin-stellanova .ext-mermaid .statediagram-state .end-state-outer {
+	fill: var(--sn-paper) !important;
+	stroke: var(--sn-ink) !important;
+}
+.skin-stellanova .ext-mermaid .statediagram-state .end-state-inner {
+	fill: var(--sn-ink) !important;
+}
+
+/* ─── Gantt ─── */
+.skin-stellanova .ext-mermaid .section0,
+.skin-stellanova .ext-mermaid .section2 {
+	fill: var(--mm-node) !important;
+	opacity: 1 !important;
+}
+.skin-stellanova .ext-mermaid .section1,
+.skin-stellanova .ext-mermaid .section3 {
+	fill: var(--mm-section) !important;
+	opacity: 1 !important;
+}
+.skin-stellanova .ext-mermaid .sectionTitle {
+	fill: var(--sn-ink) !important;
+}
+.skin-stellanova .ext-mermaid rect.task,
+.skin-stellanova .ext-mermaid .task {
+	fill: var(--sn-ink-faint) !important;
+	stroke: var(--mm-edge) !important;
+}
+.skin-stellanova .ext-mermaid .taskText {
+	fill: var(--sn-paper) !important;
+}
+.skin-stellanova .ext-mermaid .taskTextOutsideLeft,
+.skin-stellanova .ext-mermaid .taskTextOutsideRight,
+.skin-stellanova .ext-mermaid .taskTextOutside0,
+.skin-stellanova .ext-mermaid .taskTextOutside1,
+.skin-stellanova .ext-mermaid .taskTextOutside2,
+.skin-stellanova .ext-mermaid .taskTextOutside3 {
+	fill: var(--sn-ink) !important;
+}
+.skin-stellanova .ext-mermaid .grid .tick line {
+	stroke: var(--sn-hairline-soft) !important;
+	opacity: 0.4 !important;
+}
+.skin-stellanova .ext-mermaid .grid .tick text {
+	fill: var(--sn-ink-soft) !important;
+}
+.skin-stellanova .ext-mermaid .grid path {
+	stroke: transparent !important;
+}
+.skin-stellanova .ext-mermaid .today {
+	stroke: var(--sn-nova) !important;
+}
+
+/* ─── Pie ─── */
+/* Texto y separación entre sectores */
+.skin-stellanova .ext-mermaid .pieTitleText,
+.skin-stellanova .ext-mermaid .slice,
+.skin-stellanova .ext-mermaid .legend text {
+	fill: var(--sn-ink) !important;
+}
+.skin-stellanova .ext-mermaid .pieCircle {
+	stroke: var(--sn-paper) !important;
+	stroke-width: 2px !important;
+}
+/* Rampa cromática derivada de las primitivas del skin (hasta 8 sectores;
+   más allá del 8º Mermaid repite su propia paleta — aceptable). El orden
+   de los sectores y de las muestras de la leyenda coincide en el DOM. */
+.skin-stellanova .ext-mermaid path.pieCircle:nth-of-type(1),
+.skin-stellanova .ext-mermaid .legend:nth-of-type(1) rect { fill: var(--sn-tinta-600)   !important; }
+.skin-stellanova .ext-mermaid path.pieCircle:nth-of-type(2),
+.skin-stellanova .ext-mermaid .legend:nth-of-type(2) rect { fill: var(--sn-masking-500) !important; }
+.skin-stellanova .ext-mermaid path.pieCircle:nth-of-type(3),
+.skin-stellanova .ext-mermaid .legend:nth-of-type(3) rect { fill: var(--sn-verde-500)   !important; }
+.skin-stellanova .ext-mermaid path.pieCircle:nth-of-type(4),
+.skin-stellanova .ext-mermaid .legend:nth-of-type(4) rect { fill: var(--sn-rojo-600)    !important; }
+.skin-stellanova .ext-mermaid path.pieCircle:nth-of-type(5),
+.skin-stellanova .ext-mermaid .legend:nth-of-type(5) rect { fill: var(--sn-azul-300)    !important; }
+.skin-stellanova .ext-mermaid path.pieCircle:nth-of-type(6),
+.skin-stellanova .ext-mermaid .legend:nth-of-type(6) rect { fill: var(--sn-malva-400)   !important; }
+.skin-stellanova .ext-mermaid path.pieCircle:nth-of-type(7),
+.skin-stellanova .ext-mermaid .legend:nth-of-type(7) rect { fill: var(--sn-tinta-400)   !important; }
+.skin-stellanova .ext-mermaid path.pieCircle:nth-of-type(8),
+.skin-stellanova .ext-mermaid .legend:nth-of-type(8) rect { fill: var(--sn-masking-700) !important; }
+
+/* ─── Títulos genéricos (gantt/pie/otros) ─── */
+.skin-stellanova .ext-mermaid .titleText {
+	fill: var(--sn-ink) !important;
+}

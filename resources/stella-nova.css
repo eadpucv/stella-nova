@@ -2279,10 +2279,92 @@ details[open]::details-content { block-size: auto; opacity: 1; }
 .mw-redirectedfrom, .mw-revision { color: var(--sn-ink-soft);
 	font-size: var(--sn-fs-sm); }
 .error, .mw-message-box-error { color: var(--sn-danger); }
+/* Cajas de mensaje (Codex `.cdx-message` y legacy `.mw-message-box`).
+   Stella Nova tiene su propio modo oscuro vía `color-scheme`/light-dark(), no
+   la clase `skin-theme-clientpref-night` de Vector, así que los design tokens
+   de Codex (`--color-notice`, `--background-color-error-subtle`, etc.) NUNCA
+   se voltean: quedan congelados en sus valores claros. Resultado en oscuro:
+   texto tinta de Codex (#202122) sobre nuestro fondo oscuro = ilegible, y el
+   ícono enmascarado con `--color-base` desaparece. Re-mapeamos los tokens de
+   Codex que consume la caja a tokens de la skin para que TODO (fondo, texto,
+   borde, ícono) se enrute por light-dark() y sea legible en ambos temas. */
 .mw-message-box, .cdx-message {
+	--color-base: var(--sn-ink);
+	--color-notice: var(--sn-ink);
+	--color-error: var(--sn-danger);
+	--color-warning: var(--sn-warn);
+	--color-success: var(--sn-ok);
+	--background-color-notice-subtle: var(--sn-sunk);
+	--background-color-error-subtle: color-mix(in srgb, var(--sn-danger) 12%, var(--sn-paper));
+	--background-color-warning-subtle: color-mix(in srgb, var(--sn-warn) 12%, var(--sn-paper));
+	--background-color-success-subtle: color-mix(in srgb, var(--sn-ok) 12%, var(--sn-paper));
+	--border-color-notice: var(--sn-hairline);
+	--border-color-error: var(--sn-danger);
+	--border-color-warning: var(--sn-warn);
+	--border-color-success: var(--sn-ok);
 	border-left: 3px solid var(--sn-ink-faint);
+	color: var(--sn-ink);
 	background: var(--sn-sunk); padding: var(--sn-s-3) var(--sn-s-4);
 	border-radius: 0 var(--sn-radius) var(--sn-radius) 0; margin: var(--sn-s-4) 0;
+}
+.cdx-message--error {
+	border-left-color: var(--sn-danger); color: var(--sn-danger);
+	background: var(--background-color-error-subtle);
+}
+.cdx-message--warning {
+	border-left-color: var(--sn-warn);
+	background: var(--background-color-warning-subtle);
+}
+.cdx-message--success {
+	border-left-color: var(--sn-ok);
+	background: var(--background-color-success-subtle);
+}
+
+/* ─── Especial:Buscar — la hoja core `mediawiki.special.search.styles`
+   colorea tabs, opciones y resultados con variables LESS de skin compiladas a
+   hex CLARO fijo (`@background-color-neutral-subtle`, `@border-subtle`,
+   `@color-subtle`…). Son valores de tiempo de compilación: NO responden al
+   flip runtime de `color-scheme`/light-dark() de la skin, así que en oscuro
+   quedan cajas claras y texto gris ilegible. Re-enrutamos por tokens de la
+   skin. Prefijo `.skin-stellanova` para ganar especificidad sobre el módulo
+   core sin depender del orden de carga (ver cascada de skinStyles). ─── */
+.skin-stellanova .mw-search-profile-tabs,
+.skin-stellanova #mw-searchoptions,
+.skin-stellanova .mw-search-interwiki-project,
+.skin-stellanova .searchResultImage-thumbnail-placeholder {
+	background: var(--sn-sunk);
+	border-color: var(--sn-hairline);
+}
+.skin-stellanova #mw-searchoptions .divider { border-bottom-color: var(--sn-hairline); }
+.skin-stellanova .mw-search-interwiki-project { border-top-color: var(--sn-hairline); }
+.skin-stellanova #mw-search-interwiki,
+.skin-stellanova .mw-search-interwiki-header { border-color: var(--sn-hairline); }
+.skin-stellanova .mw-search-result-data,
+.skin-stellanova .results-info { color: var(--sn-ink-soft); }
+.skin-stellanova .search-types .current a { color: var(--sn-ink); }
+
+/* ─── Botón "Exportar PDF" en contenido (.sn-print-pdf) ───
+   Afford de contenido que abre la previsualización Vivliostyle de la página
+   actual (skin.js lo engancha). Estilizado como botón discreto del skin; el
+   cursor y el rol lo hacen sentir accionable aunque sea un <span>. ─── */
+.skin-stellanova .sn-print-pdf {
+	display: inline-flex; align-items: center; gap: var(--sn-s-2);
+	padding: var(--sn-s-2) var(--sn-s-3);
+	font: inherit; font-size: var(--sn-fs-sm); line-height: 1;
+	color: var(--sn-ink); background: var(--sn-sunk);
+	border: 1px solid var(--sn-hairline); border-radius: var(--sn-radius);
+	cursor: pointer; user-select: none;
+	transition: background var(--sn-dur-1), border-color var(--sn-dur-1), color var(--sn-dur-1);
+}
+.skin-stellanova .sn-print-pdf::before {
+	content: ""; width: 1em; height: 1em; flex: none;
+	background: currentColor;
+	-webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 3h12v4H6zM19 8H5a3 3 0 0 0-3 3v6h4v4h12v-4h4v-6a3 3 0 0 0-3-3zm-3 11H8v-5h8zm2-6.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/></svg>') center / contain no-repeat;
+	        mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 3h12v4H6zM19 8H5a3 3 0 0 0-3 3v6h4v4h12v-4h4v-6a3 3 0 0 0-3-3zm-3 11H8v-5h8zm2-6.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/></svg>') center / contain no-repeat;
+}
+.skin-stellanova .sn-print-pdf:hover,
+.skin-stellanova .sn-print-pdf:focus-visible {
+	background: var(--sn-paper); border-color: var(--sn-nova); color: var(--sn-nova);
 }
 
 /* ─── Tablas de contenido: la skin es dueña del estilo de TODAS las

@@ -327,6 +327,29 @@ class Hooks {
 			'd.setAttribute("data-sn-notice-hide","");}catch(e){}}' .
 			'}catch(e){}})();</script>';
 		$out->addHeadItem( 'stellanova-prepaint', $script );
+
+		// Tema de Mermaid, owned por el skin. La extensión Mermaid renderiza el
+		// SVG client-side y DIMENSIONA cada caja midiendo el texto con la fuente
+		// activa al renderizar; si solo recoloreáramos por CSS después, la
+		// geometría quedaría calculada para otra fuente (texto que no calza). Por
+		// eso forzamos fontFamily/fontSize EN EL RENDER: la extensión hace
+		// `window.mermaid = mermaid` y luego `mermaid.initialize({...,...cfg})`
+		// sobre EL MISMO objeto, así que envolvemos `initialize` desde un trap en
+		// <head> (corre antes que el módulo RL) e inyectamos la fuente del skin en
+		// cada config. El COLOR sigue en skinStyles/mermaid.css con tokens var()
+		// (flip claro/oscuro); aquí solo va el tamaño/medición. Defensivo: nunca
+		// debe romper la página. Ver [[skinstyles-cascade-gotcha]].
+		$mscript = '<script>(function(){try{' .
+			'var S="IBM Plex Sans, system-ui, sans-serif",Z="14px";' .
+			'function M(c){c=c||{};var t=c.themeVariables||{};c.fontFamily=S;' .
+			'c.themeVariables=Object.assign({},t,{fontFamily:t.fontFamily||S,fontSize:t.fontSize||Z});' .
+			'return c;}' .
+			'function W(m){if(m&&typeof m.initialize==="function"&&!m.__snW){' .
+			'var o=m.initialize.bind(m);m.initialize=function(c){return o(M(c));};m.__snW=true;}return m;}' .
+			'var _m;Object.defineProperty(window,"mermaid",{configurable:true,' .
+			'get:function(){return _m;},set:function(v){_m=W(v);}});' .
+			'}catch(e){}})();</script>';
+		$out->addHeadItem( 'stellanova-mermaid-theme', $mscript );
 	}
 
 	/**
