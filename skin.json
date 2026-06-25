@@ -2,7 +2,7 @@
 	"manifest_version": 2,
 	"name": "StellaNova",
 	"namemsg": "skinname-stellanova",
-	"version": "0.6.3",
+	"version": "0.6.4",
 	"author": [
 		"[https://herbertspencer.net Herbert Spencer González], e[ad] Escuela de Arquitectura y Diseño, Pontificia Universidad Católica de Valparaíso"
 	],
@@ -116,6 +116,7 @@
 			"+ext.imagemap.styles": "skinStyles/imagemap.css",
 			"+jquery.ui": "skinStyles/jquery.ui.css",
 			"+ext.inlineComments.diff.styles": "skinStyles/inlinecomments.css",
+			"+ext.inlineComments.makeComment": "skinStyles/inlinecomments.css",
 			"+ext.inlineComments.sidenotes.styles": "skinStyles/inlinecomments.css",
 			"+ext.maps.leaflet.fullscreen": "skinStyles/maps.base.css",
 			"+ext.maps.leaflet.library": "skinStyles/maps.base.css",

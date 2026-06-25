@@ -1,270 +1,325 @@
 /* ============================================================
  * skinStyles/inlinecomments.css — Stella Nova
- * 
- * Snapshot inicial del CSS de la extensión InlineComments
- * versión 1.0, licencia upstream: GPL-2.0-or-later.
- * Capturado el 2026-05-19 desde InlineComments/extension.json para
- * absorber los estilos dentro del sistema visual de Stella Nova.
- * 
- * Estos bloques se reescribirán gradualmente usando los tokens del
- * skin (var(--sn-...)). Mientras tanto, sirven como referencia
- * exacta de lo que la extensión inyecta hoy.
- * 
- * Cargado vía ResourceModuleSkinStyles en skin.json con prefijo `+`,
- * lo que añade este CSS DESPUÉS del CSS original de la extensión
- * sin reemplazarlo: la cascada hace que estas reglas ganen.
+ *
+ * Homologación de la extensión InlineComments (GPL-2.0-or-later) al lenguaje
+ * visual de Stella Nova. Cubre los TRES módulos de estilo de la extensión, todos
+ * enrutados a este archivo desde skin.json con prefijo `+` (se añaden DESPUÉS del
+ * CSS original → ganan por orden a igual especificidad):
+ *   +ext.inlineComments.sidenotes.styles   (sidenotes.css)
+ *   +ext.inlineComments.makeComment        (makeComment.css)   ← antes SIN skinear
+ *   +ext.inlineComments.diff.styles        (sidenotesDiff.css)
+ *
+ * Concepto: las anotaciones son marginalia sobre la hoja. Cada nota es una
+ * tarjeta de papel recogida en el canalón derecho que, al activarse, se LEVANTA
+ * y gana el filo carmín del editor. El resaltado de texto NO es el amarillo
+ * marcador genérico: es la marca editorial en --sn-nova (la corrección a lápiz
+ * rojo sobre el manuscrito), enchufada por los custom props que expone la
+ * extensión, de modo que voltea con el tema. Todo color/medida sale de tokens.
  * ============================================================ */
 
-/* ─── Módulo: ext.inlineComments.sidenotes.styles ─── */
-/* archivo origen: resources/sidenotes.css */
-html {
-	scroll-behavior: smooth;
-}
+html { scroll-behavior: smooth; }   /* salto suave al navegar a una anotación */
 
-@media screen and not ( min-width: 600px ) {
-	#mw-content-text #mw-inlinecomment-annotations .mw-inlinecomment-aside {
-		/* In mobile view, force JS not to absolutely position */
-		position: static !important;
-	}
+/* ─────────────────────── Estructura: notas como POPOVER ───────────────────────
+   InlineComments envuelve TODO el contenido en #mw-inlinecomments-precontainer,
+   le resta ancho por JS y aloja los asides `position:absolute; right:1px` en un
+   canalón derecho (offsetParent = .sn-paper). En Stella Nova NO queremos canalón
+   permanente: las notas van OCULTAS y emergen como popover pegado al borde
+   derecho de la PANTALLA SÓLO la nota elegida. La única afordancia en reposo es
+   la marca carmín del texto. La revelación se MONTA en el estado nativo de la
+   extensión: ésta añade `.mw-inlinecomment-selected` al <aside> al elegirlo
+   (click en el resaltado → select; click fuera → renderUnselected). El CSS de
+   abajo revela con esa clase; skin.js → bindComments sólo observa el cambio y
+   fija el `top` en coords de viewport (para position:fixed). Como el JS de la
+   extensión escribe estilos inline (width del precontainer; position/right/top de
+   cada aside), estas reglas requieren !important.
 
-	#mw-content-text #mw-inlinecomments-precontainer {
-		width: 100% !important;
-	}
+   Por eso: anulamos la canaleta (el cuerpo conserva su medida completa) y NO
+   ensanchamos la hoja. */
+#mw-content-text #mw-inlinecomments-precontainer { width: 100% !important; padding-right: 0; }
+#mw-content-text #mw-inlinecomments-precontainer p { width: auto; }
 
-	#mw-content-text #mw-inlinecomment-annotations .mw-inlinecomment-aside.mw-inlinecomment-selected {
-		margin-left: 0.3125rem;
-	}
-}
-
+/* Contenedor de notas fuera de flujo (las notas son flotantes on-demand). */
 #mw-content-text #mw-inlinecomment-annotations {
-	width: max-content;
-	margin-top: 1%;
+	width: 0 !important; margin: 0 !important; padding: 0 !important; border: 0 !important;
 }
 
-#mw-inlinecomments-precontainer {
-	padding-right: 3rem;
-}
+/* Notas ocultas por defecto. */
+#mw-content-text #mw-inlinecomment-annotations .mw-inlinecomment-aside { display: none; }
 
-#mw-inlinecomments-precontainer p {
-	width: 98%;
+/* ── La marca editorial: resaltado del ancla en carmín, no en amarillo ──
+   La extensión consume estos custom props (con fallback al amarillo); los
+   redefinimos en tonos de --sn-nova translúcidos (base transparent → legibles
+   sobre cualquier fondo y correctos en oscuro, donde --sn-nova es el coral). */
+#mw-content-text {
+	--sidenoteAnchorColor:         color-mix(in oklab, var(--sn-nova) 15%, transparent);
+	--sidenoteAnchorColorHover:    color-mix(in oklab, var(--sn-nova) 28%, transparent);
+	--sidenoteAnchorColorSelected: color-mix(in oklab, var(--sn-nova) 42%, transparent);
 }
-
-#mw-content-text #mw-inlinecomment-annotations .mw-inlinecomment-aside {
-	/* js sets position absolute to have good non-js fallback */
-	width: 16.25rem;
-	transition: all 300ms cubic-bezier( 0.655, 0.18, 0.3, 1.255 );
-	left: 0.625rem;
-	border: 1px var(--sn-ink-faint) solid;
-	border-radius: 2px;
-	padding: 3px 14px 0px 14px; /* TODO tok: shorthand */
-	margin-bottom: 0.625em;
-	background-color: var(--sn-sunk);
-}
-
-/* Prevent resizing textboxes greater than element size. */
-#mw-inlinecomment-annotations textarea {
-	max-width: 100%;
-}
-
-#mw-content-text #mw-inlinecomment-annotations .mw-inlinecomment-aside p {
-	text-align: left;
-}
-
-#mw-content-text #mw-inlinecomment-annotations .mw-inlinecomment-aside.mw-inlinecomment-selected {
-	left: -0.625rem;
-	opacity: 1;
-	z-index: 1;
-	background-color: var(--sn-sunk);
-	border: 1px var(--sn-hairline) solid;
-	box-shadow: 0 0 30px var(--sn-ink-faint);
-}
-
-.mw-inlinecomment-author:before {
-	content: '— ';
-}
-
-.mw-inlinecomment-author {
-	font-size: small;
-	padding-left: 1em;
-	margin-bottom: 0.9375em;
-}
-
-.mw-inlinecomment-tools {
-	display: none;
-}
-
-.mw-inlinecomment-inittools,
-.mw-inlinecomment-selected .mw-inlinecomment-tools {
-	display: block;
-	margin: 14px 0px 12px 0; /* TODO tok: shorthand */
-	padding: 7px 5px; /* TODO tok: shorthand */
-}
-
-.mw-inlinecomment-inittools .mw-inlinecomment-buttons,
-.mw-inlinecomment-selected .mw-inlinecomment-buttons {
-	margin-top: 0.9375em;
-}
-
-#mw-content-text .mw-annotation-highlight:hover,
-#mw-content-text .mw-annotation-highlight:hover .mw-annotation-highlight
-{
-	background-color: var( --sidenoteAnchorColorHover, rgba( 247, 207, 105, 0.7137254902 ) );
-}
-
-#mw-content-text .mw-annotation-highlight.mw-annotation-selected,
-#mw-content-text .mw-annotation-highlight.mw-annotation-selected .mw-annotation-highlight
-{
-	background-color: var( --sidenoteAnchorColorSelected, #f5c955 );
-}
-
 #mw-content-text .mw-annotation-highlight {
-	background-color: var( --sidenoteAnchorColor, #f8e4b1 );
-	/* context-menu isn't technically right, but it looks like a comment */
-	cursor: context-menu;
+	background-color: var( --sidenoteAnchorColor );
+	border-radius: var(--sn-radius-s);
+	cursor: pointer;                            /* clicable: abre la nota */
+	transition: background-color var(--sn-dur-1) var(--sn-ease);
+}
+#mw-content-text .mw-annotation-highlight:hover,
+#mw-content-text .mw-annotation-highlight:hover .mw-annotation-highlight {
+	background-color: var( --sidenoteAnchorColorHover );
+}
+#mw-content-text .mw-annotation-highlight.mw-annotation-selected,
+#mw-content-text .mw-annotation-highlight.mw-annotation-selected .mw-annotation-highlight {
+	background-color: var( --sidenoteAnchorColorSelected );
 }
 
-.userAutocompleteDropdown {
-	width: 100%;
-	display: flex;
-	flex-direction: column;
-	border-style: solid;
-	border-width: 0.5px;
+/* ─────────────────────── La tarjeta de la nota (aside) ───────────────────────
+   En reposo: nota recogida, fondo hundido (--sn-sunk) sobre el papel, filete
+   tenue, plana. Al seleccionarse: se levanta a papel limpio con sombra suave y
+   el filo carmín del editor (inset, sin descuadrar el ancho) y desliza hacia el
+   texto. Ancho holgado para escribir; el canalón (max-content) lo sigue solo. */
+#mw-content-text #mw-inlinecomment-annotations .mw-inlinecomment-aside {
+	width: 19rem;
+	left: var(--sn-s-2);
+	box-sizing: border-box;
+	padding: var(--sn-s-3);
+	margin-bottom: var(--sn-s-2);
+	background-color: var(--sn-sunk);
+	color: var(--sn-ink-soft);
+	border: 1px solid var(--sn-hairline-soft);
+	border-radius: var(--sn-radius);
+	font-family: var(--sn-font-text);
+	font-size: var(--sn-fs-sm);
+	transition:
+		top var(--sn-dur-2) var(--sn-ease),
+		left var(--sn-dur-2) var(--sn-ease),
+		background-color var(--sn-dur-1) var(--sn-ease),
+		border-color var(--sn-dur-1) var(--sn-ease),
+		box-shadow var(--sn-dur-1) var(--sn-ease);
 }
+#mw-content-text #mw-inlinecomment-annotations .mw-inlinecomment-aside p { text-align: left; }
 
-.userAutocompleteDropdownItem {
+/* ── Nota revelada: popover fijo al borde derecho de la PANTALLA ──
+   La extensión añade `.mw-inlinecomment-selected` al <aside> elegido (click en
+   el resaltado → select; click fuera → renderUnselected) y crea el aside de ALTA
+   con `.mw-inlinecomment-inittools`. Esos son los ÚNICOS asides visibles; el
+   resto queda oculto (regla de arriba). NOS MONTAMOS en esa clase nativa en vez
+   de interceptar el click. position:fixed → el borde derecho topa con el filo de
+   la pantalla; el `top` lo fija skin.js (bindComments) en coords de viewport,
+   alineado al resaltado. Tarjeta amplia para comentar cómodo, filo carmín y
+   levante; el !important vence al position/right/top absolutos de la extensión. */
+#mw-content-text #mw-inlinecomment-annotations .mw-inlinecomment-aside.mw-inlinecomment-selected,
+#mw-content-text #mw-inlinecomment-annotations .mw-inlinecomment-aside:has(.mw-inlinecomment-inittools) {
 	display: block;
-	padding: 0.1875rem;
-	text-decoration: none;
-	color: black;
+	position: fixed !important;
+	right: 0 !important;
+	left: auto !important;
+	top: 12px;                    /* fallback; skin.js lo alinea al resaltado */
+	margin: 0 !important;
+	width: min(94vw, 24rem); max-width: 94vw;
+	max-height: 84vh; overflow-y: auto;
+	z-index: 60;
+	padding: var(--sn-s-4);
+	background-color: var(--sn-paper);
+	color: var(--sn-ink);
+	border: 1px solid var(--sn-hairline);
+	border-right: 0;
+	border-radius: var(--sn-radius) 0 0 var(--sn-radius);
+	box-shadow: inset 2px 0 0 0 var(--sn-nova), var(--sn-lift);
+	animation: sn-comment-in var(--sn-dur-2) var(--sn-ease);
+}
+/* El editor de alta, sin ancla aún, cae a una altura fija cómoda. */
+#mw-content-text #mw-inlinecomment-annotations .mw-inlinecomment-aside:has(.mw-inlinecomment-inittools) {
+	top: 12vh !important; z-index: 61;
+}
+@keyframes sn-comment-in {
+	from { opacity: 0; transform: translateX(0.5rem); }
+	to   { opacity: 1; transform: translateX(0); }
+}
+@media ( prefers-reduced-motion: reduce ) {
+	#mw-content-text #mw-inlinecomment-annotations .mw-inlinecomment-aside { animation: none !important; }
 }
 
-.userAutocompleteDropdownItem:hover {
-	background-color: #2a4b8d;
-	color: white;
-	text-decoration: none;
+/* ── Internos de la nota ──
+   La fila del comentario alinea su contenido ARRIBA para que el lápiz de edición
+   quede pinado en la esquina superior derecha. */
+.mw-inlinecomment-comment {
+	width: 100%;
+	display: flex; flex-direction: row; align-items: flex-start;
+	justify-content: space-between; gap: var(--sn-s-2);
 }
+.mw-inlinecomment-text { line-height: 1.35; }
 
-.mw-inlinecomment-editlink {
-	all: unset;
-	cursor: pointer;
-	font-size: x-large;
-	padding: 0;
-	height: min-content;
-}
-
-.mw-inlinecomment-editlink:hover {
-	font-weight: bold;
+.mw-inlinecomment-author { padding-left: var(--sn-s-4); margin-bottom: var(--sn-s-2); }
+.mw-inlinecomment-author:before { content: '— '; }   /* atribución editorial */
+.mw-inlinecomment-author {
+	font-size: var(--sn-fs-xs);
+	color: var(--sn-ink-faint);
 }
 
 .mw-inlinecomments-editedlabel {
-	color: gray;
-	margin-bottom: 1rem;
-	margin-right: 2.5rem;
+	color: var(--sn-ink-faint);
+	font-size: var(--sn-fs-xs); font-style: italic;
+	margin: 0 var(--sn-s-5) var(--sn-s-2) 0;
 }
 
+/* Lápiz de edición. La extensión emite <button>🖉</button> (emoji U+1F589 que
+   muchas fuentes NO tienen → se veía vacío). Lo sustituimos por el lápiz de
+   Feather como máscara con color de token: visible siempre, nítido, y toma el
+   acento carmín al activarse — igual que los demás íconos enmascarados del skin. */
+.mw-inlinecomment-editlink {
+	all: unset;
+	flex: none;
+	cursor: pointer;
+	display: inline-block;
+	width: 1.05rem; height: 1.05rem;
+	margin-top: .1rem;
+	font-size: 0;                               /* oculta el emoji de respaldo */
+	background-color: var(--sn-icon);
+	-webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z'/%3E%3C/svg%3E") no-repeat center / contain;
+	        mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z'/%3E%3C/svg%3E") no-repeat center / contain;
+	transition: background-color var(--sn-dur-1) var(--sn-ease);
+}
+.mw-inlinecomment-editlink:hover { background-color: var(--sn-nova); }
+
+/* Herramientas (responder/cerrar/guardar): se separan del cuerpo con un filete
+   editorial, no con aire suelto. */
+.mw-inlinecomment-tools { display: none; }
+.mw-inlinecomment-inittools,
+.mw-inlinecomment-selected .mw-inlinecomment-tools {
+	display: block;
+	margin-top: var(--sn-s-3);
+	padding-top: var(--sn-s-2);
+	border-top: 1px solid var(--sn-hairline-soft);
+}
+
+/* Editor (alta/edición). Damos altura cómoda a la caja de escritura — el campo
+   pequeño era el "espacio ridículamente chico". El grueso del look del textarea
+   y los botones lo da el skinStyle de oojs-ui; aquí: encuadre, familia y un
+   tamaño de botón más sobrio (los OOUI por defecto se ven toscos en la tarjeta). */
+.mw-inlinecomments-editor { margin-top: var(--sn-s-2); }
+#mw-inlinecomment-annotations textarea,
+.mw-inlinecomments-editor textarea {
+	max-width: 100%;
+	min-height: 6.5rem;
+	font-family: var(--sn-font-text);
+}
+.mw-inlinecomment-buttons {
+	display: flex; flex-wrap: wrap; gap: var(--sn-s-2);
+	margin-top: var(--sn-s-2);
+}
+.mw-inlinecomment-buttons .oo-ui-buttonInputWidget { margin: 0; }
+.mw-inlinecomment-buttons .oo-ui-buttonElement-button {
+	font-family: var(--sn-font-text);
+	font-size: var(--sn-fs-sm);
+	min-height: 0;
+	padding-top: var(--sn-s-1); padding-bottom: var(--sn-s-1);
+}
+
+/* Comentario en edición: lavado carmín + filo, en vez del azul/aliceblue. */
 .mw-inlinecomment-selected .mw-inlinecomment-comment.currentedit {
-	background: aliceblue;
-	border-style: solid;
-	border-width: 0.5px;
-	border-color: blue;
-	padding-left: 0.5rem;
-	padding-bottom: 0.5rem;
+	background: var(--sn-nova-wash);
+	border-left: 2px solid var(--sn-nova);
+	border-radius: 0 var(--sn-radius-s) var(--sn-radius-s) 0;
+	padding: var(--sn-s-1) var(--sn-s-2);
+}
+.mw-inlinecomment-selected .currentedit .mw-inlinecomment-editlink { display: none !important; }
+
+/* ── Móvil (<600px): el JS no posiciona absoluto; las notas fluyen en columna ── */
+@media screen and not ( min-width: 600px ) {
+	#mw-content-text #mw-inlinecomment-annotations .mw-inlinecomment-aside {
+		position: static !important;
+		width: 100%; left: 0;
+	}
+	#mw-content-text #mw-inlinecomments-precontainer { width: 100% !important; }
+	#mw-content-text #mw-inlinecomment-annotations .mw-inlinecomment-aside.mw-inlinecomment-selected {
+		left: 0; margin-left: 0;
+	}
 }
 
-.mw-inlinecomment-selected .currentedit .mw-inlinecomment-editlink {
-	display: none !important;
-}
-
-.mw-inlinecomment-comment {
+/* ─────────────────────── Mención de usuarios (@) ───────────────────────
+   Mismo lenguaje que los demás desplegables del skin (.sn-menu-list, el
+   autocompletar del buscador): hoja papel, filete, levante suave, hover hundido
+   + carmín. Reemplaza el azul #2a4b8d y el negro cableados de la extensión. */
+.userAutocompleteDropdown {
 	width: 100%;
-	display: flex;
-	flex-direction: row;
-	justify-content: space-between;
+	display: flex; flex-direction: column;
+	background: var(--sn-paper);
+	border: 1px solid var(--sn-hairline);
+	border-radius: var(--sn-radius);
+	box-shadow: var(--sn-lift-soft);
+	overflow: hidden;
+	font-family: var(--sn-font-text); font-size: var(--sn-fs-sm);
+}
+.userAutocompleteDropdownItem {
+	display: block;
+	padding: var(--sn-s-1) var(--sn-s-2);
+	color: var(--sn-ink);
+	text-decoration: none;
+}
+.userAutocompleteDropdownItem:hover {
+	background-color: var(--sn-sunk);
+	color: var(--sn-nova);
+	text-decoration: none;
 }
 
-
-/* ─── Módulo: ext.inlineComments.diff.styles ─── */
-/* archivo origen: resources/sidenotesDiff.css */
-.mw-inlinecomments-comment-added {
-	background-color: rgb(182, 215, 132);
-	float: right;
-	padding: 0.5rem;
-	margin-bottom: 1rem;
-	width: max-content;
-	border-radius: 0.5rem;
-	border-style: solid;
-	border-color: lightgray;
-	border-width: 1px;
+/* ─────────────────────── Afordancia "añadir comentario" ───────────────────────
+   El globo flotante (OOUI speechBubbleAdd) que aparece al seleccionar texto
+   (position:fixed sobre <body>). Tarjeta de papel limpia con filete SÓLIDO (no
+   punteado) y levante; al pasar el cursor toma el lavado y el filo carmín. */
+#mw-inlinecomments-addicon {
+	cursor: pointer;
+	display: grid; place-items: center;
+	padding: var(--sn-s-1);
+	background-color: var(--sn-paper);
+	border: 1px solid var(--sn-hairline);
+	border-radius: var(--sn-radius);
+	box-shadow: var(--sn-lift-soft);
+	transition: background-color var(--sn-dur-1) var(--sn-ease), border-color var(--sn-dur-1) var(--sn-ease);
 }
-
-.mw-inlinecomments-comment-removed {
-	background-color: rgb(241, 138, 138);
-	float: left;
-	padding: 0.5rem;
-	margin-bottom: 1rem;
-	width: max-content;
-	border-radius: 0.5rem;
-	border-style: solid;
-	border-color: lightgray;
-	border-width: 1px;
+#mw-inlinecomments-addicon:hover {
+	background-color: var(--sn-nova-wash);
+	border-color: var(--sn-nova);
 }
+#mw-inlinecomments-addicon span { margin: 0; opacity: .7; }
+#mw-inlinecomments-addicon:hover span { opacity: 1; }
 
-.mw-inlinecomments-comment-changed {
-	background-color: rgb(239, 243, 169);
-	float: right;
-	padding: 0.5rem;
-	margin-bottom: 1rem;
-	width: max-content;
-	border-radius: 0.5rem;
-	border-style: solid;
-	border-color: lightgray;
-	border-width: 1px;
+/* ─────────────────────── Vista de diff (historial de comentarios) ───────────────────────
+   Las burbujas de cambio se enrutan a los lavados semánticos del skin: añadido =
+   ok, quitado = danger, cambiado = warn, sin cambios = hundido neutro; el texto
+   anclado al carmín (es el ancla). Filetes y radios tokenizados. */
+.mw-inlinecomments-comment-added,
+.mw-inlinecomments-comment-removed,
+.mw-inlinecomments-comment-changed,
+.mw-inlinecomments-comment-unchanged {
+	padding: var(--sn-s-2);
+	margin-bottom: var(--sn-baseline);
+	width: max-content; max-width: 100%;
+	border: 1px solid var(--sn-hairline-soft);
+	border-radius: var(--sn-radius);
+	font-family: var(--sn-font-text); font-size: var(--sn-fs-sm);
 }
-
+.mw-inlinecomments-comment-added     { background-color: var(--sn-ok-wash);     float: right; }
+.mw-inlinecomments-comment-removed   { background-color: var(--sn-danger-wash); float: left; }
+.mw-inlinecomments-comment-changed   { background-color: var(--sn-warn-wash);   float: right; }
+.mw-inlinecomments-comment-unchanged { background-color: var(--sn-sunk);        float: left; }
 .mw-inlinecomments-comment-changed-old {
 	text-decoration: line-through;
-	background-color: rgb(241, 138, 138);
+	background-color: var(--sn-danger-wash);
 }
 
-.mw-inlinecomments-comment-unchanged {
-	background-color:gainsboro;
-	float: left;
-	padding: 0.5rem;
-	margin-bottom: 1rem;
-	width: max-content;
-	border-radius: 0.5rem;
-	border-style: solid;
-	border-color: lightgray;
-	border-width: 1px;
-}
-
-.mw-inlinecomments-diff {
-	display: flex;
-	flex-direction: column;
-}
-
+.mw-inlinecomments-diff { display: flex; flex-direction: column; }
 .mw-inlinecomments-diff-target-text {
-	background-color: rgb(183, 235, 244);
-	padding: 0.5rem;
-	border-style: solid;
-	border-width: 1px;
+	background-color: var(--sn-nova-wash);
+	padding: var(--sn-s-2);
+	border: 1px solid var(--sn-hairline-soft);
+	border-radius: var(--sn-radius);
+	font-family: var(--sn-font-text);
 }
-
 .mw-inlinecomments-diff-username {
-	font-size: smaller;
-	color: rgba(92, 89, 89, 0.875);
-	font-weight: bold;
+	font-size: var(--sn-fs-xs); font-weight: 600;
+	color: var(--sn-ink-faint);
 }
-
-.mw-inlinecomments-comment-diff {
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-}
-
+.mw-inlinecomments-comment-diff { display: flex; flex-direction: row; align-items: center; }
 .mw-inlinecomments-diff-sign {
-	font-size: 1.5rem;
-	margin-bottom: 1rem;
-	margin-right: 0.5rem;
+	font-size: var(--sn-fs-md);
+	color: var(--sn-ink-faint);
+	margin: 0 var(--sn-s-2) var(--sn-baseline) 0;
 }
-

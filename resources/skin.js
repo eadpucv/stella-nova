@@ -379,7 +379,75 @@
 		} );
 	}
 
-	function init() { bindPrefs(); bindMenus(); bindSearch(); bindNotice(); bindPrint(); bindCollapse(); }
+	/* ── InlineComments como marginalia popover ──
+	 * La extensión muestra las notas siempre, apiladas/absolutas en un canalón que
+	 * aplasta la hoja. Aquí las dejamos OCULTAS (CSS) y revelamos SÓLO la nota
+	 * elegida, como popover fijo al borde derecho de la pantalla.
+	 *
+	 * Clave (aprendida a la mala): NO interceptamos el click — competíamos con el
+	 * handler de la extensión y perdíamos. En su lugar nos MONTAMOS en su estado:
+	 * la extensión añade/quita `.mw-inlinecomment-selected` en el <aside> al
+	 * elegir/cerrar una nota (click en el resaltado → select; click fuera →
+	 * renderUnselected). El CSS revela con esa clase nativa; aquí sólo OBSERVAMOS
+	 * el cambio y reposicionamos la nota elegida en coords de viewport (su `top`
+	 * absoluto no sirve con position:fixed). El vínculo resaltado↔nota es por id:
+	 *   resaltado: data-mw-highlight-id="<id>"   ·   nota: #mw-inlinecomment-aside-<id> */
+	function bindComments() {
+		var box = doc.getElementById( 'mw-inlinecomment-annotations' );
+		var content = doc.getElementById( 'mw-content-text' );
+		if ( !box || !content ) { return; }              // página sin comentarios
+
+		function hlOf( aside ) {
+			var id = aside.id.replace( 'mw-inlinecomment-aside-', '' );
+			return content.querySelector( '.mw-annotation-highlight[data-mw-highlight-id="' + id + '"]' );
+		}
+		function place( aside ) {
+			var hl = hlOf( aside );
+			var top;
+			if ( hl ) {
+				var r = hl.getBoundingClientRect();
+				top = Math.min( Math.max( 12, r.top ), window.innerHeight - aside.offsetHeight - 12 );
+			} else {
+				top = Math.round( window.innerHeight * 0.15 );   // alta sin ancla
+			}
+			// inline !important: gana al `top` absoluto que escribe la extensión
+			aside.style.setProperty( 'top', Math.round( Math.max( 12, top ) ) + 'px', 'important' );
+		}
+		function current() {
+			var a = box.querySelector( '.mw-inlinecomment-aside.mw-inlinecomment-selected' );
+			if ( a ) { return a; }
+			var t = box.querySelector( '.mw-inlinecomment-inittools' );   // aside de alta
+			return t ? t.closest( '.mw-inlinecomment-aside' ) : null;
+		}
+		var raf = null;
+		function reposition() {
+			if ( raf ) { return; }
+			raf = requestAnimationFrame( function () {
+				raf = null;
+				var a = current();
+				if ( a ) { place( a ); }
+			} );
+		}
+
+		// La extensión togglea `.mw-inlinecomment-selected` y crea el aside de alta
+		// (.inittools). Observamos ambos y reposicionamos la nota visible.
+		new MutationObserver( reposition ).observe( box, {
+			subtree: true, childList: true, attributes: true, attributeFilter: [ 'class' ]
+		} );
+
+		// Escape cierra la nota elegida reusando el cierre nativo de la extensión.
+		doc.addEventListener( 'keydown', function ( e ) {
+			if ( e.key !== 'Escape' ) { return; }
+			var a = current();
+			if ( a ) { a.classList.remove( 'mw-inlinecomment-selected' ); }
+		} );
+
+		window.addEventListener( 'scroll', reposition, { passive: true } );
+		window.addEventListener( 'resize', reposition );
+		reposition();   // por si ya hay una nota elegida al cargar (p.ej. por #fragmento)
+	}
+
+	function init() { bindPrefs(); bindMenus(); bindSearch(); bindNotice(); bindPrint(); bindCollapse(); bindComments(); }
 	if ( doc.readyState === 'loading' ) {
 		doc.addEventListener( 'DOMContentLoaded', init );
 	} else { init(); }

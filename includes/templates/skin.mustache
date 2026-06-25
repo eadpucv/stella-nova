@@ -15,7 +15,7 @@
 	  footer}{is-published,html}
 }}
 {{{html-headelement}}}
-<a class="sn-skip" href="#sn-content">{{msg-stellanova-skip-to-content}}</a>
+<a class="sn-skip" href="#content">{{msg-stellanova-skip-to-content}}</a>
 {{^is-sn-fullscreen}}<a class="sn-skip" href="#sn-nav">{{msg-stellanova-skip-to-nav}}</a>{{/is-sn-fullscreen}}
 
 {{#is-sn-fullscreen}}
@@ -26,7 +26,7 @@
 	Cuenta y Preferencias. Sin "salir de pantalla completa" — el
 	modal mismo es la salida (los enlaces de Portada/Navegación
 	salen del canvas). }}
-<main id="sn-content" class="sn-canvas" tabindex="-1">
+<main id="content" class="sn-canvas" tabindex="-1">
 		<div class="sn-md sn-md-fs sn-fs-md">
 			<button type="button" class="sn-fs-trigger" aria-expanded="false"
 				aria-haspopup="dialog" data-sn-menu
@@ -76,7 +76,7 @@
 						{{#sn-sitenav}}
 						<div class="sn-fs-group">
 							{{#label}}<h4 class="sn-fs-subh">{{.}}</h4>{{/label}}
-							<ul class="sn-fs-pills">{{{html-items}}}</ul>
+							<ul class="sn-fs-pills" id="{{id}}">{{{html-items}}}</ul>
 						</div>
 						{{/sn-sitenav}}
 						{{/sn-has-sitenav}}
@@ -98,7 +98,7 @@
 					{{#data-user-menu}}
 					<section class="sn-fs-sec" aria-labelledby="sn-fs-h-user">
 						<h3 id="sn-fs-h-user" class="sn-fs-h">{{msg-stellanova-user}}</h3>
-						<ul class="sn-fs-pills">{{{html-items}}}</ul>
+						<ul class="sn-fs-pills" id="{{id}}">{{{html-items}}}</ul>
 						{{!	Preferencias de lectura (Tema · Tamaño · Familia), las
 							mismas que en el menú de usuario de las páginas normales.
 							skin.js engancha [data-sn-pref] a nivel documento. }}
@@ -160,13 +160,13 @@
 			<div class="sn-foot-line">
 				{{#sn-toolbox}}{{^is-empty}}
 				<details class="sn-foot-tools-dd">
-					<summary class="sn-foot-tools-summary" aria-controls="sn-foot-toollist">
+					<summary class="sn-foot-tools-summary" aria-controls="{{id}}">
 						<svg class="sn-i sn-foot-tools-plus" aria-hidden="true" width="13" height="13" viewBox="0 0 24 24"><use href="#sn-i-plus"/></svg>
 						<svg class="sn-i sn-foot-tools-up" aria-hidden="true" width="13" height="13" viewBox="0 0 24 24"><use href="#sn-i-arrow-up"/></svg>
 						{{msg-stellanova-tools}}
 					</summary>
 				</details>
-				<ul class="sn-foot-toollist" id="sn-foot-toollist">{{{html-items}}}</ul>
+				<ul class="sn-foot-toollist" id="{{id}}">{{{html-items}}}</ul>
 				{{/is-empty}}{{/sn-toolbox}}
 
 				{{#data-footer}}{{#data-places}}<ul class="sn-foot-places" id="{{id}}">{{#array-items}}<li id="{{id}}">{{{html}}}</li>{{/array-items}}</ul>{{/data-places}}{{/data-footer}}
@@ -217,7 +217,7 @@
 							{{#sn-sitenav}}
 							<section class="sn-mm-sec">
 								{{#label}}<h2 class="sn-mm-h">{{.}}</h2>{{/label}}
-								<ul>{{{html-items}}}</ul>
+								<ul id="{{id}}">{{{html-items}}}</ul>
 							</section>
 							{{/sn-sitenav}}
 						</div>
@@ -296,12 +296,12 @@
 							</a></li></ul>
 							{{/sn-editcode}}
 							{{#data-portlets}}
-							{{#data-namespaces}}<ul class="sn-mm-grp">{{{html-items}}}</ul>{{/data-namespaces}}
+							{{#data-namespaces}}<ul class="sn-mm-grp" id="{{id}}">{{{html-items}}}</ul>{{/data-namespaces}}
 							{{/data-portlets}}
 							{{#sn-has-pageviews}}<ul class="sn-mm-grp">{{#sn-pageviews}}<li id="{{id}}" class="{{class}}">{{{html}}}</li>{{/sn-pageviews}}</ul>{{/sn-has-pageviews}}
 							{{#data-portlets}}
-							{{#data-actions}}<ul class="sn-mm-grp">{{{html-items}}}</ul>{{/data-actions}}
-							{{#data-variants}}<ul class="sn-mm-grp">{{{html-items}}}</ul>{{/data-variants}}
+							{{#data-actions}}<ul class="sn-mm-grp" id="{{id}}">{{{html-items}}}</ul>{{/data-actions}}
+							{{#data-variants}}<ul class="sn-mm-grp" id="{{id}}">{{{html-items}}}</ul>{{/data-variants}}
 							{{/data-portlets}}
 						</div>
 					</div>
@@ -336,7 +336,7 @@
 							</button>
 						</header>
 						<div class="sn-modal-body">
-							<ul class="sn-menu-items">{{{html-items}}}</ul>
+							<ul class="sn-menu-items" id="{{id}}">{{{html-items}}}</ul>
 							{{!	Preferencias de lectura — antes panel aparte; ahora
 								apéndice del menú de usuario tras un separador: sólo
 								Tema (claro/auto/oscuro) y Tamaño de letra. }}
@@ -419,7 +419,7 @@
 					skin solo lo ESTILIZA in situ (.mw-parser-output .toc),
 					respetando la ubicación del magic word. }}
 
-				<div id="sn-content" class="sn-body mw-body-content" tabindex="-1">
+				<div id="content" class="sn-body mw-body-content" tabindex="-1">
 					{{{html-body-content}}}
 				</div>
 
@@ -458,13 +458,13 @@
 				<div class="sn-foot-line">
 					{{#sn-toolbox}}{{^is-empty}}
 					<details class="sn-foot-tools-dd">
-						<summary class="sn-foot-tools-summary" aria-controls="sn-foot-toollist">
+						<summary class="sn-foot-tools-summary" aria-controls="{{id}}">
 							<svg class="sn-i sn-foot-tools-plus" aria-hidden="true" width="13" height="13" viewBox="0 0 24 24"><use href="#sn-i-plus"/></svg>
 							<svg class="sn-i sn-foot-tools-up" aria-hidden="true" width="13" height="13" viewBox="0 0 24 24"><use href="#sn-i-arrow-up"/></svg>
 							{{msg-stellanova-tools}}
 						</summary>
 					</details>
-					<ul class="sn-foot-toollist" id="sn-foot-toollist">{{{html-items}}}</ul>
+					<ul class="sn-foot-toollist" id="{{id}}">{{{html-items}}}</ul>
 					{{/is-empty}}{{/sn-toolbox}}
 
 					{{#data-footer}}{{#data-places}}<ul class="sn-foot-places" id="{{id}}">{{#array-items}}<li id="{{id}}">{{{html}}}</li>{{/array-items}}</ul>{{/data-places}}{{/data-footer}}
