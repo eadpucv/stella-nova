@@ -744,10 +744,10 @@ html[data-sn-notice-hide] .sn-notice { display: none; }
 /* ─────────────── Cuerpo: ritmo editorial ─────────────── */
 /* Ancho condensado del cuerpo vía el eje wdth (token --sn-text-width).
    font-stretch hereda, así que párrafos, listas, tablas y captions lo toman;
-   las cabeceras lo resetean a 100% más abajo. Las DOS familias de texto —IBM
-   Plex Sans y Roboto Serif— declaran el mismo rango wdth 75–100, así que el
-   cuerpo condensa por igual aunque el lector alterne a serif. Mono no tiene
-   eje wdth → lo ignora sin efecto. */
+   las cabeceras lo resetean a 100% más abajo. Las DOS familias de texto lo
+   consumen, pero con pisos distintos: IBM Plex Sans baja a wdth 75, Roboto
+   Serif a 62.5 (re-instanciada para que el modo serif apriete más; el token
+   cambia por familia, ver tokens.css). Mono no tiene eje wdth → lo ignora. */
 .sn-body { min-width: 0; font-stretch: var(--sn-text-width); }
 /* El ancho de la HOJA lo fija --sn-measure (.sn-paper-wrap). Esa es la
    medida de lectura: TODO el contenido —párrafos, cabeceras, listas, tablas,
