@@ -135,6 +135,17 @@ a.new:visited, a[href].new:visited { color: var(--sn-link-new); }
 	background: color-mix(in oklab, var(--sn-field) 60%, transparent);
 	-webkit-backdrop-filter: saturate(1.5) blur(5px);
 	backdrop-filter: saturate(1.5) blur(5px);
+	/* PROMOCIÓN A CAPA GPU. En Macs antiguos (Safari/Firefox viejos) el motor de
+	   composición NO hace overlap-testing: un `<canvas>` —siempre en su propia
+	   capa GPU— se pinta ENCIMA de todo lo que no esté también compuesto,
+	   ignorando el `z-index`. Al promover el header (y con él sus dropdowns) a su
+	   propia capa, el orden de pintado vuelve a respetar el `z-index` frente al
+	   canvas. Usamos `will-change: transform` y NO `translateZ(0)`: aplicar un
+	   transform real a un elemento `position: sticky` rompe la adherencia en
+	   Safari antiguo (justo el navegador afectado); `will-change` promueve la
+	   capa sin transformar. Se anula bajo modal (ver regla siguiente): como
+	   `backdrop-filter`, crea bloque contenedor y atraparía el modal `fixed`. */
+	will-change: transform;
 	/* Sin filete inferior: la cabecera se separa del cuerpo por el blur y el
 	   fondo translúcido, no por una regla horizontal (doctrina "sin filetes"). */
 }
@@ -150,6 +161,7 @@ a.new:visited, a[href].new:visited { color: var(--sn-link-new); }
 html[data-sn-modal] .sn-header {
 	-webkit-backdrop-filter: none;
 	backdrop-filter: none;
+	will-change: auto;   /* suelta el bloque contenedor para que el modal fixed se ancle al viewport */
 }
 /* Cabecera despejada: isotipo · pestañas de página · buscador · usuario.
    La navegación del sitio vive en el pie. */
@@ -1798,6 +1810,11 @@ canvas, iframe,
 	padding: var(--sn-canvas-py) var(--sn-canvas-px);
 	background: var(--sn-paper);
 	color: var(--sn-ink);
+	/* AÍSLA el cuerpo en un contexto de apilamiento propio. Cualquier contenido
+	   dinámico (canvas p5 de la home, embeds JS) queda ENCERRADO aquí abajo: por
+	   más `z-index` que se ponga, no puede escalar por encima del `.sn-header`
+	   hermano. Es la defensa "independiente de lo que inyecte el JS". */
+	isolation: isolate;
 	/* `.full-width` usa `width: 100vw` con margenes negativos calculados
 	   en `vw`. Sin `clip`, micro-desfases sub-pixel pueden disparar scroll
 	   horizontal en algún viewport. `clip` no crea contexto propio (a

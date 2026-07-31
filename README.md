@@ -52,6 +52,84 @@ el `wfLoadSkin` apunte a esa carpeta y los woff2 resuelven solos. (Antes,
 `remoteSkinPath` estaba hardcodeado y las fuentes daban 404 si la carpeta no
 se llamaba exactamente `StellaNova`.)
 
+## Logo / isotipo
+
+El skin muestra **dos** assets de marca en la cabecera:
+
+| Asset | Config | Bundle por defecto | Uso |
+|---|---|---|---|
+| **Wordmark** (logotipo + constelación) | `$wgStellaNovaIsotypePath` | `resources/casiopea.svg` | Cabecera en viewport normal |
+| **Glifo compacto** (cuadrado, sin texto) | `$wgStellaNovaIconPath` | `resources/casiopea-icon.svg` | Viewport estrecho + barra de pantalla completa |
+
+A diferencia del `<img>` de `$wgLogos` (que es opaco al CSS y no se puede
+recolorear), el skin **lee el SVG del disco y lo incrusta *inline*** en el
+HTML. Eso permite tematizarlo claro/oscuro automáticamente sin mantener dos
+archivos. Por eso el logo se configura con una **ruta de sistema de archivos**
+(no una URL) y **debe ser un SVG** (un bitmap no se puede incrustar así).
+
+### Usar tu propio logo
+
+En `LocalSettings.php`, después de `wfLoadSkin( 'StellaNova' )`:
+
+```php
+$wgStellaNovaIsotypePath = '/ruta/absoluta/en/el/servidor/mi-logo.svg';
+$wgStellaNovaIconPath    = '/ruta/absoluta/en/el/servidor/mi-icono.svg';
+```
+
+Si no se definen (o el archivo no es legible), el skin usa el bundle de
+Casiopea, así que el repo funciona out-of-the-box.
+
+**Dónde colocar el archivo.** *No* dentro de la carpeta del skin: se pierde en
+cada `git pull` / actualización. Ponlo en una ubicación estable servida por el
+mismo host y a prueba de upgrades — la convención MediaWiki es bajo
+`$IP/images/` (p. ej. `images/branding/mi-logo.svg`). Con `$IP` = raíz de tu
+instalación (`.../w`), la config quedaría
+`$wgStellaNovaIsotypePath = "$IP/images/branding/mi-logo.svg";`.
+
+### Cómo construir un buen SVG claro-oscuro
+
+El truco es **no fijar colores**: el skin pinta el logo con la *tinta* del tema
+activo vía la propiedad CSS `color`, que el SVG hereda con `currentColor`. Un
+SVG que cumpla este contrato se ve oscuro sobre papel en modo claro y claro
+sobre tinta en modo oscuro, sin variantes ni `@media`.
+
+Reglas:
+
+1. **Todo el color es `currentColor`.** Usa `fill="currentColor"` en el `<svg>`
+   raíz y `stroke="currentColor"` en los trazos. **No** uses `#000`, `#fff`,
+   `black`, `white` ni colores absolutos en ningún elemento — quedarían fijos y
+   romperían un tema.
+2. **Fondo transparente.** Sin `<rect>` de fondo. El papel del skin es el fondo.
+3. **Monocromo.** El sistema es de una sola tinta. Si necesitas jerarquía
+   (p. ej. líneas más tenues que las estrellas), gradúala con **`opacity`**, no
+   con otro color. Puedes incluir un `<style>` interno con clases para eso:
+   ```xml
+   <style>
+     .linea  { stroke: currentColor; fill: none; opacity: .45; }
+     .estrella { fill: currentColor; }
+   </style>
+   ```
+4. **Accesible e inerte.** Añade `aria-hidden="true"` y `focusable="false"` al
+   `<svg>` (el texto accesible lo aporta el enlace a portada, no el SVG).
+5. **Autocontenido.** Sin referencias externas (`<image href>`, fuentes por URL,
+   `<use href="otro.svg#…">`). Convierte el texto a trazados (`<path>`) para no
+   depender de fuentes del sistema. El skin elimina el prólogo `<?xml?>` y los
+   comentarios al incrustar; lo demás se inyecta tal cual.
+
+### Dimensiones recomendadas
+
+No hay tamaño en píxeles: el SVG escala. Lo que importa es el **`viewBox`** (su
+proporción) porque el CSS fija la **altura** y el ancho se deduce de ahí.
+
+- **Wordmark** — horizontal, proporción ≈ **4:1 a 5:1** (el bundle es
+  `viewBox="0 0 524 115"`, ~4.6:1). El skin lo escala a la altura de la barra
+  (~2rem / 32px); a esa altura el texto debe seguir legible, así que evita
+  trazos demasiado finos (grosor de trazo ≥ ~2 unidades en el viewBox).
+- **Glifo compacto** — **cuadrado 1:1** (el bundle es `viewBox="0 0 148 148"`).
+  Se muestra a ~2rem; debe leerse bien como marca diminuta, sin el wordmark.
+- Deja un pequeño **margen interno** dentro del `viewBox` (que los trazos no
+  toquen el borde) para que no se recorte al alinearse en la barra.
+
 ## Fundamentos y enfoque
 
 Stella Nova sigue el camino oficial de MediaWiki para skins modernos:

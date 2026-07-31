@@ -427,10 +427,17 @@
 	--sn-dur-3: calc(420ms * var(--sn-motion));
 	--sn-ease: cubic-bezier(.22, 1, .36, 1);
 
-	--sn-z-rail: 10;
-	--sn-z-header: 20;
-	--sn-z-panel: 40;
-	--sn-z-skip: 60;
+	/* Banda de apilamiento del CHROME del skin. Deliberadamente alta (900+)
+	   para ganarle a cualquier `z-index` modesto que inyecte contenido dinámico
+	   —típicamente un canvas p5 en la home (z:0..~100)—. No es solo aritmética:
+	   el chrome vive por encima del contenido, que además está AISLADO en un
+	   contexto propio (`.sn-canvas { isolation: isolate }`), así que ni un
+	   `z-index: 999999` inyectado por JS puede escalar por encima del header.
+	   Los paneles del modal móvil usan 1000 crudo y quedan sobre esta banda. */
+	--sn-z-rail: 900;
+	--sn-z-header: 910;
+	--sn-z-panel: 920;
+	--sn-z-skip: 930;
 
 
 	/* ═══════════════════════════════════════════════════════════════════

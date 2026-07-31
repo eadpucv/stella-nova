@@ -42,12 +42,18 @@ casi sin PHP y favorece código testeable. Es la dirección oficial.
 - `templateDirectory` se declara en `skin.json` relativo al skin
   (convención Vector: `includes/templates`). Plantilla principal `skin.mustache`
   empieza con `{{{html-headelement}}}` y cierra `</body></html>`.
-- **Isotipo autocontenido en el skin**, no en la wiki. Estándar MediaWiki:
-  el logo es config de nivel wiki (`$wgLogos` → data key `data-logos`) y el
-  core no provee variante por tema. Aquí se invierte: el asset canónico se
-  versiona en `resources/`, el skin resuelve la variante clara/oscura según
-  el tema activo, y `$wgLogos` —si la instalación lo define— actúa como
-  override. Enlaza a la portada (`link-mainpage`, comportamiento de core).
+- **Isotipo configurable, con bundle de fallback.** Estándar MediaWiki: el
+  logo es config de nivel wiki (`$wgLogos` → `data-logos`) renderizado como
+  `<img>`, que el core no tematiza. Aquí se invierte para conservar el tema:
+  el skin **lee un SVG monocromo del disco y lo incrusta inline** (así
+  `currentColor` resuelve la variante clara/oscura sin dos archivos). La ruta
+  es config propia del skin —`$wgStellaNovaIsotypePath` / `$wgStellaNovaIconPath`
+  (rutas de sistema de archivos, no URLs)— y si no se define cae al bundle
+  `resources/casiopea*.svg`, de modo que el repo corre out-of-the-box. Se
+  prefiere config propia a `$wgLogos` a propósito: `$wgLogos` entrega una URL
+  no tematizable. El contrato del SVG (todo `currentColor`, sin colores fijos,
+  fondo transparente, autocontenido) y las dimensiones están en el README,
+  sección *Logo / isotipo*. Enlaza a la portada (`link-mainpage`, core).
 
 ## 3. Compatibilidad con Semantic MediaWiki (lo más crítico aquí)
 

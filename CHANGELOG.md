@@ -9,6 +9,37 @@ ajustes editoriales. La fuente de verdad del comportamiento es
 [`specs/stella-nova.allium`](specs/stella-nova.allium); cada entrada que toque
 comportamiento debería reflejarse también ahí.
 
+## [0.7.0] — 2026-07-31
+
+### Added
+- **Logo/isotipo configurable (des-hardcodeado)**: dos opciones nuevas de
+  `skin.json` — `$wgStellaNovaIsotypePath` (wordmark) y `$wgStellaNovaIconPath`
+  (glifo compacto) — apuntan a un **SVG en el sistema de archivos del servidor**
+  que el skin lee e incrusta *inline* (para conservar el tematizado
+  claro/oscuro vía `currentColor`; un `<img>` de `$wgLogos` no se puede
+  recolorear). Si no se definen, cae al bundle `resources/casiopea*.svg`, así
+  que el repo corre out-of-the-box y Casiopea no cambia. El skin deja de estar
+  casado con la marca de una wiki particular. Contrato del SVG claro-oscuro
+  (todo `currentColor`, sin colores fijos, fondo transparente, autocontenido) y
+  dimensiones recomendadas (wordmark ~4.6:1, glifo 1:1) documentados en el
+  README, sección *Logo / isotipo*; doctrina actualizada en `ARCHITECTURE.md §2`.
+  Se prefiere config propia a `$wgLogos` a propósito (ver README).
+
+### Fixed
+- **El canvas p5 de la home ya no tapa el menú desplegable en Macs antiguos**
+  (Safari/Firefox viejos). No era aritmética de `z-index` (header 20, menú 40
+  ya eran correctos) sino orden de composición GPU: esos motores no hacen
+  *overlap-testing*, así que la capa del `<canvas>` se pinta encima de todo lo
+  no-compuesto, ignorando el `z-index`. Tres capas de defensa: (1) banda de
+  tokens `--sn-z-*` subida a 900–930 para ganarle a cualquier `z-index` modesto
+  inyectado por JS; (2) `isolation: isolate` en `.sn-canvas` — encierra el
+  contenido dinámico en su propio contexto de apilamiento por debajo del header,
+  independiente de lo que inyecte el JS; (3) `will-change: transform` en
+  `.sn-header` (no `translateZ(0)`, que rompería el `position: sticky` en Safari
+  antiguo) para promover la cabecera a su capa GPU y que el orden de pintado
+  vuelva a respetar el `z-index`; se anula bajo modal para no reintroducir el
+  *containing-block trap* del `backdrop-filter`.
+
 ## [0.6.18] — 2026-07-20
 
 ### Added

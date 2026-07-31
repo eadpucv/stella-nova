@@ -35,21 +35,30 @@ class SkinStellaNova extends SkinMustache {
 	private static ?string $iconSvgCache = null;
 
 	/**
-	 * Isotipo: logotipo "Casiopea" + constelación. Asset EDITABLE
-	 * versionado en `resources/casiopea.svg` (doctrina ARCHITECTURE §2:
-	 * isotipo autocontenido en el repo del skin). Monocromo y colorizable
-	 * (`currentColor`) → tematizable claro/oscuro sin variantes por tema
-	 * (spec SiteIsotype.ThemeAdaptive). Se lee UNA vez por request y se
-	 * embebe inline (para que `currentColor` aplique; un <img> no se
-	 * podría tematizar). El wordmark ES el texto: no hay span "Casiopea"
-	 * aparte. Degradación: si el archivo falta o no es legible → cadena
-	 * vacía (el enlace a portada permanece, con su aria-label).
+	 * Isotipo: logotipo del wordmark + constelación. Asset EDITABLE. Monocromo
+	 * y colorizable (`currentColor`) → tematizable claro/oscuro sin variantes
+	 * por tema (spec SiteIsotype.ThemeAdaptive). Se lee UNA vez por request y se
+	 * embebe inline (para que `currentColor` aplique; un <img> no se podría
+	 * tematizar). El wordmark ES el texto: no hay span aparte.
 	 *
+	 * DES-HARDCODEADO (config StellaNovaIsotypePath): si la instalación define
+	 * `$wgStellaNovaIsotypePath` con una ruta de disco legible, se lee de ahí;
+	 * si no, cae al bundle `resources/casiopea.svg` (default → el repo corre
+	 * out-of-the-box). Así el skin no está casado con Casiopea: cualquier wiki
+	 * pone su SVG monocromo en el servidor y setea una línea en LocalSettings.
+	 * Ver README (sección "Logo / isotipo") para el contrato del SVG.
+	 * Degradación: si nada es legible → cadena vacía (el enlace a portada
+	 * permanece, con su aria-label).
+	 *
+	 * @param string|null $override Ruta de disco de config, o null para el bundle.
 	 * @return string
 	 */
-	private static function isotypeSvg(): string {
+	private static function isotypeSvg( ?string $override ): string {
 		if ( self::$isotypeSvgCache === null ) {
-			self::$isotypeSvgCache = self::readSvg( __DIR__ . '/../resources/casiopea.svg' );
+			$path = ( $override !== null && $override !== '' && is_readable( $override ) )
+				? $override
+				: __DIR__ . '/../resources/casiopea.svg';
+			self::$isotypeSvgCache = self::readSvg( $path );
 		}
 		return self::$isotypeSvgCache;
 	}
@@ -64,11 +73,18 @@ class SkinStellaNova extends SkinMustache {
 	 * viewport (spec ChromeAccessibility — la realización compacta la
 	 * presentación, ambas alcanzables).
 	 *
+	 * Des-hardcodeado igual que el wordmark: config `StellaNovaIconPath` →
+	 * bundle `resources/casiopea-icon.svg` de fallback.
+	 *
+	 * @param string|null $override Ruta de disco de config, o null para el bundle.
 	 * @return string
 	 */
-	private static function iconSvg(): string {
+	private static function iconSvg( ?string $override ): string {
 		if ( self::$iconSvgCache === null ) {
-			self::$iconSvgCache = self::readSvg( __DIR__ . '/../resources/casiopea-icon.svg' );
+			$path = ( $override !== null && $override !== '' && is_readable( $override ) )
+				? $override
+				: __DIR__ . '/../resources/casiopea-icon.svg';
+			self::$iconSvgCache = self::readSvg( $path );
 		}
 		return self::$iconSvgCache;
 	}
@@ -197,17 +213,21 @@ class SkinStellaNova extends SkinMustache {
 		$identity = $isNamed ? 'registered' : ( $isTemp ? 'temporary' : 'anonymous' );
 		$data['sn-identity'] = $identity;
 
-		// — SiteIsotype: AUTOCONTENIDO, el logo del skin SIEMPRE gana —
-		// Decisión de producto 2026-06-02: el skin trae su propio isotipo
-		// (SVG embebido, tematizable claro/oscuro) e IGNORA $wgLogos. Antes
-		// $wgLogos (data-logos) actuaba como override de instalación; se
-		// retiró porque en producción $wgLogos llevaba el logo del skin viejo
-		// (bo) y tapaba el del skin. "Logo definido por la skin, saltándose
-		// LocalSettings" era la intención original. Ver spec SiteIsotype.
+		// — SiteIsotype: DES-HARDCODEADO (skin reutilizable) —
+		// El skin embebe el SVG inline (para tematizar claro/oscuro con
+		// currentColor; un <img> de $wgLogos no se podría recolorear). El asset
+		// deja de estar casado con Casiopea: se lee de la config de disco
+		// `$wgStellaNovaIsotypePath` / `$wgStellaNovaIconPath` si la instalación
+		// las define, y si no, del bundle `resources/casiopea*.svg` (default →
+		// el repo corre out-of-the-box). Se PREFIERE config propia a $wgLogos a
+		// propósito: $wgLogos entrega una URL (<img>) no tematizable, y además
+		// en producción llevaba el logo del skin viejo (bo). Ver README y spec
+		// SiteIsotype.
+		$config = $this->getConfig();
 		$data['sn-isotype'] = [
 			'href' => $data['link-mainpage'] ?? Title::newMainPage()->getLocalURL(),
-			'svg' => self::isotypeSvg(),
-			'svg-icon' => self::iconSvg(),
+			'svg' => self::isotypeSvg( $config->get( 'StellaNovaIsotypePath' ) ),
+			'svg-icon' => self::iconSvg( $config->get( 'StellaNovaIconPath' ) ),
 		];
 
 		// — Navegación del sitio vs. caja de herramientas —

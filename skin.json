@@ -2,7 +2,7 @@
 	"manifest_version": 2,
 	"name": "StellaNova",
 	"namemsg": "skinname-stellanova",
-	"version": "0.6.18",
+	"version": "0.7.0",
 	"author": [
 		"[https://herbertspencer.net Herbert Spencer González]",
 		".:TIG:. Taller de Investigaciones Gráficas, e[ad] Escuela de Arquitectura y Diseño, Pontificia Universidad Católica de Valparaíso",
@@ -14,6 +14,16 @@
 	"type": "skin",
 	"requires": {
 		"MediaWiki": ">= 1.43.0"
+	},
+	"config": {
+		"StellaNovaIsotypePath": {
+			"value": null,
+			"description": "Ruta ABSOLUTA en el sistema de archivos del servidor a un SVG monocromo colorizable (usa currentColor) para el isotipo/wordmark del header. El skin lo lee e inyecta inline, por lo que se tematiza claro/oscuro. Si es null o el archivo no es legible, usa el bundle resources/casiopea.svg. Ver README (seccion \"Logo / isotipo\")."
+		},
+		"StellaNovaIconPath": {
+			"value": null,
+			"description": "Ruta ABSOLUTA en el sistema de archivos del servidor al glifo compacto (cuadrado, sin wordmark) para viewports estrechos y la barra de pantalla completa. Mismas reglas que StellaNovaIsotypePath; fallback al bundle resources/casiopea-icon.svg."
+		}
 	},
 	"AutoloadNamespaces": {
 		"MediaWiki\\Skins\\StellaNova\\": "includes/"
