@@ -9,6 +9,39 @@ ajustes editoriales. La fuente de verdad del comportamiento es
 [`specs/stella-nova.allium`](specs/stella-nova.allium); cada entrada que toque
 comportamiento debería reflejarse también ahí.
 
+## [0.7.2] — 2026-07-31
+
+### Fixed
+- **REGRESIÓN (introducida en v0.7.0): el menú desplegable dejó de abrirse en
+  Macs antiguos.** El `will-change: transform` que promovía `.sn-header` a su
+  propia capa GPU **recorta el dropdown `.sn-menu-list`** —que se desborda por
+  debajo del header— en Safari/Firefox viejos: el menú abría (el JS corría) pero
+  no se veía nada. Se **elimina** esa promoción del header. La defensa contra el
+  canvas se traslada al **contenedor de contenido**: `.sn-shell` (layout normal,
+  el de la portada) y `.sn-canvas` (fullscreen) llevan `isolation: isolate`, que
+  encierra el canvas p5 en su contexto de apilamiento —por debajo del header
+  hermano— sin tocar el header ni el menú. La `isolation` de v0.7.0 iba solo en
+  `.sn-canvas`, **que la portada no usa** (es layout normal), por lo que ahí el
+  menú quedaba protegido únicamente por el `will-change` roto.
+
+### Added
+- **El aviso (`Stella-Nova:Aviso`) queda por encima del contenido de la página
+  —canvas p5 incluido— pero NUNCA sobre el menú.** El aviso vive dentro de
+  `.sn-shell` (aislado, bajo el header), así que su `z-index` es local y no
+  compite con el dropdown. Se le da `position: relative; z-index` (sobre el
+  canvas en navegadores modernos) y `transform: translateZ(0)` (capa propia para
+  ganarle al canvas también en Macs viejos; seguro aquí porque el aviso no tiene
+  hijos que se desborden y puedan recortarse). Además, el `.full-width`
+  primer-hijo **deja de reventar al borde superior cuando hay un aviso visible**
+  (no chocaría/quedaría tras él); se restaura el bleed si el aviso se descarta.
+- **Seguridad del chrome administrable (namespace dedicado):** documentación
+  completa en el README (sección *Chrome administrable y seguridad del
+  namespace*) — declarar `Stella-Nova` vía `$wgExtraNamespaces` +
+  `$wgNamespaceProtection`, migración sin páginas huérfanas y la regla operativa
+  **«para retirar un aviso, vaciar — no borrar»** (el skin ya oculta el slot con
+  contenido en blanco). Cierra el vector de vandalismo sitio-completo del aviso.
+  Puntero añadido en `ARCHITECTURE.md §2`.
+
 ## [0.7.1] — 2026-07-31
 
 ### Fixed

@@ -135,17 +135,13 @@ a.new:visited, a[href].new:visited { color: var(--sn-link-new); }
 	background: color-mix(in oklab, var(--sn-field) 60%, transparent);
 	-webkit-backdrop-filter: saturate(1.5) blur(5px);
 	backdrop-filter: saturate(1.5) blur(5px);
-	/* PROMOCIÓN A CAPA GPU. En Macs antiguos (Safari/Firefox viejos) el motor de
-	   composición NO hace overlap-testing: un `<canvas>` —siempre en su propia
-	   capa GPU— se pinta ENCIMA de todo lo que no esté también compuesto,
-	   ignorando el `z-index`. Al promover el header (y con él sus dropdowns) a su
-	   propia capa, el orden de pintado vuelve a respetar el `z-index` frente al
-	   canvas. Usamos `will-change: transform` y NO `translateZ(0)`: aplicar un
-	   transform real a un elemento `position: sticky` rompe la adherencia en
-	   Safari antiguo (justo el navegador afectado); `will-change` promueve la
-	   capa sin transformar. Se anula bajo modal (ver regla siguiente): como
-	   `backdrop-filter`, crea bloque contenedor y atraparía el modal `fixed`. */
-	will-change: transform;
+	/* NO promover el header a su propia capa (translateZ(0)/will-change). Se
+	   intentó (v0.7.0) para ganarle al canvas en Macs viejos, pero en Safari/
+	   Firefox antiguos la capa RECORTA el dropdown `.sn-menu-list`, que se
+	   desborda por debajo del header → el menú abría (JS ok) pero no se veía.
+	   La defensa contra el canvas va en el CONTENIDO, no aquí: `.sn-shell` /
+	   `.sn-canvas` son `isolation: isolate`, así el canvas queda encerrado en
+	   su contexto —por debajo del header hermano— sin tocar el header. */
 	/* Sin filete inferior: la cabecera se separa del cuerpo por el blur y el
 	   fondo translúcido, no por una regla horizontal (doctrina "sin filetes"). */
 }
@@ -161,7 +157,6 @@ a.new:visited, a[href].new:visited { color: var(--sn-link-new); }
 html[data-sn-modal] .sn-header {
 	-webkit-backdrop-filter: none;
 	backdrop-filter: none;
-	will-change: auto;   /* suelta el bloque contenedor para que el modal fixed se ancle al viewport */
 }
 /* Cabecera despejada: isotipo · pestañas de página · buscador · usuario.
    La navegación del sitio vive en el pie. */
@@ -473,6 +468,13 @@ html[data-sn-modal] .sn-header {
 	justify-content: center;
 	width: 100%;
 	margin-inline: auto;
+	/* AÍSLA el contenido (layout normal). Cualquier canvas p5 / embed dinámico
+	   de la página queda ENCERRADO en este contexto de apilamiento, que se
+	   sienta por debajo del `.sn-header` hermano — el canvas no puede escalar
+	   sobre el menú por más `z-index` que ponga el JS. Gemelo de la misma regla
+	   en `.sn-canvas` (layout fullscreen). NO promovemos el header a capa GPU:
+	   eso recortaba el dropdown en navegadores viejos (ver `.sn-header`). */
+	isolation: isolate;
 	/* Sin padding inferior: el campo ya se fusiona con el pie (mismo --sn-field),
 	   así la hoja no deja un colchón muerto antes del pie. */
 	padding: clamp(var(--sn-s-5), 5vw, var(--sn-s-7)) var(--sn-s-4) 0;
@@ -624,6 +626,17 @@ html[data-sn-modal] .sn-header {
 	display: flex; align-items: flex-start; gap: var(--sn-s-3);
 	padding: var(--sn-s-3) var(--sn-paper-px);
 	font-size: var(--sn-fs-sm);
+	/* SOBRE el contenido de la página (canvas p5 incluido), pero NUNCA sobre el
+	   menú: el aviso vive dentro de `.sn-shell` (aislado, por debajo del header),
+	   así que su `z-index` es local y no compite con el dropdown. El `z-index`
+	   lo pone sobre el canvas en navegadores modernos; el `translateZ(0)` lo
+	   promueve a su propia capa GPU para ganarle al canvas también en Macs
+	   viejos (entre dos capas compuestas el z-order SÍ se respeta). Aquí el
+	   translateZ es seguro —a diferencia del header— porque el aviso no tiene
+	   hijos que se desborden de su caja y puedan quedar recortados. */
+	position: relative;
+	z-index: 1;
+	transform: translateZ(0);
 }
 html[data-sn-notice-hide] .sn-notice { display: none; }
 .sn-notice-body { flex: 1; min-width: 0; }
@@ -1243,6 +1256,24 @@ html[data-sn-notice-hide] .sn-notice { display: none; }
    impide la ejecución), así que el Widget P5 sigue inicializándose. */
 .sn-body :is(p):first-child:has(> script):not(:has(> :not(script))) {
 	display: none;
+}
+/* Con un AVISO VISIBLE arriba, el full-width primer-hijo NO revienta al borde
+   superior del papel: el aviso ya ocupa el tope y el canvas quedaría chocando /
+   tapado tras él. Vuelve al margen normal (sin radio superior ni recorte). Se
+   restaura el bleed si el aviso se descartó (html[data-sn-notice-hide]) o si no
+   hay aviso (el `~` no casa). Cubre las mismas variantes que el bleed-top:
+   directa, mw-empty-elt, <style> líder y Widget solo-scripts (Widget:P5). En
+   navegadores sin :has() (Macs muy viejos) la variante Widget del bleed-top
+   tampoco dispara, así que el canvas ya trae margen normal → mismo resultado. */
+html:not([data-sn-notice-hide]) .sn-notice ~ .sn-body > :is(.full-width, [class~="'full-width'"]):first-child,
+html:not([data-sn-notice-hide]) .sn-notice ~ .sn-body > *:first-child > :is(.full-width, [class~="'full-width'"]):first-child,
+html:not([data-sn-notice-hide]) .sn-notice ~ .sn-body > p.mw-empty-elt:first-child + :is(.full-width, [class~="'full-width'"]),
+html:not([data-sn-notice-hide]) .sn-notice ~ .sn-body style:first-child + * > :is(.full-width, [class~="'full-width'"]):first-child,
+html:not([data-sn-notice-hide]) .sn-notice ~ .sn-body :is(p):first-child:has(> script):not(:has(> :not(script))) + :is(.full-width, [class~="'full-width'"]) {
+	margin-block-start: var(--sn-s-5);
+	border-start-start-radius: 0;
+	border-start-end-radius: 0;
+	overflow: visible;
 }
 .sn-body > :is(.full-width, [class~="'full-width'"]):last-child,
 .sn-body > *:last-child > :is(.full-width, [class~="'full-width'"]):last-child,

@@ -126,7 +126,10 @@ al grupo `editores-de-interfaz` (o sysop) vía `$wgNamespaceProtection`. El
 pie es **compuesto**: las obligaciones core de MediaWiki (última
 modificación, licencia/atribución, places, icons, hooks de extensión) se
 renderizan SIEMPRE; el bloque institucional gestionado es adicional y se
-oculta si su página está vacía (sin fallback propio).
+oculta si su página está vacía (sin fallback propio). **Runbook de instalación
+y seguridad** (declarar el namespace, restringir escritura, migrar páginas,
+regla "vaciar en vez de borrar"): README, sección *Chrome administrable y
+seguridad del namespace*.
 
 **Modo de página:** una página declara `__PANTALLACOMPLETA__` (behaviour
 switch, mismo patrón que `__NOTITLE__`/NoTitle) para control total del

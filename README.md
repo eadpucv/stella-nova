@@ -130,6 +130,82 @@ proporción) porque el CSS fija la **altura** y el ancho se deduce de ahí.
 - Deja un pequeño **margen interno** dentro del `viewBox` (que los trazos no
   toquen el borde) para que no se recorte al alinearse en la barra.
 
+## Chrome administrable y seguridad del namespace
+
+Tres slots del chrome se editan **como páginas de la wiki**, no en código: el
+**aviso** de cabecera (`Stella-Nova:Aviso`), el **pie** institucional
+(`Stella-Nova:Pie`) y —opcional, si se usa— la **barra lateral**
+(`Stella-Nova:Barra lateral`). El skin lee cada página, y si tiene contenido lo
+inyecta en su slot; si está **vacía o no existe**, el slot no se muestra
+(`SkinStellaNova::resolveFragment`).
+
+Como el aviso aparece en **todas las páginas**, su fuente es un objetivo de
+vandalismo con alcance sitio-completo. Por eso estas páginas **deben vivir en un
+namespace dedicado con la escritura restringida**. El skin ya lo prefiere; falta
+declararlo en la instalación.
+
+### Los dos modos (y por qué importa)
+
+- **Con namespace dedicado (correcto):** si el namespace `Stella-Nova` está
+  declarado, los fragmentos viven ahí y **toda** escritura —crear, editar,
+  borrar, mover— exige un derecho. Un vándalo no puede ni crear la página.
+- **Sin él (fallback inseguro):** si no se declara, el skin cae a una página del
+  espacio principal cuyo título literal es `Stella-Nova:Aviso` (con dos puntos),
+  **sin ninguna restricción de escritura**. Es solo conveniencia, no seguridad.
+
+### Configuración (LocalSettings.php)
+
+```php
+define( 'NS_STELLANOVA', 3000 );          // verifica que 3000/3001 estén libres
+define( 'NS_STELLANOVA_TALK', 3001 );      // (Especial:Versión → Espacios de nombres)
+$wgExtraNamespaces[NS_STELLANOVA]      = 'Stella-Nova';
+$wgExtraNamespaces[NS_STELLANOVA_TALK] = 'Stella-Nova_discusión';
+$wgNamespaceProtection[NS_STELLANOVA]  = [ 'editinterface' ];
+$wgContentNamespaces[]                 = NS_STELLANOVA;   // opcional: cuenta como contenido
+```
+
+- El nombre del namespace **debe ser exactamente `Stella-Nova`** (con guion): es
+  el que el skin busca con `getNsIndex`.
+- **Derecho de escritura.** `editinterface` lo tienen sysops e interface-admins
+  — suele ser lo que quieres. Para **delegar** la edición del aviso a un grupo
+  propio sin darles todo el poder de sysop, define un grupo y un derecho:
+  ```php
+  $wgGroupPermissions['editores-de-interfaz']['editinterface'] = true;
+  // luego asigna el grupo en Especial:PermisosDeUsuario
+  ```
+  (Las cuentas temporales de MW 1.43 no tienen el grupo ni sysop → denegadas,
+  que es lo correcto.)
+
+### Migración de páginas ya existentes (evitar huérfanas)
+
+Declarar el namespace **cambia cómo resuelve** el título `Stella-Nova:Aviso`:
+pasa a ser *namespace + "Aviso"* en vez de una página del espacio principal. Si
+ya tienes esas páginas en el espacio principal, sigue este orden para **no dejar
+copias huérfanas** inaccesibles:
+
+1. **Copia el wikitexto** actual de `Stella-Nova:Aviso` y `Stella-Nova:Pie`
+   (`?action=raw` o Editar → copiar).
+2. **Borra** esas páginas del espacio principal **mientras el namespace aún no
+   está declarado** (así sus títulos todavía apuntan a ellas y son borrables).
+3. **Declara** el namespace (bloque de arriba) y ejecuta `php maintenance/
+   update.php` si tu instalación lo pide.
+4. **Recrea** el contenido dentro del namespace ya protegido — como sysop, o por
+   CLI: `php maintenance/edit.php --user "TuAdmin" "Stella-Nova:Aviso" < aviso.txt`.
+
+Si te saltaste el paso 2 y quedaron huérfanas en el espacio principal (siguen
+existiendo pero su título ya no las alcanza), bórralas **por pageid** — un
+`Special:Export`/consulta te da el id — con un script de mantenimiento
+(`WikiPageFactory::newFromID($id)` → `DeletePageFactory`).
+
+### Regla operativa: para quitar un aviso, VACÍA — no borres
+
+El skin trata **contenido en blanco = sin aviso** (oculta el slot). Por lo tanto
+**nunca borres la página para retirar un aviso: vacíala**. Borrar y recrear hace
+que la página nazca y muera, y con cada recreación la protección por-página se
+perdería; mantenerla siempre existente (aunque vacía) conserva la protección del
+namespace y elimina el ciclo crear/borrar que abría el hueco. Publicar un aviso =
+escribir su texto; retirarlo = dejar la página en blanco.
+
 ## Fundamentos y enfoque
 
 Stella Nova sigue el camino oficial de MediaWiki para skins modernos:
