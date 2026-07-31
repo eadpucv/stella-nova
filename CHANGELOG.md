@@ -24,6 +24,10 @@ comportamiento debería reflejarse también ahí.
   dimensiones recomendadas (wordmark ~4.6:1, glifo 1:1) documentados en el
   README, sección *Logo / isotipo*; doctrina actualizada en `ARCHITECTURE.md §2`.
   Se prefiere config propia a `$wgLogos` a propósito (ver README).
+- **Assets de validación** en `docs/examples/` (`logo-prueba.svg`,
+  `logo-prueba-icono.svg`): logos de prueba contract-compliant, distintos del de
+  Casiopea, para confirmar el flujo de config en el servidor antes de poner un
+  logo real. Ver `docs/examples/README.md`.
 
 ### Fixed
 - **El canvas p5 de la home ya no tapa el menú desplegable en Macs antiguos**

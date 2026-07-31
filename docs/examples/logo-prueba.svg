@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+	Logo de PRUEBA (wordmark) para validar el flujo de configuración del isotipo
+	de Stella Nova ($wgStellaNovaIsotypePath). Cumple el contrato del README
+	(sección "Logo / isotipo"): todo en currentColor, fondo transparente,
+	monocromo, autocontenido, aria-hidden. Es DELIBERADAMENTE distinto del
+	isotipo de Casiopea (formas geométricas, no la constelación) para que el
+	cambio se vea a simple vista al validar. NO usar como logo real de producción.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 450 100" fill="currentColor" aria-hidden="true" focusable="false">
+	<style>
+		.p-linea { stroke: currentColor; fill: none; stroke-width: 4; opacity: .45; }
+		.p-forma { fill: currentColor; }
+	</style>
+	<path class="p-linea" d="M40 60 H410" />
+	<circle class="p-forma" cx="70" cy="60" r="22" />
+	<rect class="p-forma" x="160" y="24" width="60" height="60" />
+	<path class="p-forma" d="M300 22 L338 80 L262 80 Z" />
+	<circle class="p-forma" cx="398" cy="36" r="14" />
+</svg>
