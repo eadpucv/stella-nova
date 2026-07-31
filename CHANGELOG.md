@@ -9,6 +9,30 @@ ajustes editoriales. La fuente de verdad del comportamiento es
 [`specs/stella-nova.allium`](specs/stella-nova.allium); cada entrada que toque
 comportamiento debería reflejarse también ahí.
 
+## [0.7.1] — 2026-07-31
+
+### Fixed
+- **Accesibilidad (primera pasada de auditoría WCAG 2.1 AA, hito M5):**
+  - **Contraste del redlink** (`--sn-rosa-400`) en tema claro: pasaba a
+    **2.80:1** sobre el papel (fallaba 1.4.3). Ahora `#a94f66` → **5.07:1** (AA).
+    El redlink oscuro (`--sn-rosa-300`, 8.89:1) ya cumplía y no cambia.
+  - **Skip-link "saltar a navegación"** apuntaba a `#sn-nav`, un id que no
+    existía → enlace roto (2.4.1). Se añade el id al contenedor de navegación
+    del sitio, ahora un landmark `<nav aria-label>` con `tabindex="-1"` (además
+    cierra un hueco de landmark: la nav principal del sitio no era `<nav>`).
+  - **Grupos de preferencias** (tema/tamaño/familia) declaraban
+    `role="radiogroup"` pero sus botones exponen `aria-pressed` (patrón de
+    *toggle*, no *radio*): desajuste rol/estado (4.1.2). Cambiados a
+    `role="group"` — coherente con el `aria-pressed` que ya gestiona el JS,
+    dentro de su `<fieldset><legend>`.
+
+### Changed
+- **Licencia homologada a Artistic-2.0** en toda la doc: `docs/DEVELOPMENT.md`
+  aún declaraba GPL-2.0-or-later. `skin.json`, `COPYING` y el README ya eran
+  Artistic-2.0; ahora coinciden. (Excepción sin cambios: `skinStyles/`
+  `mermaid.css` y `pagenotice.css` conservan su GPL de origen, compatible.)
+- **Roadmap:** M4 (responsive + navegación) marcado como hecho.
+
 ## [0.7.0] — 2026-07-31
 
 ### Added

@@ -105,7 +105,7 @@
 						<div class="sn-menu-prefs">
 							<fieldset class="sn-pref">
 								<legend>{{msg-stellanova-pref-theme}}</legend>
-								<div class="sn-seg sn-seg-icon" role="radiogroup" data-sn-pref="theme" data-sn-os="{{sn-prefs.os-scheme}}">
+								<div class="sn-seg sn-seg-icon" role="group" data-sn-pref="theme" data-sn-os="{{sn-prefs.os-scheme}}">
 									<button type="button" data-v="light" title="{{msg-stellanova-theme-light}}" aria-label="{{msg-stellanova-theme-light}}"><svg class="sn-i" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24"><use href="#sn-i-sun"/></svg></button>
 									<button type="button" data-v="auto" title="{{msg-stellanova-auto}}" aria-label="{{msg-stellanova-auto}}"><svg class="sn-i" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24"><use href="#sn-i-clock"/></svg></button>
 									<button type="button" data-v="dark" title="{{msg-stellanova-theme-dark}}" aria-label="{{msg-stellanova-theme-dark}}"><svg class="sn-i" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24"><use href="#sn-i-moon"/></svg></button>
@@ -113,7 +113,7 @@
 							</fieldset>
 							<fieldset class="sn-pref">
 								<legend>{{msg-stellanova-pref-font}}</legend>
-								<div class="sn-seg sn-seg-sz" role="radiogroup" data-sn-pref="font">
+								<div class="sn-seg sn-seg-sz" role="group" data-sn-pref="font">
 									<button type="button" data-v="small" title="{{msg-stellanova-sz-s}}" aria-label="{{msg-stellanova-sz-s}}"><span aria-hidden="true">S</span></button>
 									<button type="button" data-v="medium" title="{{msg-stellanova-sz-m}}" aria-label="{{msg-stellanova-sz-m}}"><span aria-hidden="true">M</span></button>
 									<button type="button" data-v="large" title="{{msg-stellanova-sz-l}}" aria-label="{{msg-stellanova-sz-l}}"><span aria-hidden="true">L</span></button>
@@ -121,7 +121,7 @@
 							</fieldset>
 							<fieldset class="sn-pref">
 								<legend>{{msg-stellanova-pref-family}}</legend>
-								<div class="sn-seg sn-seg-fam" role="radiogroup" data-sn-pref="family">
+								<div class="sn-seg sn-seg-fam" role="group" data-sn-pref="family">
 									<button type="button" data-v="sans" title="{{msg-stellanova-family-sans}}" aria-label="{{msg-stellanova-family-sans}}"><span class="sn-fam-spec sn-fam-sans" aria-hidden="true">a</span></button>
 									<button type="button" data-v="serif" title="{{msg-stellanova-family-serif}}" aria-label="{{msg-stellanova-family-serif}}"><span class="sn-fam-spec sn-fam-serif" aria-hidden="true">a</span></button>
 								</div>
@@ -198,7 +198,7 @@
 				{{!	Navegación del SITIO (Escuela/Wiki/Navegación…). La caja
 					de herramientas ("Herramientas y más") vive en el pie. }}
 				{{#sn-has-sitenav}}
-				<div class="sn-md sn-sitenav">
+				<nav class="sn-md sn-sitenav" id="sn-nav" tabindex="-1" aria-label="{{msg-stellanova-nav}}">
 					<button type="button" class="sn-md-trigger sn-md-icononly" aria-expanded="false"
 						aria-haspopup="true" data-sn-menu
 						title="{{msg-stellanova-nav}}" aria-label="{{msg-stellanova-nav}}">
@@ -222,7 +222,7 @@
 							{{/sn-sitenav}}
 						</div>
 					</div>
-				</div>
+				</nav>
 				{{/sn-has-sitenav}}
 			</div>
 
@@ -344,7 +344,7 @@
 							<div class="sn-menu-prefs">
 								<fieldset class="sn-pref">
 									<legend>{{msg-stellanova-pref-theme}}</legend>
-									<div class="sn-seg sn-seg-icon" role="radiogroup" data-sn-pref="theme" data-sn-os="{{sn-prefs.os-scheme}}">
+									<div class="sn-seg sn-seg-icon" role="group" data-sn-pref="theme" data-sn-os="{{sn-prefs.os-scheme}}">
 										<button type="button" data-v="light" title="{{msg-stellanova-theme-light}}" aria-label="{{msg-stellanova-theme-light}}"><svg class="sn-i" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24"><use href="#sn-i-sun"/></svg></button>
 										<button type="button" data-v="auto" title="{{msg-stellanova-auto}}" aria-label="{{msg-stellanova-auto}}"><svg class="sn-i" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24"><use href="#sn-i-clock"/></svg></button>
 										<button type="button" data-v="dark" title="{{msg-stellanova-theme-dark}}" aria-label="{{msg-stellanova-theme-dark}}"><svg class="sn-i" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24"><use href="#sn-i-moon"/></svg></button>
@@ -352,7 +352,7 @@
 								</fieldset>
 								<fieldset class="sn-pref">
 									<legend>{{msg-stellanova-pref-font}}</legend>
-									<div class="sn-seg sn-seg-sz" role="radiogroup" data-sn-pref="font">
+									<div class="sn-seg sn-seg-sz" role="group" data-sn-pref="font">
 										<button type="button" data-v="small" title="{{msg-stellanova-sz-s}}" aria-label="{{msg-stellanova-sz-s}}"><span aria-hidden="true">S</span></button>
 										<button type="button" data-v="medium" title="{{msg-stellanova-sz-m}}" aria-label="{{msg-stellanova-sz-m}}"><span aria-hidden="true">M</span></button>
 										<button type="button" data-v="large" title="{{msg-stellanova-sz-l}}" aria-label="{{msg-stellanova-sz-l}}"><span aria-hidden="true">L</span></button>
@@ -360,7 +360,7 @@
 								</fieldset>
 								<fieldset class="sn-pref">
 									<legend>{{msg-stellanova-pref-family}}</legend>
-									<div class="sn-seg sn-seg-fam" role="radiogroup" data-sn-pref="family">
+									<div class="sn-seg sn-seg-fam" role="group" data-sn-pref="family">
 										<button type="button" data-v="sans" title="{{msg-stellanova-family-sans}}" aria-label="{{msg-stellanova-family-sans}}"><span class="sn-fam-spec sn-fam-sans" aria-hidden="true">a</span></button>
 										<button type="button" data-v="serif" title="{{msg-stellanova-family-serif}}" aria-label="{{msg-stellanova-family-serif}}"><span class="sn-fam-spec sn-fam-serif" aria-hidden="true">a</span></button>
 									</div>

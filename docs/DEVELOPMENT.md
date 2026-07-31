@@ -97,8 +97,10 @@ Decidir herramienta (pendiente del PLAN del proyecto).
 
 ## Decisiones
 
-- Licencia: **GPL-2.0-or-later** (vendor el texto completo en `COPYING` antes
-  de publicar — hoy es una nota corta).
+- Licencia: **Artistic-2.0** (SPDX `Artistic-2.0`), homologada en `skin.json`
+  (`license-name`), `COPYING` (texto íntegro + aviso en castellano) y el README.
+  Excepción: `resources/skinStyles/{mermaid,pagenotice}.css` conservan su
+  GPL-2.0-or-later de origen (compatible con Artistic, indicada en su cabecera).
 - Remoto: **GitHub `eadpucv/stella-nova`** (`origin` configurado, **sin push**
   aún — empujar cuando M1+ esté presentable).
 - Testing/CI: herramienta por definir (M7).

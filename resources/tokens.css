@@ -98,7 +98,7 @@
 
 	/* — Primitiva · rosa — el rosado pálido de las páginas inexistentes (redlink) */
 	--sn-rosa-300: #e6acb7;    /* link-new oscuro (rosa pálido sobre papel noche) */
-	--sn-rosa-400: #c98592;    /* link-new claro (rosa apagado, legible sobre crema) */
+	--sn-rosa-400: #a94f66;    /* link-new claro (rosa vino apagado; 5.07:1 sobre papel-50 → WCAG AA. Antes #c98592 daba 2.80:1, fallaba) */
 
 	/* — Primitiva · azul — único frío del skin, link de noche */
 	--sn-azul-200: #b3cef2;
