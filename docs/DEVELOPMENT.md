@@ -34,10 +34,11 @@ Plan accionable. Principios en [`ARCHITECTURE.md`](ARCHITECTURE.md).
 - [x] **M3 — Tokens + tema**: `tokens.css` definitivo; **default claro**,
   oscuro solo por elección explícita / `auto`+SO (ver Decisiones); fuentes
   auto-alojadas (IBM Plex, `fonts.css`, sin CDN runtime).
-- [~] **M4 — Responsive + navegación**: mobile-first; dropdown colapsable;
-  preferencias (tema + tamaño de letra) en el menú de usuario, con
-  persistencia híbrida (cuenta/`localStorage`) + pre-pintado sin FOUC. Falta
-  ronda móvil real.
+- [x] **M4 — Responsive + navegación**: mobile-first; dropdown colapsable →
+  modal a pantalla completa en viewport compact; búsqueda como modal; sin
+  overflow horizontal; preferencias (tema + tamaño + familia) en el menú de
+  usuario, con persistencia híbrida (cuenta/`localStorage`) + pre-pintado sin
+  FOUC. Ronda móvil real hecha.
 - [ ] M5 — Accesibilidad WCAG 2.1 AA (auditoría axe/WAVE + lector pantalla)
 - [~] M6 — JS progresivo (panel/dropdown/menús hechos; degradación sin JS ok)
 - [ ] M7 — Testing + CI
