@@ -1,4 +1,4 @@
-# Notas de diseño — Stella Nova v0.0.4
+# Notas de diseño — Stella Nova
 
 Este archivo sobrevive a los rebuilds del espécimen. Anotá aquí decisiones,
 preguntas y propuestas. Los cambios de tokens van en el bloque

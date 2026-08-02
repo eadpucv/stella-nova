@@ -2,3 +2,12 @@ node_modules/
 .claude/
 .DS_Store
 *.log
+
+# Respaldos que dejan los scripts de mantenimiento al reescribir hojas:
+# apply-tokenization.py escribe `<hoja>.pre-tok-AAAAMMDD-HHMMSS` antes de
+# tocar cada archivo. Son andamios de una sola corrida —el historial de git
+# ya es el respaldo real—, así que no se versionan. (Se limpiaron 17 de estos
+# en la v0.8.0; ver CHANGELOG.)
+*.pre-tok-*
+*.bak
+__pycache__/

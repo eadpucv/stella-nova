@@ -196,8 +196,8 @@ contract ChromeAccessibility {
 
     @invariant ChromeReachableInAnyViewport
         -- Cada surface de chrome (PreferencesPanel, UserTools,
-        -- ManagedChrome en sus tres slots, SiteIsotype, la búsqueda y
-        -- la navegación expuestas vía portlets y vía ManagedChrome.sidebar)
+        -- ManagedChrome en sus dos slots, SiteIsotype, la búsqueda y
+        -- la navegación del sitio expuesta vía portlets)
         -- es alcanzable y operable en CUALQUIER viewport, incluyendo
         -- los más estrechos. La realización puede COMPACTAR la
         -- presentación (colapso a icon-only, paso a overlay, recombinación
@@ -278,10 +278,15 @@ enum ThemeChoice { light | dark | auto }
 enum UserIdentity { anonymous | temporary | registered }
 
 -- Identidades de región del chrome gestionado (cada una = una página
--- wiki del namespace del skin), NO posiciones en pantalla. `sidebar` es
--- el fragmento institucional de navegación; su presentación (riel,
--- dropdown, hamburguesa) la fija la realización, no el spec.
-enum ChromeSlot { footer | sidebar | notice }
+-- wiki del namespace del skin), NO posiciones en pantalla.
+-- Histórico de recortes: 3 → 2 (2026-08-02: fuera `sidebar`). Modelaba un
+-- fragmento institucional de navegación editable como wikitexto libre; nunca
+-- llegó a exponerse. La navegación del sitio ya se administra por la vía
+-- nativa de MediaWiki (el mensaje de interfaz de barra lateral, expuesto como
+-- portlets — ver SkinRenderFidelity), así que el slot duplicaba una capacidad
+-- existente sin añadir comportamiento observable. Reintroducirlo es un cambio
+-- de spec, no un detalle de realización.
+enum ChromeSlot { footer | notice }
 
 enum LayoutMode { standard | fullscreen }
 
@@ -351,9 +356,9 @@ entity ViewingSession {
     active_font_family: saved?.font_family ?? sans
 }
 
--- Conjunto cerrado de tres regiones (footer, sidebar, notice). No es un
--- modelo genérico: añadir una cuarta exige editar ChromeSlot (cambio de spec),
--- que es exactamente la decisión "tres instancias concretas" tomada.
+-- Conjunto cerrado de dos regiones (footer, notice). No es un modelo
+-- genérico: añadir una tercera exige editar ChromeSlot (cambio de spec), que
+-- es exactamente la decisión "instancias concretas, no framework" tomada.
 entity InterfaceFragment {
     slot: ChromeSlot
     -- Resolución de la fuente: por preferencia, la página de nombre del
@@ -379,7 +384,7 @@ entity InterfaceFragment {
     -- Identidad de la revisión publicada vigente de source_page (cambia al
     -- editarla); null si no publicada. La usa la descartabilidad del aviso
     -- (slot notice): un aviso descartado reaparece cuando su versión cambia.
-    -- Irrelevante para footer/sidebar (no descartables).
+    -- Irrelevante para footer (no descartable).
     version: String?
 }
 
@@ -529,7 +534,7 @@ surface PreferencesPanel {
 }
 
 -- Regiones de chrome administradas desde páginas wiki. Una instancia de
--- surface por fragmento (footer, sidebar, notice).
+-- surface por fragmento (footer, notice).
 --
 -- IMPORTANTE para el slot `footer`: el pie es COMPUESTO. Este fragmento
 -- gestionado es SÓLO el bloque institucional. Las obligaciones core del
@@ -574,7 +579,7 @@ surface ManagedChrome {
         -- El slot `notice` tiene además una capa interactiva de descarte
         -- (cerrar + recordar por versión), modelada aparte en la surface
         -- SiteNotice. Esta surface cubre sólo la publicación/visibilidad
-        -- base compartida por los tres slots.
+        -- base compartida por ambos slots.
 }
 
 -- Aviso descartable (slot notice). Capa interactiva sobre la publicación
@@ -662,9 +667,9 @@ surface ExperimentalCanvas {
 
     @guarantee ChromeSuppressed
         -- En fullscreen el skin suprime header, búsqueda, herramientas de
-        -- usuario (con las preferencias de lectura que aloja), sidebar, aviso
-        -- y pie. El body de la página ocupa el viewport completo, salvo la
-        -- afordancia de escape.
+        -- usuario (con las preferencias de lectura que aloja), navegación,
+        -- aviso y pie. El body de la página ocupa el viewport completo, salvo
+        -- la afordancia de escape.
 
     @guidance
         -- Hoy el JS interactivo (p5.js) se inyecta vía MediaWiki:Common.js

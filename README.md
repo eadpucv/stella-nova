@@ -132,12 +132,22 @@ proporción) porque el CSS fija la **altura** y el ancho se deduce de ahí.
 
 ## Chrome administrable y seguridad del namespace
 
-Tres slots del chrome se editan **como páginas de la wiki**, no en código: el
-**aviso** de cabecera (`Stella-Nova:Aviso`), el **pie** institucional
-(`Stella-Nova:Pie`) y —opcional, si se usa— la **barra lateral**
-(`Stella-Nova:Barra lateral`). El skin lee cada página, y si tiene contenido lo
-inyecta en su slot; si está **vacía o no existe**, el slot no se muestra
+Dos slots del chrome se editan **como páginas de la wiki**, no en código: el
+**aviso** de cabecera (`Stella-Nova:Aviso`) y el **pie** institucional
+(`Stella-Nova:Pie`). El skin lee cada página, y si tiene contenido lo inyecta en
+su slot; si está **vacía o no existe**, el slot no se muestra
 (`SkinStellaNova::resolveFragment`).
+
+> Hubo un tercer slot, `Stella-Nova:Barra lateral`, retirado en la v0.8.0: el
+> skin lo resolvía en cada request y la plantilla nunca lo dibujaba. La
+> navegación del sitio se edita donde siempre —`MediaWiki:Sidebar`—, y el skin
+> reparte esos portlets entre el menú de la cabecera y la caja de herramientas
+> del pie. Si tu wiki tiene creada esa página, ya no la lee nadie: se puede
+> borrar (o dejarla, es inerte).
+
+Ambos slots aceptan las **clases tipográficas de contenido** del skin
+(`lg`, `nova`, `uppercase`, `center`…, ver [`docs/WIKITEXTO.md`](docs/WIKITEXTO.md)),
+así que no hace falta escribirlos con `style=` inline.
 
 Como el aviso aparece en **todas las páginas**, su fuente es un objetivo de
 vandalismo con alcance sitio-completo. Por eso estas páginas **deben vivir en un
@@ -225,7 +235,7 @@ Stella Nova sigue el camino oficial de MediaWiki para skins modernos:
   de los hooks): el resto del trabajo lo hace la plantilla. Su única
   responsabilidad es emitir las *data keys* propias que el `.mustache`
   va a interpolar (`is-sn-fullscreen`, `sn-identity`, `sn-isotype`,
-  `sn-prefs`, `sn-chrome.notice/sidebar/footer`).
+  `sn-prefs`, `sn-chrome.notice/footer`).
 - **[`includes/templates/skin.mustache`](includes/templates/skin.mustache)**
   es la plantilla raíz. Consume las data keys que emite `SkinMustache`
   (`{{{html-headelement}}}`, `{{{html-body-content}}}`,

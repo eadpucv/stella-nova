@@ -9,6 +9,92 @@ ajustes editoriales. La fuente de verdad del comportamiento es
 [`specs/stella-nova.allium`](specs/stella-nova.allium); cada entrada que toque
 comportamiento debería reflejarse también ahí.
 
+## [0.8.0] — 2026-08-02
+
+### Added
+- **Las clases tipográficas de contenido pasan a ser parte del skin.** Los
+  cinco ejes ortogonales del vocabulario de wikitexto —tamaño
+  (`jumbo`/`lg`/`sm`/`xs`), familia (`serif`/`sans`/`mono`), énfasis
+  (`uppercase`/`italic`/`bold`), alineación (`left`/`center`/`right`/`justify`)
+  y color por rol (`nova`/`ok`/`warn`/`danger`)— vivían en el
+  `MediaWiki:Common.css` de cada wiki. Ahora los define
+  `resources/stella-nova.css`, con alcance
+  `:is(.sn-body, .sn-notice-body, .sn-footer-managed)`.
+
+  Tres razones, todas verificadas:
+
+  1. **La exportación a PDF las perdía.** `print-preview.js` enlaza a propósito
+     los archivos limpios del skin (`fonts.css` + `tokens.css` +
+     `stella-nova.css`) y **no** el módulo `site.styles`, que es donde
+     MediaWiki sirve el `Common.css` de la wiki. Una página con
+     `class="jumbo center nova"` se veía bien en pantalla y salía sin ninguna
+     de las tres clases en el PDF. Ahora las hereda gratis.
+  2. **El chrome administrable no las alcanzaba.** `Stella-Nova:Pie` y
+     `Stella-Nova:Aviso` se renderizan con `OutputPage::parseAsContent`, que
+     **no** envuelve en `.mw-parser-output`; el alcance viejo
+     (`.mw-parser-output .clase`) no llegaba y esas páginas terminaban escritas
+     con `style=` inline —ciego al tema claro/oscuro y a la escala del lector—.
+     El alcance nuevo incluye los dos contenedores del chrome.
+  3. **Había tres copias divergentes** (el `Common.css` de producción, el
+     espejo del espécimen y la documentación). Una sola fuente lo cierra.
+
+### Fixed
+- **`sm` y `xs` ignoraban la preferencia de tamaño del lector** en el espejo del
+  espécimen: `--sn-fs-sm` y `--sn-fs-xs` son los dos únicos tokens de la escala
+  que **no** llevan `--sn-font-scale` dentro (ver `tokens.css`), así que hay que
+  multiplicarlos en la clase. El espejo no lo hacía y las notas al pie quedaban
+  del mismo tamaño con la preferencia en S, M o L. La versión que ahora trae el
+  skin sí lo aplica.
+- **El espécimen dejó de replicar el CSS de estas clases.** `build-specimen.py`
+  ya enlazaba `assets/stella-nova.css` (copia literal del archivo del skin), así
+  que el espejo `HELPERS_CSS` era redundante — y era donde había divergido. Lo
+  que se ve en el espécimen es ahora exactamente el CSS que corre en la wiki.
+- **El espécimen versionado estaba cuatro versiones atrasado** (v0.6.18 con el
+  skin en 0.7.2): su copia de `tokens.css` no tenía ni el contraste WCAG del
+  redlink (v0.7.1) ni la banda de `z-index` del chrome (v0.7.0). Reconstruido.
+- **Tres comentarios afirmaban lo contrario de la realidad**: decían que el
+  `Common.css` de la wiki (módulo `site`) carga *después* del skin. Fue cierto
+  mientras la CSS del skin viajaba dentro del `<link>` combinado de
+  ResourceLoader; desde que `Hooks::onBeforePageDisplay` la inyecta como head
+  item `zzz-stellanova-styles` (para bustear caché por versión), el orden es el
+  inverso — verificado sobre el HTML servido. Corregidos; ninguna regla cambia,
+  la especificidad extra no dependía del orden. Anotado también que el
+  `Common.css` de producción ya no trae las reglas de `a.new`/`a:visited` que
+  ese bloque contrarresta: hoy son defensa para wikis que aún las conserven.
+
+### Changed
+- `uppercase` añade `letter-spacing: .04ex` (compensación óptica de la caja
+  alta), que estaba en el espécimen pero no en el `Common.css` de producción.
+- El espécimen documenta el vocabulario con ejemplos nuevos: el eje
+  `justify`, una demostración de **combinación de ejes** y otra del uso en el
+  **chrome administrable** (el antes/después del `style=` inline del pie).
+
+### Removed
+- **Slot de chrome `sidebar` (`Stella-Nova:Barra lateral`).** El skin lo
+  resolvía en **cada request** —comprobación de existencia + parse de la
+  página— y la plantilla **nunca lo consumía**: no había ni un `{{#sidebar}}`
+  en `skin.mustache`. La navegación del sitio la arma el skin desde los
+  portlets de `MediaWiki:Sidebar` (`sn-sitenav` al menú de cabecera, `p-tb` al
+  pie), que es donde los editores ya la administran; el slot duplicaba esa
+  capacidad sin aportar nada observable. Fuera de `SkinStellaNova::CHROME`, del
+  `enum ChromeSlot` del spec y de la documentación. Producción **no** tenía
+  creada esa página, así que el retiro no afecta a ninguna wiki en uso; si
+  alguna instalación la tiene, queda inerte y se puede borrar.
+- **17 archivos de respaldo versionados** en `resources/skinStyles/`: 16
+  `*.pre-tok-20260519-225142` (los deja `scripts/apply-tokenization.py` antes
+  de reescribir cada hoja) y `oojs-ui.curated.css.bak`. Eran andamios de una
+  corrida de mayo; el historial de git ya es el respaldo. Se añadió
+  `*.pre-tok-*` y `*.bak` al `.gitignore` para que no vuelvan a colarse.
+
+### Migración
+- En cada wiki: borrar el bloque «clases tipográficas de contenido» de
+  `MediaWiki:Common.css`. **No es urgente ni rompe nada** si se deja: el
+  `<link>` del skin se emite después de `site.styles`, así que a igual
+  especificidad (0,0,2,0) gana el skin y las reglas viejas quedan sombreadas.
+  Pero dejarlas duplicadas invita a que vuelvan a divergir. Lo que **sí** cambia
+  es dónde se retocan: a partir de aquí, en `resources/stella-nova.css`; desde
+  `Common.css` ya no se pueden sobrescribir sin `!important`.
+
 ## [0.7.2] — 2026-07-31
 
 ### Fixed

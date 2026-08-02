@@ -22,11 +22,22 @@ use Title;
 
 class SkinStellaNova extends SkinMustache {
 
-	/** Páginas wiki que gobiernan el chrome (spec InterfaceFragment). */
+	/**
+	 * Páginas wiki que gobiernan el chrome (spec InterfaceFragment).
+	 *
+	 * DOS slots, no tres. Hubo un tercero, `sidebar` => 'Barra lateral', que se
+	 * retiró en v0.8.0: se resolvía en cada request (una consulta de existencia
+	 * + un parse) y el template NUNCA lo consumía — la navegación del sitio la
+	 * arma el skin desde los portlets de MediaWiki:Sidebar (ver sn-sitenav más
+	 * abajo), que es la fuente que los editores ya usan. Un fragmento de chrome
+	 * paralelo para lo mismo era trabajo por request sin nada al otro lado. Si
+	 * alguna vez se quiere navegación editable como wikitexto libre, hay que
+	 * volver a añadir el slot AQUÍ, en el enum ChromeSlot del spec y en el
+	 * template — no basta con crear la página.
+	 */
 	private const CHROME = [
-		'notice'  => 'Aviso',
-		'sidebar' => 'Barra lateral',
-		'footer'  => 'Pie',
+		'notice' => 'Aviso',
+		'footer' => 'Pie',
 	];
 
 	/** Cache por-request del SVG del isotipo (recurso editable). */
@@ -182,7 +193,8 @@ class SkinStellaNova extends SkinMustache {
 	 *   sn-pageviews, sn-has-pageviews
 	 *                                       — Vistas del menú "Página", sin el editar (lo lleva el lápiz)
 	 *   sn-prefs                {…}          — PreferencesPanel: estado inicial server-side
-	 *   sn-chrome               {…}          — ManagedChrome: fragmentos Pie/Sidebar/Aviso
+	 *   sn-chrome               {notice,footer}
+	 *                                       — ManagedChrome: fragmentos Aviso y Pie
 	 *
 	 * El template consume estas keys con secciones Mustache. La filosofía:
 	 * decidir aquí lo que requiere PHP (state, lookups, condicionales sobre

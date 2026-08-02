@@ -466,16 +466,24 @@ def body_components():
 
 <section class="comp">
   <h2>Helpers de contenido</h2>
-  <p class="meta">Clases utilitarias para el wikitexto — viven en
-  <code>MediaWiki:Common.css</code> (replicadas aquí para el espécimen).
+  <p class="meta">Clases utilitarias para el wikitexto — <strong>las trae el
+  skin</strong> desde la v0.8.0 (antes vivían en
+  <code>MediaWiki:Common.css</code> y el espécimen las replicaba). Lo que se ve
+  aquí abajo es literalmente el mismo CSS que corre en la wiki, no una copia.
   <strong>Ortogonales</strong>: se combinan en cualquier orden
   (<code>class="lg serif center nova"</code>). Pensadas para envolver el
   <code>&lt;p&gt;</code> que genera la wiki: una clase en el <code>&lt;div&gt;</code>
   contenedor se hereda al párrafo interno (tamaño, familia, énfasis, color); la
   <strong>alineación</strong> se propaga al <code>&lt;p&gt;</code> de forma
-  explícita porque <code>.sn-body p</code> fija <code>justify</code>. Alcance
-  <code>.mw-parser-output .clase</code> para ganarle a las reglas de cuerpo del
-  skin.</p>
+  explícita porque <code>.sn-body p</code> fija <code>justify</code>.</p>
+  <p class="meta">Alcance <code>:is(.sn-body, .sn-notice-body,
+  .sn-footer-managed)</code>: el cuerpo del artículo —hoja normal y
+  <code>__PANTALLACOMPLETA__</code>— <em>y</em> los dos fragmentos del chrome
+  administrable (<code>Stella-Nova:Aviso</code> y <code>Stella-Nova:Pie</code>),
+  que antes quedaban fuera y obligaban a escribir <code>style=</code> inline.
+  Al vivir en el skin también viajan a la <strong>exportación a PDF</strong>: la
+  previsualización paginada enlaza los archivos del skin, no el
+  <code>Common.css</code> de la wiki.</p>
 
   <h3 class="spec-subh">Tamaño — <code>jumbo</code> · <code>lg</code> · <code>sm</code> · <code>xs</code></h3>
   <p class="meta">Escala alrededor del cuerpo (que es el tamaño por defecto, sin
@@ -536,12 +544,20 @@ Texto centrado. Aunque la wiki lo
 envuelva en su &lt;p&gt;, queda centrado.
 &lt;/div&gt;
 
-&lt;div class="right"&gt;Alineado a la derecha&lt;/div&gt;</pre>
+&lt;div class="right"&gt;Alineado a la derecha&lt;/div&gt;
+&lt;div class="left"&gt;Alineado a la izquierda&lt;/div&gt;
+&lt;div class="justify"&gt;Justificado (el default
+del cuerpo: la clase solo hace falta para
+volver a justificar dentro de un bloque
+alineado de otro modo)&lt;/div&gt;</pre>
     <div class="sn-paper sn-body demo">
       <div class="mw-parser-output">
         <div class="center"><p>Texto centrado. Aunque la wiki lo envuelva en su <code>&lt;p&gt;</code>, queda centrado.</p></div>
         <div class="right"><p>Alineado a la derecha.</p></div>
         <div class="left"><p>Alineado a la izquierda (apaga la división de palabras).</p></div>
+        <div class="justify"><p>Justificado con partición de palabras — es el
+        comportamiento por defecto del cuerpo, así que esta clase solo hace
+        falta para recuperarlo dentro de un contenedor alineado de otro modo.</p></div>
       </div>
     </div>
   </div>
@@ -585,6 +601,64 @@ envuelva en su &lt;p&gt;, queda centrado.
     </figure>
   </div>
 
+  <h3 class="spec-subh">Combinación de ejes</h3>
+  <p class="meta">El punto de que sean cinco ejes ortogonales: se apilan en un
+  mismo <code>class=</code>, en cualquier orden, y se mezclan con los helpers
+  propios del skin (<code>fw-*</code> de ancho, <code>grid</code>,
+  <code>fondo-*</code>). Un titular de portada rara vez necesita una plantilla
+  nueva: necesita tres clases.</p>
+  <div class="grilla cols-2 spec-usage">
+<pre class="howto-code">&lt;div class="jumbo serif center nova fw-90"&gt;
+Travesía a Punta Arenas
+&lt;/div&gt;
+
+&lt;div class="sm uppercase center"&gt;
+Taller de Amereida · 2026
+&lt;/div&gt;
+
+&lt;p class="lg serif justify"&gt;
+Un párrafo de entrada, en serif y un
+punto mayor que el cuerpo.
+&lt;/p&gt;</pre>
+    <div class="sn-paper sn-body demo">
+      <div class="mw-parser-output">
+        <div class="jumbo serif center nova fw-90"><p>Travesía a Punta Arenas</p></div>
+        <div class="sm uppercase center"><p>Taller de Amereida · 2026</p></div>
+        <p class="lg serif justify">Un párrafo de entrada, en serif y un punto
+        mayor que el cuerpo, que sigue justificado como el resto de la hoja y
+        parte palabras para cerrar la caja.</p>
+      </div>
+    </div>
+  </div>
+
+  <h3 class="spec-subh">También en el chrome administrable</h3>
+  <p class="meta">Novedad de la v0.8.0. <code>Stella-Nova:Pie</code> y
+  <code>Stella-Nova:Aviso</code> se parsean sin el envoltorio
+  <code>.mw-parser-output</code>, así que el alcance viejo de
+  <code>Common.css</code> no llegaba y esas páginas terminaban escritas con
+  <code>style=</code> inline —invisible al tema claro/oscuro y a la escala del
+  lector—. Ahora aceptan el mismo vocabulario que el cuerpo.</p>
+  <div class="grilla cols-2 spec-usage">
+<pre class="howto-code">&lt;!-- antes, en Stella-Nova:Pie --&gt;
+&lt;span style="font-size: 1.6em;
+  font-weight: 300;
+  color: var(--sn-nova)"&gt;e[ad]&lt;/span&gt;
+
+&lt;!-- ahora --&gt;
+&lt;span class="lg nova"&gt;e[ad]&lt;/span&gt;
+&lt;div class="xs uppercase"&gt;
+Pontificia Universidad Católica
+de Valparaíso
+&lt;/div&gt;</pre>
+    <div class="sn-paper demo">
+      <div class="sn-footer-managed">
+        <p><span class="lg nova">e[ad]</span><br>
+        Escuela de Arquitectura y Diseño<br>
+        <span class="xs uppercase">Pontificia Universidad Católica de Valparaíso</span></p>
+      </div>
+    </div>
+  </div>
+
   <div class="spec-notes">
     <p>Cada eje es independiente: tamaño (<code>jumbo/lg/sm/xs</code>), familia
     (<code>serif/sans/mono</code>), énfasis (<code>uppercase/italic/bold</code>),
@@ -592,13 +666,26 @@ envuelva en su &lt;p&gt;, queda centrado.
     (<code>nova/ok/warn/danger</code>) → se componen libremente. En el wikitexto
     se aplican con <code>&lt;span&gt;</code> / <code>&lt;div&gt;</code> o, en una
     plantilla, con el atributo <code>class</code>.</p>
+    <p><strong>Cuándo NO usarlas.</strong> El color por sí solo nunca debe ser
+    el único portador del significado (WCAG 2.1 AA § 1.4.1): acompañá
+    <code>danger</code> o <code>warn</code> de una palabra, un ícono o un peso.
+    <code>bold</code>/<code>italic</code> son presentación, no semántica: para
+    énfasis real conviene el <code>'''negrita'''</code> / <code>''cursiva''</code>
+    del wikitexto, que emite <code>&lt;b&gt;</code>/<code>&lt;i&gt;</code>. Y si
+    una combinación se repite en muchas páginas, deja de ser un helper y
+    corresponde una plantilla con su <code>TemplateStyles</code>.</p>
+    <p><strong>Ancho tipográfico.</strong> Las clases de familia cambian la
+    familia pero heredan el ancho del cuerpo (<code>--sn-text-width</code>, 80 %
+    en sans y 62,5 % en serif). Un <code>class="serif"</code> leído en modo sans
+    sale a 80 %, más ancho de lo que la serif se diseñó. Si el ancho importa,
+    fijalo: <code>class="serif fw-60"</code>.</p>
   </div>
 </section>
 
 <section class="comp">
   <h2>Ancho de fuente — <code>fw-50</code> … <code>fw-150</code></h2>
-  <p class="meta"><strong>Estas viven en la skin</strong> (no en
-  <code>MediaWiki:Common.css</code> ni en TemplateStyles). Existen porque el
+  <p class="meta">Sexto eje, ortogonal a los cinco de arriba y —como ellos— en
+  la skin (nunca en TemplateStyles). Existen porque el
   sanitizador de TemplateStyles (css-sanitizer) <strong>no acepta
   <code>font-stretch:&nbsp;80%</code></strong> —solo palabras clave—, así que una
   plantilla no puede condensar por porcentaje en su propio <code>styles.css</code>.
@@ -2348,68 +2435,14 @@ pre code { background: transparent; padding: 0; }
 """
 
 # ── helpers tipográficos ───────────────────────────────────────────────────
-# ESPEJO de MediaWiki:Common.css. Estas clases utilitarias son de CONTENIDO
-# (las teclea el editor en el wikitexto), no chrome del skin, por eso su hogar
-# vivo es Common.css. Se replican aquí para que el espécimen las demuestre.
-# Si cambias una, cambia también la otra copia.
-HELPERS_CSS = r"""
-/* === Helpers tipográficos de contenido (espejo de MediaWiki:Common.css) ===
-   Clases utilitarias que el editor teclea en el wikitexto (<span>, <div> o el
-   atributo class= de una plantilla). Referencian los tokens de Stella Nova con
-   fallback → se ven igual bajo Stella Nova y degradan a stacks/valores
-   equivalentes en otros skins. Son ORTOGONALES: se combinan libremente
-   (class="lg serif center nova"). Alcance .mw-parser-output .clase para
-   ganarle a las reglas de cuerpo del skin.
-
-   Pensadas para envolver el <p> que genera la wiki: una clase en el <div>
-   contenedor (tamaño, familia, énfasis, color) se HEREDA al párrafo interno;
-   la ALINEACIÓN se propaga explícitamente al <p> porque `.sn-body p` fija
-   text-align: justify y, sin esto, ganaría por especificidad. */
-
-/* — Tamaño — escala tipográfica; respeta la preferencia S/M/L del lector
-     (--sn-font-scale). `jumbo` es el titular; lg/sm/xs afinan alrededor del
-     cuerpo (que es el tamaño por defecto, sin clase). */
-.mw-parser-output .jumbo {
-	font-size: calc(clamp(2rem, 1.5rem + 2.2vw, 3.25rem) * var(--sn-font-scale, 1));
-	line-height: 1.12;
-}
-.mw-parser-output .lg { font-size: var(--sn-fs-lg, 1.35rem); }
-.mw-parser-output .sm { font-size: var(--sn-fs-sm, .88rem); }
-.mw-parser-output .xs { font-size: var(--sn-fs-xs, .76rem); }
-
-/* — Familia — fuerzan la familia (heredan a los hijos). */
-.mw-parser-output .serif {
-	font-family: var(--sn-font-serif, 'Roboto Serif','Iowan Old Style',Palatino,'Times New Roman',Georgia,serif);
-}
-.mw-parser-output .sans {
-	font-family: var(--sn-font-sans, 'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif);
-}
-.mw-parser-output .mono {
-	font-family: var(--sn-font-mono, 'IBM Plex Mono',ui-monospace,'SFMono-Regular','Cascadia Code',Menlo,Consolas,monospace);
-}
-
-/* — Énfasis — transformaciones que heredan al texto interno. */
-.mw-parser-output .uppercase { text-transform: uppercase; letter-spacing: .04ex; }
-.mw-parser-output .italic    { font-style: italic; }
-.mw-parser-output .bold      { font-weight: 700; }
-
-/* — Alineación — aplica al elemento Y a los <p>/<li>/leyendas que genera la
-     wiki dentro (gana a `.sn-body p { text-align: justify }`). Las
-     alineaciones no justificadas apagan la división de palabras. */
-.mw-parser-output :is(.left, .center, .right) :is(p, li, figcaption) { hyphens: none; }
-.mw-parser-output .left,    .mw-parser-output .left    :is(p, li) { text-align: left; }
-.mw-parser-output .center,  .mw-parser-output .center  :is(p, li) { text-align: center; }
-.mw-parser-output .right,   .mw-parser-output .right   :is(p, li) { text-align: right; }
-.mw-parser-output .justify, .mw-parser-output .justify :is(p, li) { text-align: justify; }
-
-/* — Color semántico — color de texto por rol (hereda al texto interno; voltea
-     claro/oscuro porque los tokens usan light-dark). Para fondos y avisos en
-     bloque, ver las cajas .wash del skin, no estas clases. */
-.mw-parser-output .nova   { color: var(--sn-nova,   #c4361f); }
-.mw-parser-output .ok     { color: var(--sn-ok,     #2e7d32); }
-.mw-parser-output .warn   { color: var(--sn-warn,   #b26a00); }
-.mw-parser-output .danger { color: var(--sn-danger, #b21e3e); }
-"""
+# YA NO SE REPLICAN AQUÍ. Desde v0.8.0 las clases utilitarias de contenido
+# (jumbo/lg/sm/xs · serif/sans/mono · uppercase/italic/bold ·
+# left/center/right/justify · nova/ok/warn/danger) las trae el propio skin, en
+# resources/stella-nova.css, que el espécimen enlaza tal cual desde
+# assets/stella-nova.css. Una sola fuente: lo que se ve en el espécimen es
+# literalmente el CSS que corre en la wiki. Antes había un espejo aquí y
+# divergió (sm/xs perdieron el factor --sn-font-scale).
+HELPERS_CSS = ""
 
 
 # Formatos de CONTENIDO de la wiki que NO viven en el skin sino en
@@ -2533,7 +2566,11 @@ CONTENT_CSS = r"""
 
 
 # ── build steps ────────────────────────────────────────────────────────────
-NOTES_TEMPLATE = """# Notas de diseño — Stella Nova v{version}
+# Sin número de versión en el encabezado A PROPÓSITO: este archivo se crea una
+# sola vez y sobrevive a todos los rebuilds, así que un `v{version}` estampado
+# al nacer envejece mal (llegó a decir v0.0.4 con el skin en 0.8.0). La versión
+# vigente está en el README y en cada página del espécimen.
+NOTES_TEMPLATE = """# Notas de diseño — Stella Nova
 
 Este archivo sobrevive a los rebuilds del espécimen. Anotá aquí decisiones,
 preguntas y propuestas. Los cambios de tokens van en el bloque
@@ -2674,10 +2711,10 @@ def write_pages(version):
     )
 
 
-def write_notes(version):
+def write_notes():
     notes = OUT_DIR / "notes.md"
     if not notes.exists():
-        notes.write_text(NOTES_TEMPLATE.format(version=version))
+        notes.write_text(NOTES_TEMPLATE)
 
 
 def write_readme(version):
@@ -2706,7 +2743,7 @@ def main():
     copy_assets()
     write_specimen_css()
     write_pages(version)
-    write_notes(version)
+    write_notes()
     write_readme(version)
     zip_path = make_zip(version)
     print(f"✓ HTML  {OUT_DIR.relative_to(SKIN_ROOT)}/index.html")

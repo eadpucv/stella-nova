@@ -48,8 +48,11 @@ a:hover { color: var(--sn-link-hover); }
 a:visited { color: var(--sn-link-visited); }
 
 /* ── Redlinks (a páginas inexistentes) y :visited ─────────────────
-   Overrides de MediaWiki:Common.css (heredado de producción), que
-   trae:
+   OJO (revisado 2026-08-02): el Common.css de producción YA NO trae estas dos
+   reglas — la migración al skin de julio de 2026 lo dejó al mínimo. Lo de aquí
+   abajo queda como DEFENSA para wikis que aún las conserven; si se confirma que
+   ninguna instalación las tiene, los `!important` se pueden retirar. Contexto
+   histórico: Common.css traía
      a[href].new { color: rgba(0,0,0,.3) !important; }   ← negro en dark
      a:visited   { color: #681603; }                     ← rojo carbón
    En claro funcionan (faded grey y rojo oscuro sobre cream). En oscuro
@@ -135,6 +138,13 @@ a.new:visited, a[href].new:visited { color: var(--sn-link-new); }
 	background: color-mix(in oklab, var(--sn-field) 60%, transparent);
 	-webkit-backdrop-filter: saturate(1.5) blur(5px);
 	backdrop-filter: saturate(1.5) blur(5px);
+	/* NO promover el header a su propia capa (translateZ(0)/will-change). Se
+	   intentó (v0.7.0) para ganarle al canvas en Macs viejos, pero en Safari/
+	   Firefox antiguos la capa RECORTA el dropdown `.sn-menu-list`, que se
+	   desborda por debajo del header → el menú abría (JS ok) pero no se veía.
+	   La defensa contra el canvas va en el CONTENIDO, no aquí: `.sn-shell` /
+	   `.sn-canvas` son `isolation: isolate`, así el canvas queda encerrado en
+	   su contexto —por debajo del header hermano— sin tocar el header. */
 	/* Sin filete inferior: la cabecera se separa del cuerpo por el blur y el
 	   fondo translúcido, no por una regla horizontal (doctrina "sin filetes"). */
 }
@@ -461,6 +471,13 @@ html[data-sn-modal] .sn-header {
 	justify-content: center;
 	width: 100%;
 	margin-inline: auto;
+	/* AÍSLA el contenido (layout normal). Cualquier canvas p5 / embed dinámico
+	   de la página queda ENCERRADO en este contexto de apilamiento, que se
+	   sienta por debajo del `.sn-header` hermano — el canvas no puede escalar
+	   sobre el menú por más `z-index` que ponga el JS. Gemelo de la misma regla
+	   en `.sn-canvas` (layout fullscreen). NO promovemos el header a capa GPU:
+	   eso recortaba el dropdown en navegadores viejos (ver `.sn-header`). */
+	isolation: isolate;
 	/* Sin padding inferior: el campo ya se fusiona con el pie (mismo --sn-field),
 	   así la hoja no deja un colchón muerto antes del pie. */
 	padding: clamp(var(--sn-s-5), 5vw, var(--sn-s-7)) var(--sn-s-4) 0;
@@ -612,6 +629,17 @@ html[data-sn-modal] .sn-header {
 	display: flex; align-items: flex-start; gap: var(--sn-s-3);
 	padding: var(--sn-s-3) var(--sn-paper-px);
 	font-size: var(--sn-fs-sm);
+	/* SOBRE el contenido de la página (canvas p5 incluido), pero NUNCA sobre el
+	   menú: el aviso vive dentro de `.sn-shell` (aislado, por debajo del header),
+	   así que su `z-index` es local y no compite con el dropdown. El `z-index`
+	   lo pone sobre el canvas en navegadores modernos; el `translateZ(0)` lo
+	   promueve a su propia capa GPU para ganarle al canvas también en Macs
+	   viejos (entre dos capas compuestas el z-order SÍ se respeta). Aquí el
+	   translateZ es seguro —a diferencia del header— porque el aviso no tiene
+	   hijos que se desborden de su caja y puedan quedar recortados. */
+	position: relative;
+	z-index: 1;
+	transform: translateZ(0);
 }
 html[data-sn-notice-hide] .sn-notice { display: none; }
 .sn-notice-body { flex: 1; min-width: 0; }
@@ -810,6 +838,102 @@ html[data-sn-notice-hide] .sn-notice { display: none; }
 .sn-body .fw-85  { font-stretch: 85%; }
 .sn-body .fw-75  { font-stretch: 75%; }
 
+/* ── Helpers TIPOGRÁFICOS de contenido ──────────────────────────────────
+   Vocabulario que el editor teclea en el wikitexto (<span>, <div> o el
+   atributo class= de una plantilla) para dar tamaño, familia, énfasis,
+   alineación y color a un fragmento. CINCO EJES ORTOGONALES que se combinan
+   libremente y en cualquier orden:  class="lg serif center nova"
+
+   VIVÍAN EN MediaWiki:Common.css (v0.7.2 y antes); desde v0.8.0 los trae el
+   skin. Tres razones, todas verificadas, no estéticas:
+
+     1. La PREVISUALIZACIÓN DE IMPRESIÓN (Vivliostyle) no cargaba Common.css.
+        print-preview.js enlaza a propósito los archivos LIMPIOS del skin
+        (fonts.css + tokens.css + stella-nova.css) y NO el módulo `site.styles`
+        —donde MediaWiki sirve el Common.css de la wiki—. O sea: una página con
+        class="jumbo center nova" se veía bien en pantalla y perdía las tres
+        clases al exportar a PDF. Viviendo aquí, el PDF las hereda gratis.
+     2. El CHROME ADMINISTRABLE no las alcanzaba. Stella-Nova:Pie y
+        Stella-Nova:Aviso se renderizan con OutputPage::parseAsContent, que NO
+        envuelve en `.mw-parser-output`, así que el alcance de Common.css
+        (`.mw-parser-output .clase`) no llegaba y el editor tenía que recurrir a
+        `style="…"` inline. Por eso el alcance de aquí abajo incluye los dos
+        contenedores del chrome además del cuerpo.
+     3. Había TRES COPIAS divergentes (Common.css de producción, el espejo del
+        espécimen y la doc), y la del espécimen tenía un bug real: no
+        multiplicaba `sm`/`xs` por --sn-font-scale. Una sola fuente lo cierra.
+
+   ALCANCE `:is(.sn-body, .sn-notice-body, .sn-footer-managed)` = cuerpo del
+   artículo (hoja normal Y __PANTALLACOMPLETA__, ambos llevan .sn-body) + los
+   dos fragmentos del chrome administrable. Especificidad (0,0,2,0): la misma
+   que tenía `.mw-parser-output .clase` en Common.css, y como el <link> del
+   skin se emite DESPUÉS de `site.styles` (Hooks::onBeforePageDisplay, head
+   item `zzz-…`), el skin gana el empate. Consecuencia práctica: una wiki que
+   conserve las reglas viejas en su Common.css NO rompe nada —quedan
+   sombreadas—, pero tampoco puede sobrescribirlas desde ahí sin `!important`.
+   Para retocarlas, el sitio correcto es este archivo.
+
+   Sin valores de respaldo en los var(): tokens.css SIEMPRE viaja con el skin,
+   y estos selectores solo existen dentro de contenedores del skin.
+
+   GOTCHA (heredado, no introducido aquí): las clases de familia cambian la
+   FAMILIA pero no el ancho. `--sn-text-width` está afinado por familia (80%
+   sans / 62.5% serif) y se hereda del cuerpo, así que un `class="serif"` en
+   una página leída en modo sans renderiza Roboto Serif a 80%, no al 62.5% con
+   que se diseñó. Si el ancho importa, fijarlo explícito: class="serif fw-60". */
+
+/* Eje 1 — TAMAÑO. El cuerpo es el valor por defecto, sin clase.
+   Ojo con la escala del lector: --sn-fs-lg y superiores YA multiplican por
+   --sn-font-scale dentro del propio token; --sn-fs-sm y --sn-fs-xs NO lo
+   hacen (ver tokens.css). Por eso unos se multiplican aquí y el otro no:
+   hacerlo en los que ya vienen escalados aplicaría la preferencia dos veces. */
+:is(.sn-body, .sn-notice-body, .sn-footer-managed) .jumbo {
+	font-size: calc(clamp(2rem, 1.5rem + 2.2vw, 3.25rem) * var(--sn-font-scale));
+	line-height: 1.12;
+}
+:is(.sn-body, .sn-notice-body, .sn-footer-managed) .lg { font-size: var(--sn-fs-lg); }
+:is(.sn-body, .sn-notice-body, .sn-footer-managed) .sm { font-size: calc(var(--sn-fs-sm) * var(--sn-font-scale)); }
+:is(.sn-body, .sn-notice-body, .sn-footer-managed) .xs { font-size: calc(var(--sn-fs-xs) * var(--sn-font-scale)); }
+
+/* Eje 2 — FAMILIA. La del cuerpo la elige el LECTOR desde el menú de usuario;
+   estas clases la fijan para un fragmento concreto. Úsalas cuando el contraste
+   importe, no por costumbre. */
+:is(.sn-body, .sn-notice-body, .sn-footer-managed) .serif { font-family: var(--sn-font-serif); }
+:is(.sn-body, .sn-notice-body, .sn-footer-managed) .sans  { font-family: var(--sn-font-sans); }
+:is(.sn-body, .sn-notice-body, .sn-footer-managed) .mono  { font-family: var(--sn-font-mono); }
+
+/* Eje 3 — ÉNFASIS. */
+:is(.sn-body, .sn-notice-body, .sn-footer-managed) .uppercase { text-transform: uppercase; letter-spacing: .04ex; }
+:is(.sn-body, .sn-notice-body, .sn-footer-managed) .italic    { font-style: italic; }
+:is(.sn-body, .sn-notice-body, .sn-footer-managed) .bold      { font-weight: 700; }
+
+/* Eje 4 — ALINEACIÓN. El skin justifica los <p> del cuerpo por defecto
+   (`.sn-body p`, especificidad 0,0,1,1), así que cada regla alcanza TAMBIÉN a
+   los <p>/<li> interiores (0,0,2,1 → gana) para que la clase funcione puesta
+   en un contenedor y no solo en el párrafo mismo. Lo no-justificado apaga la
+   división de palabras: partir palabras solo tiene sentido para cuadrar una
+   caja justificada. */
+:is(.sn-body, .sn-notice-body, .sn-footer-managed) :is(.left, .center, .right) :is(p, li, figcaption) { hyphens: none; }
+:is(.sn-body, .sn-notice-body, .sn-footer-managed) .left,
+:is(.sn-body, .sn-notice-body, .sn-footer-managed) .left    :is(p, li) { text-align: left; }
+:is(.sn-body, .sn-notice-body, .sn-footer-managed) .center,
+:is(.sn-body, .sn-notice-body, .sn-footer-managed) .center  :is(p, li) { text-align: center; }
+:is(.sn-body, .sn-notice-body, .sn-footer-managed) .right,
+:is(.sn-body, .sn-notice-body, .sn-footer-managed) .right   :is(p, li) { text-align: right; }
+:is(.sn-body, .sn-notice-body, .sn-footer-managed) .justify,
+:is(.sn-body, .sn-notice-body, .sn-footer-managed) .justify :is(p, li) { text-align: justify; }
+
+/* Eje 5 — COLOR POR ROL. Nombran la FUNCIÓN, no el color, así que voltean
+   solos entre tema claro y oscuro (los tokens son light-dark()). Nunca
+   escribir un hexadecimal en su lugar. La nova es el único acento agudo del
+   sistema: se gasta con avaricia, y el color por sí solo NUNCA debe ser el
+   único portador del significado (WCAG 2.1 AA § 1.4.1) — acompañar de palabra,
+   ícono o peso. Para fondos en bloque van las clases .fondo-*, no éstas. */
+:is(.sn-body, .sn-notice-body, .sn-footer-managed) .nova   { color: var(--sn-nova); }
+:is(.sn-body, .sn-notice-body, .sn-footer-managed) .ok     { color: var(--sn-ok); }
+:is(.sn-body, .sn-notice-body, .sn-footer-managed) .warn   { color: var(--sn-warn); }
+:is(.sn-body, .sn-notice-body, .sn-footer-managed) .danger { color: var(--sn-danger); }
+
 /* Títulos en IBM Plex Sans (familia única para todas las cabeceras). h1–h2
    son la voz editorial sobria; h3 es la subsección en color nova; h4–h6
    son labels secundarios. line-heights y márgenes son múltiplos enteros
@@ -958,8 +1082,15 @@ html[data-sn-notice-hide] .sn-notice { display: none; }
 .sn-body li { margin: 0; }
 .sn-body li::marker { color: var(--sn-ink-faint); }
 /* Enlaces del contenido: el token manda. Especificidad .sn-body a*
-   (0,0,2,x) para vencer a MediaWiki:Common.css `a:visited{...}`, que
-   carga después del skin (módulo `site`) con igual especificidad. */
+   (0,0,2,x) para vencer a un `a:visited{…}` de MediaWiki:Common.css, que a
+   igual especificidad ganaría por orden.
+   NOTA DE ORDEN (verificado 2026-08-02, corrige el comentario anterior): hoy
+   el <link> del skin se emite DESPUÉS de `site.styles` —lo inyecta
+   Hooks::onBeforePageDisplay como head item `zzz-stellanova-styles`, para
+   poder bustear caché por versión—, así que el skin ya gana los empates. El
+   comentario viejo decía lo contrario porque describía la época en que la CSS
+   del skin viajaba dentro del <link> combinado de ResourceLoader. La
+   especificidad extra se conserva igual: no depende del orden. */
 .sn-body a { color: var(--sn-link); }
 .sn-body a:hover { color: var(--sn-link-hover); }
 .sn-body a:visited { color: var(--sn-link-visited); }
@@ -1232,6 +1363,24 @@ html[data-sn-notice-hide] .sn-notice { display: none; }
 .sn-body :is(p):first-child:has(> script):not(:has(> :not(script))) {
 	display: none;
 }
+/* Con un AVISO VISIBLE arriba, el full-width primer-hijo NO revienta al borde
+   superior del papel: el aviso ya ocupa el tope y el canvas quedaría chocando /
+   tapado tras él. Vuelve al margen normal (sin radio superior ni recorte). Se
+   restaura el bleed si el aviso se descartó (html[data-sn-notice-hide]) o si no
+   hay aviso (el `~` no casa). Cubre las mismas variantes que el bleed-top:
+   directa, mw-empty-elt, <style> líder y Widget solo-scripts (Widget:P5). En
+   navegadores sin :has() (Macs muy viejos) la variante Widget del bleed-top
+   tampoco dispara, así que el canvas ya trae margen normal → mismo resultado. */
+html:not([data-sn-notice-hide]) .sn-notice ~ .sn-body > :is(.full-width, [class~="'full-width'"]):first-child,
+html:not([data-sn-notice-hide]) .sn-notice ~ .sn-body > *:first-child > :is(.full-width, [class~="'full-width'"]):first-child,
+html:not([data-sn-notice-hide]) .sn-notice ~ .sn-body > p.mw-empty-elt:first-child + :is(.full-width, [class~="'full-width'"]),
+html:not([data-sn-notice-hide]) .sn-notice ~ .sn-body style:first-child + * > :is(.full-width, [class~="'full-width'"]):first-child,
+html:not([data-sn-notice-hide]) .sn-notice ~ .sn-body :is(p):first-child:has(> script):not(:has(> :not(script))) + :is(.full-width, [class~="'full-width'"]) {
+	margin-block-start: var(--sn-s-5);
+	border-start-start-radius: 0;
+	border-start-end-radius: 0;
+	overflow: visible;
+}
 .sn-body > :is(.full-width, [class~="'full-width'"]):last-child,
 .sn-body > *:last-child > :is(.full-width, [class~="'full-width'"]):last-child,
 .sn-body > *:last-child > *:last-child > :is(.full-width, [class~="'full-width'"]):last-child,
@@ -1364,8 +1513,10 @@ html[data-sn-notice-hide] .sn-notice { display: none; }
    también el box-shadow porque el del widget (inline, hex de 8 dígitos)
    Firefox lo renderiza como una raya negra gruesa (causa real del bug).
    El skin se hace dueño de esto pase lo que pase en el estilo inline del
-   widget. !important por si Common.css (módulo `site`, carga tras el
-   skin) o el UA intentan imponerlo. */
+   widget. !important por si Common.css o el UA intentan imponerlo. (El
+   `site.styles` de la wiki carga ANTES que el <link> del skin, así que el
+   orden ya nos favorece; el !important cubre el estilo inline del widget,
+   que sí ganaría por cascada.) */
 canvas, iframe,
 .mw-body-content :is(canvas, iframe),
 .p5m-sketch, .p5m-sketch canvas,
@@ -1798,6 +1949,11 @@ canvas, iframe,
 	padding: var(--sn-canvas-py) var(--sn-canvas-px);
 	background: var(--sn-paper);
 	color: var(--sn-ink);
+	/* AÍSLA el cuerpo en un contexto de apilamiento propio. Cualquier contenido
+	   dinámico (canvas p5 de la home, embeds JS) queda ENCERRADO aquí abajo: por
+	   más `z-index` que se ponga, no puede escalar por encima del `.sn-header`
+	   hermano. Es la defensa "independiente de lo que inyecte el JS". */
+	isolation: isolate;
 	/* `.full-width` usa `width: 100vw` con margenes negativos calculados
 	   en `vw`. Sin `clip`, micro-desfases sub-pixel pueden disparar scroll
 	   horizontal en algún viewport. `clip` no crea contexto propio (a

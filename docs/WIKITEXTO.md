@@ -408,16 +408,11 @@ el `woff2` sin recortar el eje **y** fijar `serif` en el elemento.
   la plantilla puede escribir `font-stretch: var(--tu-prop)` en su `styles.css`:
   `var()` sí pasa el sanitizador (aunque el porcentaje literal no).
 
-### Clases tipográficas de contenido (viven en `MediaWiki:Common.css`)
+### Clases tipográficas de contenido (las trae el skin desde v0.8.0)
 
 Utilitarias ortogonales que se **combinan** (`class="lg serif center nova"`).
 Pensadas para envolver el `<p>` que genera la wiki: una clase en el `<div>` se
 hereda al párrafo; la **alineación** además se propaga al `<p>` interno.
-
-> ⚠️ A diferencia de las clases de arriba, éstas **no las define el skin** sino
-> `MediaWiki:Common.css` de cada wiki. El espécimen las replica para mostrarlas,
-> pero para que funcionen en el wikitexto real deben estar en el `Common.css` de
-> la wiki.
 
 | Eje | Clases |
 |---|---|
@@ -426,6 +421,35 @@ hereda al párrafo; la **alineación** además se propaga al `<p>` interno.
 | **Énfasis** | `uppercase` · `italic` · `bold` |
 | **Alineación** | `left` · `center` · `right` · `justify` |
 | **Color** | `nova` · `ok` · `warn` · `danger` (color de texto por rol; voltea con el tema) |
+
+Alcance: `:is(.sn-body, .sn-notice-body, .sn-footer-managed)` — el cuerpo del
+artículo (hoja normal y `__PANTALLACOMPLETA__`) **y** los dos fragmentos del
+chrome administrable (`Stella-Nova:Aviso`, `Stella-Nova:Pie`).
+
+> **Cambio de hogar (v0.8.0).** Hasta la v0.7.2 estas clases vivían en el
+> `MediaWiki:Common.css` de cada wiki y el skin no las conocía. Se movieron al
+> skin porque desde ahí sí alcanzan los dos sitios donde faltaban:
+>
+> - **La exportación a PDF.** La previsualización paginada (Vivliostyle) enlaza
+>   los archivos limpios del skin, **no** el `Common.css` de la wiki: una página
+>   con `class="jumbo center nova"` se veía bien en pantalla y perdía las tres
+>   clases en el PDF.
+> - **El chrome administrable.** `Stella-Nova:Pie` y `Stella-Nova:Aviso` se
+>   parsean sin el envoltorio `.mw-parser-output`, así que el alcance viejo no
+>   llegaba y esas páginas se escribían con `style=` inline.
+>
+> **Al actualizar una wiki:** borrar el bloque «clases tipográficas de
+> contenido» del `MediaWiki:Common.css`. No es urgente —el `<link>` del skin se
+> emite después de `site.styles`, así que las reglas del skin ganan el empate de
+> especificidad y las viejas quedan sombreadas—, pero dejarlas duplicadas
+> invita a que vuelvan a divergir. Si tu wiki las había personalizado, el sitio
+> para retocarlas ahora es `resources/stella-nova.css`, no `Common.css`
+> (desde ahí ya no se pueden sobrescribir sin `!important`).
+
+**Ancho tipográfico y familia.** Las clases de familia cambian la familia pero
+heredan el ancho del cuerpo (`--sn-text-width`: 80 % en sans, 62,5 % en serif).
+Un `class="serif"` leído en modo sans sale a 80 %, más ancho de lo que la serif
+se diseñó. Si el ancho importa, fijalo: `class="serif fw-60"`.
 
 ## 3. Comportamientos del skin sobre wikitexto estándar
 

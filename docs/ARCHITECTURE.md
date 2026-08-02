@@ -120,8 +120,10 @@ valor explícito > señal del SO (tema/motion) > default de diseño.
 **Persistencia híbrida por identidad**: registrado → preferencia de cuenta
 MediaWiki (BBDD, cross-device); anónimo/temporal → sesión del navegador.
 
-**Chrome administrable desde la wiki:** pie, barra lateral y aviso se editan
-como páginas del namespace `Stella-Nova`; la escritura (CRUD) se restringe
+**Chrome administrable desde la wiki:** pie y aviso —dos slots; la barra
+lateral se retiró en v0.8.0 por duplicar `MediaWiki:Sidebar` sin llegar a
+renderizarse— se editan como páginas del namespace
+`Stella-Nova`; la escritura (CRUD) se restringe
 al grupo `editores-de-interfaz` (o sysop) vía `$wgNamespaceProtection`. El
 pie es **compuesto**: las obligaciones core de MediaWiki (última
 modificación, licencia/atribución, places, icons, hooks de extensión) se
