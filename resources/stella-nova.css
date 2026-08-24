@@ -2759,6 +2759,22 @@ details[open]::details-content { block-size: auto; opacity: 1; }
 	vertical-align: top;
 	color: var(--sn-ink);
 }
+/* TODA celda de cabecera, esté donde esté en la tabla. El core pinta
+   `.wikitable th` con un gris CLARO literal (`background-color:#eaecf0`) y
+   tinta oscura literal, valores horneados en tiempo de compilación desde las
+   variables LESS de skin —no reaccionan a `light-dark()`. La skin ya reenruta
+   el TEXTO a `--sn-ink`, así que en modo oscuro quedaba tinta clara sobre
+   fondo gris claro: cabecera ilegible. El caso que lo destapa es la tabla de
+   «cabecera por fila» (primera columna escrita con `!`), cuyas `th` NO están
+   en la primera fila y por eso escapaban a la regla de abajo, que solo cubría
+   `thead`/primera fila. Aquí se apaga el relleno del core para todas las `th`
+   y el peso tipográfico queda como única marca de cabecera, coherente con el
+   diseño sin rellenos ni filetes verticales. */
+.sn-body :is(table.wikitable, table.smwtable, table.broadtable) th {
+	background: transparent;
+	color: var(--sn-ink);
+	font-weight: 600;
+}
 /* Fila(s) de cabecera: sin relleno de fondo, filete NORMAL (más marcado)
    separando cabeceras del cuerpo. Cubre <thead> y la 1ª fila de <th>
    cuando no hay <thead> — el caso típico de los resultados #ask de SMW. */
@@ -2768,6 +2784,18 @@ details[open]::details-content { block-size: auto; opacity: 1; }
 	background: transparent;
 	font-weight: 600;
 	box-shadow: inset 0 -1px 0 var(--sn-hairline);     /* filete normal cabecera→cuerpo */
+}
+/* Corrección para la tabla de «cabecera por fila»: si la primera fila MEZCLA
+   `th` y `td` no es una fila de cabecera, sino una fila normal cuya primera
+   celda es su rótulo → su filete inferior vuelve al fino de entre-filas, para
+   no dejar un filete marcado bajo la primera fila y ninguno bajo las demás.
+   Va en regla aparte (y no como `:not(:has(...))` sobre la regla de arriba)
+   porque un navegador sin `:has()` descarta la regla entera: así lo que se
+   pierde es solo este ajuste, no el filete de cabecera. `:not(:last-child)`
+   protege la tabla de una sola fila, que no debe cerrar con filete. */
+.sn-body :is(table.wikitable, table.smwtable, table.broadtable) > :is(thead, tbody) > tr:first-child:not(:last-child):has(> td) > th,
+.sn-body :is(table.wikitable, table.smwtable, table.broadtable) > tr:first-child:not(:last-child):has(> td) > th {
+	box-shadow: inset 0 -1px 0 var(--sn-hairline-soft);
 }
 /* Sin borde exterior: la última fila no lleva filete inferior (se leería
    como contorno de cierre). */

@@ -9,6 +9,30 @@ ajustes editoriales. La fuente de verdad del comportamiento es
 [`specs/stella-nova.allium`](specs/stella-nova.allium); cada entrada que toque
 comportamiento debería reflejarse también ahí.
 
+## [0.8.1] — 2026-08-23
+
+### Fixed
+- **Cabeceras de tabla ilegibles en modo oscuro.** MediaWiki core pinta
+  `.wikitable th` con `background-color:#eaecf0` y `color:#222` —hexadecimales
+  literales, horneados en tiempo de compilación desde las variables LESS de
+  skin, que no reaccionan a `light-dark()`. La skin ya reenrutaba el TEXTO de
+  toda celda a `--sn-ink`, pero no el fondo, y su regla de «fila de cabecera»
+  solo cubría `thead` y la primera fila; así que en modo oscuro toda `th`
+  fuera de esa posición quedaba con tinta clara sobre el gris claro del core.
+  El caso que lo destapa es la tabla de **cabecera por fila** (primera columna
+  escrita con `!`), como las de `Casiopea:Política de privacidad`: sus rótulos
+  eran invisibles. Ahora el fondo se apaga en TODA `th` de
+  `wikitable`/`smwtable`/`broadtable`, y el peso tipográfico queda como única
+  marca de cabecera —coherente con el diseño sin rellenos ni filetes
+  verticales.
+- **Filete espurio bajo la primera fila** en esas mismas tablas: su primera
+  fila disparaba la regla de cabecera y cerraba con el filete marcado
+  (`--sn-hairline`) mientras las demás llevaban el fino. Una regla aparte
+  detecta con `:has(> td)` que la fila mezcla `th` y `td` —no es fila de
+  cabecera— y le devuelve el filete de entre-filas. Va en regla propia, y no
+  como `:not(:has(…))` sobre la de cabecera, para que un navegador sin `:has()`
+  pierda solo este ajuste y no el filete de cabecera.
+
 ## [0.8.0] — 2026-08-02
 
 ### Added
