@@ -219,6 +219,28 @@
 	transform: none !important;
 	zoom: 1 !important;
 }
+/* MARGEN DOBLE (bug): las cajas de página de Vivliostyle viven en ESTE documento
+   y heredan el `html{box-sizing:border-box} *{box-sizing:inherit}` global del
+   skin. Vivliostyle las dimensiona asumiendo content-box: la page-box lleva el
+   margen de @page como padding sobre un alto ya descontado → con border-box el
+   padding se resta OTRA vez y el área de maqueta queda 2·margen más chica por
+   lado (A4 con 1.5cm: cortaba ~6cm antes del pie). La impresión real
+   (printHTML, iframe sin el CSS del skin) no lo sufría → preview ≠ papel.
+   Devolvemos content-box a las cajas estructurales y border-box al contenido. */
+.sn-pp-viewport :is(
+	[data-vivliostyle-page-container],
+	[data-vivliostyle-bleed-box],
+	[data-vivliostyle-page-box],
+	[data-vivliostyle-page-area-container],
+	[data-vivliostyle-page-area],
+	[data-vivliostyle-page-margin-box]
+) {
+	box-sizing: content-box;
+}
+.sn-pp-viewport :is([data-vivliostyle-page-area], [data-vivliostyle-page-margin-box]) > * {
+	box-sizing: border-box;
+}
+
 /* Cada hoja: papel blanco con sombra sobre el campo. La sombra va en el
    contenedor; el blanco se fuerza en TODAS las capas de Vivliostyle (container /
    box / area / bleed) para que ninguna quede gris al navegar (al cambiar de

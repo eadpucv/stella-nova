@@ -9,6 +9,17 @@ ajustes editoriales. La fuente de verdad del comportamiento es
 [`specs/stella-nova.allium`](specs/stella-nova.allium); cada entrada que toque
 comportamiento debería reflejarse también ahí.
 
+## [0.8.4] — 2026-09-22
+
+### Fixed
+- **Previsualización de impresión: margen aplicado dos veces.** Las cajas de
+  página de Vivliostyle viven en el documento de la wiki y heredaban el
+  `box-sizing: border-box` global del skin; como Vivliostyle las dimensiona en
+  content-box, el margen de `@page` se restaba otra vez y el texto saltaba de
+  página muy antes (A4: ~6 cm antes del pie). La impresión real (`printHTML`,
+  iframe sin el CSS del skin) no lo sufría → la vista no coincidía con el papel.
+  `print-preview.css` devuelve content-box a las cajas estructurales.
+
 ## [0.8.3] — 2026-09-22
 
 ### Added
