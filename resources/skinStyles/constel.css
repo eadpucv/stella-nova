@@ -1,0 +1,11 @@
+/* Casiopea-Con§tel (extensión casiopea-constel) — absorción en Stella Nova.
+ *
+ * Las páginas del mapa (Especial:Constelación) y de la lectura propia
+ * (Especial:MiConstel) marcan <body class="constel-wide">: necesitan ancho
+ * para el grafo y las tablas. Aquí la hoja se ensancha al ancho del conjunto
+ * (--sn-shell, el mismo del header y el pie) en vez de la medida de lectura
+ * (--sn-measure). Los componentes de la extensión ya usan los tokens del skin.
+ */
+.constel-wide .sn-paper-wrap {
+	max-width: var( --sn-shell );
+}

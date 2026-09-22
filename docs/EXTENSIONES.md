@@ -159,3 +159,12 @@ sistema visual.)
 
 > El proceso completo, mapas de equivalencias y trazabilidad de cada
 > hoja está en el [Plan de Migración Stella Nova](https://wiki.ead.pucv.cl/Stella_Nova).
+
+## Casiopea-Con§tel (desarrollo propio)
+
+[`skinStyles/constel.css`](../resources/skinStyles/constel.css) sobre
+`ext.constel.map.styles`: las páginas Especial:Constelación y Especial:MiConstel
+marcan `<body class="constel-wide">` y aquí la hoja se ensancha a `--sn-shell`.
+El resto de la extensión no necesita absorción: se diseñó sobre los tokens
+semánticos y de componente del skin (capa de alias `--constel-*`).
+

@@ -9,6 +9,17 @@ ajustes editoriales. La fuente de verdad del comportamiento es
 [`specs/stella-nova.allium`](specs/stella-nova.allium); cada entrada que toque
 comportamiento debería reflejarse también ahí.
 
+## [0.8.3] — 2026-09-22
+
+### Added
+- **Absorción de Casiopea-Con§tel** (extensión `casiopea-constel`):
+  `skinStyles/constel.css` sobre `ext.constel.map.styles`. Las páginas
+  Especial:Constelación y Especial:MiConstel marcan `<body class="constel-wide">`
+  y la hoja se ensancha al ancho del conjunto (`--sn-shell`) en vez de la
+  medida de lectura. El resto de la extensión se diseñó sobre los tokens
+  semánticos y de componente del skin y no necesita absorción. Ver
+  `docs/EXTENSIONES.md`.
+
 ## [0.8.2] — 2026-09-22
 
 ### Fixed

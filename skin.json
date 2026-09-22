@@ -2,7 +2,7 @@
 	"manifest_version": 2,
 	"name": "StellaNova",
 	"namemsg": "skinname-stellanova",
-	"version": "0.8.2",
+	"version": "0.8.3",
 	"author": [
 		"[https://herbertspencer.net Herbert Spencer González]",
 		".:TIG:. Taller de Investigaciones Gráficas, e[ad] Escuela de Arquitectura y Diseño, Pontificia Universidad Católica de Valparaíso",
@@ -168,7 +168,8 @@
 			"+mediawiki.special.preferences.styles.ooui": "skinStyles/preferences.css",
 			"+oojs-ui-core.styles": "skinStyles/oojs-ui.css",
 			"+oojs-ui-widgets.styles": "skinStyles/oojs-ui.css",
-			"+oojs-ui-windows.styles": "skinStyles/oojs-ui.css"
+			"+oojs-ui-windows.styles": "skinStyles/oojs-ui.css",
+			"+ext.constel.map.styles": "skinStyles/constel.css"
 		}
 	}
 }
