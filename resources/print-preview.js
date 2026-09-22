@@ -205,6 +205,10 @@
 			'.sn-body p { line-height: var(--sn-leading); }',
 			'.sn-body a { color: #000; text-decoration: underline; }',
 			'.sn-pp-flow :is(h1, h2, .mw-heading1, .mw-heading2) { border-bottom: 0; }',
+			/* Tooltips de SMW (p. ej. advertencia de valor inválido en una
+			   bibliografía): el doc fuente no carga el CSS de SMW que oculta su
+			   contenido, así que el texto del tooltip se imprimía en línea. */
+			'.sn-pp-flow .smwttcontent { display: none !important; }',
 			col,
 			/* Elementos corrientes (repetidos por página vía su margin-box). */
 			'.sn-run { font-family: var(--sn-font-text); font-size: 8pt; color: #000; line-height: 1.2; }',

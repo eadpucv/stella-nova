@@ -9,6 +9,24 @@ ajustes editoriales. La fuente de verdad del comportamiento es
 [`specs/stella-nova.allium`](specs/stella-nova.allium); cada entrada que toque
 comportamiento debería reflejarse también ahí.
 
+## [0.8.2] — 2026-09-22
+
+### Fixed
+- **Hojas casi vacías al imprimir páginas con enlaces externos** (reportado en
+  bibliografías de Asignaturas; caso replicable: `Práctica de Diseño`).
+  `print.css` imprime la URL de cada enlace externo en su `::after`
+  (`" (" attr(href) ")"` con `break-all`), pero ese mismo `::after` es en
+  pantalla el ícono de enlace externo: `inline-block` de .68em × .68em con
+  `mask`. La URL quedaba encajonada en esa columna de .68em, se partía en un
+  carácter por línea y el navegador insertaba hojas casi en blanco (solo
+  asomaba el «(» bajo la máscara). Ahora la regla de impresión deshace la caja
+  del ícono (`display:inline`, sin tamaño, sin `mask` ni fondo). Práctica de
+  Diseño pasa de 7 a 5 hojas.
+- **Texto de tooltips SMW en la previsualización paginada.** El documento
+  fuente de Vivliostyle no carga el CSS de SMW, así que el contenido oculto de
+  los avisos (p. ej. «La propiedad «Bibliografía»… contiene caracteres
+  inválidos») se imprimía en línea. Se oculta `.smwttcontent`.
+
 ## [0.8.1] — 2026-08-23
 
 ### Fixed

@@ -78,9 +78,20 @@ body::before { display: none !important; }
    `!important` y out-especificar con `.sn-body a`. */
 .sn-body a { color: #000 !important; text-decoration: underline !important; }
 a { color: #000; }
+/* La URL impresa reusa el ::after que en pantalla es el ÍCONO de enlace
+   externo (`.sn-body a.external::after`: inline-block de .68em × .68em con
+   mask). Si no se deshace esa caja, la URL queda encajonada en .68em de ancho:
+   con break-all se parte en un carácter por línea, la cajita crece hacia abajo
+   y el navegador inserta hojas casi vacías (solo asoma el «(» bajo la mask).
+   Se ve en las bibliografías con enlaces externos (p. ej. Asignaturas). */
 .sn-body a[href^="http"]::after {
 	content: " (" attr(href) ")"; font-size: .85em; color: #555;
 	word-break: break-all;
+	display: inline !important;
+	width: auto !important; height: auto !important;
+	margin: 0 !important; vertical-align: baseline !important;
+	background: none !important; opacity: 1 !important;
+	-webkit-mask: none !important; mask: none !important;
 }
 :is(h1,h2,h3,h4,h5,h6) { page-break-after: avoid; }
 img, figure, table, pre { page-break-inside: avoid; }
