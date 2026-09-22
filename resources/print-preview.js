@@ -82,13 +82,15 @@
 	}
 
 	/* Tamaños de papel y nº de columnas del cuerpo por formato. Editable. */
+	/* `short` = lado menor en mm: de él derivan margen y separación de columnas
+	   (ver pageMargin), para que el blanco escale con el papel. */
 	var SIZES = [
-		{ id: 'a4',        label: 'A4 · 21 × 29,7 cm',       css: 'A4',          cols: 1 },
-		{ id: 'letter',    label: 'Carta · 21,6 × 27,9 cm',  css: 'letter',      cols: 1 },
-		{ id: 'legal',     label: 'Oficio · 21,6 × 35,6 cm', css: 'legal',       cols: 1 },
-		{ id: 'a3',        label: 'A3 · 29,7 × 42 cm',        css: 'A3',          cols: 2 },
-		{ id: 'tabloid',   label: 'Tabloide · 27,9 × 43,2 cm', css: '279mm 432mm', cols: 2 },
-		{ id: 'plotter90', label: 'Plóter · 90 × 120 cm',    css: '900mm 1200mm', cols: 4 }
+		{ id: 'a4',        label: 'A4 · 21 × 29,7 cm',       css: 'A4',          short: 210,   cols: 1 },
+		{ id: 'letter',    label: 'Carta · 21,6 × 27,9 cm',  css: 'letter',      short: 215.9, cols: 1 },
+		{ id: 'legal',     label: 'Oficio · 21,6 × 35,6 cm', css: 'legal',       short: 215.9, cols: 1 },
+		{ id: 'a3',        label: 'A3 · 29,7 × 42 cm',        css: 'A3',          short: 297,   cols: 2 },
+		{ id: 'tabloid',   label: 'Tabloide · 27,9 × 43,2 cm', css: '279mm 432mm', short: 279,   cols: 2 },
+		{ id: 'plotter90', label: 'Plóter · 90 × 120 cm',    css: '900mm 1200mm', short: 900,  cols: 4 }
 	];
 	var DEFAULT_SIZE = 'a4';
 	function sizeEntryById( id ) {
@@ -121,6 +123,19 @@
 		return ent.cols + ( orient === 'landscape' ? 1 : 0 );
 	}
 
+	/* Margen de @page PROPORCIONAL al papel: ~9,5% del lado menor (A4 → 2cm;
+	   A3 → 2,8cm; Plóter → 8,6cm). Igual en los cuatro lados y en ambas
+	   orientaciones (el lado menor no cambia al girar). La banda del margen aloja
+	   cabecera/pie (margin-boxes), centrados en ella. */
+	var MARGIN_RATIO = 0.095;
+	function pageMargin( ent ) {
+		return ( Math.round( ent.short * MARGIN_RATIO * 10 ) / 10 ) + 'mm';
+	}
+	/* Separación entre columnas: medio margen, escala con el papel. */
+	function colGap( ent ) {
+		return ( Math.round( ent.short * MARGIN_RATIO * 5 ) / 10 ) + 'mm';
+	}
+
 	/* Zoom de la previsualización (escala visual de la hoja en pantalla; no afecta
 	   la salida impresa). Útil para «alejar» y ver completa una hoja grande. */
 	var ZOOM_MIN = 0.25, ZOOM_MAX = 1.5, ZOOM_STEP = 0.25;
@@ -149,23 +164,20 @@
 	/* CSS de impresión del documento fuente: @page con sus cuatro margin-boxes
 	   (logo / n·total / URL / fecha a 8pt), escala tipográfica, columnas por
 	   formato (FLUJO VERTICAL), elementos corrientes, TOC con líder + nº de
-	   página, y tablas sin fondo. `sizeCss` y `cols` los elige la barra. */
-	function printCss( sizeCss, cols ) {
+	   página, y tablas sin fondo. Tamaño, columnas, margen y separación salen del formato elegido en la barra. */
+	function printCss( sizeCss, cols, margin, gap ) {
 		var col = ( cols && cols > 1 ) ? [
-			'.sn-body { column-count: ' + cols + '; column-gap: 1cm; column-fill: auto; }',
+			'.sn-body { column-count: ' + cols + '; column-gap: ' + ( gap || '1cm' ) + '; column-fill: auto; }',
 			'.sn-body > :is(#toc, .toc, .mw-table-of-contents) { column-span: all; }',
 			'.sn-body :is(figure, table, blockquote, pre, .thumb) { break-inside: avoid; }'
 		].join( '\n' ) : '';
 		return [
 			'@page {',
 			'	size: ' + ( sizeCss || 'A4' ) + ';',
-			/* OJO: Vivliostyle aplica el margen de @page DOBLE al inset del
-			   contenido (margen M → 2·M por lado: lo reserva como zona de
-			   margin-boxes Y como caja de página). Margen VERTICAL mayor que el
-			   horizontal: con 1.5cm arriba/abajo la banda de margin-boxes es más
-			   alta y la CABECERA/PIE quedan más despegadas del borde del papel
-			   (~0.75cm en vez de ~0.5cm); los lados siguen a 1cm. */
-			'	margin: 1.5cm 1cm;',
+			/* Margen proporcional al formato (pageMargin). Es el margen REAL:
+			   el «margen doble» que se veía antes era un bug de box-sizing en la
+			   previsualización (ver print-preview.css), no de Vivliostyle. */
+			'	margin: ' + ( margin || '2cm' ) + ';',
 			'	@top-left { content: element(snRunLogo); }',
 			'	@top-right { content: counter(page) " / " counter(pages);',
 			'		font-family: var(--sn-font-text); font-size: 8pt; color: #000; }',
@@ -190,7 +202,7 @@
 			'	overflow: visible !important; border: 0 !important; }',
 			'.sn-pp-flow img { max-width: 100%; height: auto; }',
 			/* El contenedor del contenido llena el área de página; el margen del
-			   contenido (~2cm parejos) lo da íntegro el @page, sin padding extra. */
+			   contenido lo da íntegro el @page (proporcional al papel), sin padding extra. */
 			'.sn-pp-flow { margin: 0; padding: 0; max-width: none; width: auto; }',
 			'.sn-body, .sn-body .mw-parser-output { max-width: none; width: auto; }',
 			'.sn-body { font-stretch: 100%; }',
@@ -271,11 +283,12 @@
 	}
 
 	/* Documento HTML fuente completo y autocontenido para Vivliostyle. */
-	function buildSourceDoc( sizeCss, cols ) {
+	function buildSourceDoc( ent, orient ) {
 		var wrap = buildContentEl();
 		return '<!DOCTYPE html><html lang="es"><head><meta charset="utf-8">' +
 			skinCssLinks() +
-			'<style>' + printCss( sizeCss, cols ) + '</style>' +
+			'<style>' + printCss( pageSize( ent, orient ), colsFor( ent, orient ),
+				pageMargin( ent ), colGap( ent ) ) + '</style>' +
 			'</head><body>' + wrap.outerHTML + '</body></html>';
 	}
 
@@ -399,7 +412,7 @@
 		var viewport = pages.querySelector( '.sn-pp-viewport' );
 		viewport.style.zoom = state.zoom;
 
-		var src = buildSourceDoc( pageSize( ent, state.orient ), colsFor( ent, state.orient ) );
+		var src = buildSourceDoc( ent, state.orient );
 		state.srcUrl = URL.createObjectURL( new Blob( [ src ], { type: 'text/html' } ) );
 
 		// La hoja 1 ya está visible: habilita la barra y oculta el spinner. Se
@@ -478,7 +491,7 @@
 	   imágenes) — es inherente al render en cliente. */
 	function printDocument() {
 		var ent = sizeEntryById( state.size );
-		var src = buildSourceDoc( pageSize( ent, state.orient ), colsFor( ent, state.orient ) );
+		var src = buildSourceDoc( ent, state.orient );
 		try {
 			window.Vivliostyle.printHTML( src, {
 				title: ( mw && mw.config && mw.config.get( 'wgTitle' ) ) || document.title

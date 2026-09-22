@@ -9,6 +9,15 @@ ajustes editoriales. La fuente de verdad del comportamiento es
 [`specs/stella-nova.allium`](specs/stella-nova.allium); cada entrada que toque
 comportamiento debería reflejarse también ahí.
 
+## [0.8.5] — 2026-09-22
+
+### Changed
+- **Márgenes de impresión proporcionales al formato.** El margen de `@page` de
+  la previsualización es ahora el 9,5 % del lado menor del papel (A4 2 cm,
+  A3 2,8 cm, Plóter 8,6 cm), igual en los cuatro lados y en ambas
+  orientaciones; la separación entre columnas es medio margen. Reemplaza el
+  `1.5cm 1cm` fijo, que estaba calibrado contra el margen doble de 0.8.4.
+
 ## [0.8.4] — 2026-09-22
 
 ### Fixed
