@@ -9,3 +9,28 @@
 .constel-wide .sn-paper-wrap {
 	max-width: var( --sn-shell );
 }
+
+/* Especial:Constelación va además a pantalla completa (la extensión fija la
+ * misma propiedad que __PANTALLACOMPLETA__) y marca <body class="constel-full">:
+ * el mapa posee el viewport, como la biblioteca con§tel. El canvas pierde su
+ * padding; título e introducción quedan sólo para lectores de pantalla; la
+ * primera fila de la barra deja libre la esquina del isotipo, que baja a su altura. */
+.constel-full .sn-canvas {
+	padding: 0;
+}
+.constel-full .sn-canvas :is( h1#firstHeading, .mw-specialpage-summary ) {
+	position: absolute;
+	width: 1px; height: 1px;
+	margin: -1px; padding: 0;
+	overflow: hidden;
+	clip-path: inset( 50% );
+	white-space: nowrap;
+}
+.constel-full .sn-fs-md {
+	padding-top: var( --sn-s-3 );
+}
+/* Sólo la primera fila (vista, aristas, zoom) comparte altura con el isotipo;
+ * los filtros siguen hasta el borde. */
+.constel-full .constel-map__row:first-child {
+	padding-inline-end: calc( 3rem + var( --sn-canvas-px ) );
+}

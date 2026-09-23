@@ -165,6 +165,10 @@ sistema visual.)
 [`skinStyles/constel.css`](../resources/skinStyles/constel.css) sobre
 `ext.constel.map.styles`: las páginas Especial:Constelación y Especial:MiConstel
 marcan `<body class="constel-wide">` y aquí la hoja se ensancha a `--sn-shell`.
+Especial:Constelación además va a pantalla completa: fija `stellanova-fullscreen`
+(lo mismo que `__PANTALLACOMPLETA__`) y marca `constel-full`; aquí el canvas
+pierde su padding, título e introducción quedan sólo para lectores de pantalla
+y la barra del mapa deja libre la esquina del isotipo.
 El resto de la extensión no necesita absorción: se diseñó sobre los tokens
 semánticos y de componente del skin (capa de alias `--constel-*`).
 

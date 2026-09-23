@@ -9,6 +9,17 @@ ajustes editoriales. La fuente de verdad del comportamiento es
 [`specs/stella-nova.allium`](specs/stella-nova.allium); cada entrada que toque
 comportamiento debería reflejarse también ahí.
 
+## [0.8.6] — 2026-09-23
+
+### Added
+- **Casiopea-Con§tel a pantalla completa.** Especial:Constelación entra al
+  modo `__PANTALLACOMPLETA__` (la extensión fija la misma propiedad de
+  OutputPage) y marca `<body class="constel-full">`. `skinStyles/constel.css`
+  quita el padding del canvas, deja título e introducción sólo para lectores
+  de pantalla, sube el isotipo a la altura de la barra del mapa y le reserva
+  esa esquina en la primera fila. El mapa posee el viewport, como la
+  biblioteca con§tel.
+
 ## [0.8.5] — 2026-09-22
 
 ### Changed
