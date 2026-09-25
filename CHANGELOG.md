@@ -9,6 +9,35 @@ ajustes editoriales. La fuente de verdad del comportamiento es
 [`specs/stella-nova.allium`](specs/stella-nova.allium); cada entrada que toque
 comportamiento debería reflejarse también ahí.
 
+## [0.9.0] — 2026-09-25
+
+### Added
+- **`__PAGINAANCHA__` / `__WIDEPAGE__`** (LayoutMode.wide). Palabra mágica
+  para que una página conserve el chrome estándar pero ensanche la hoja (y el
+  pie) de la medida de lectura (`--sn-measure`) al ancho del conjunto
+  (`--sn-shell`), el mismo layout que Especial:MiConstel obtiene con
+  `constel-wide`. Sirve para tablas, grillas o grafos que no caben en la
+  columna de lectura. El hook marca `<body class="sn-wide">`. Si la página
+  declara además `__PANTALLACOMPLETA__`, gana pantalla completa.
+
+### Changed
+- **Isotipo de pantalla completa en una esquina cuadrada.** `--sn-fs-inset`
+  fija una sola separación para el borde superior y el derecho (antes el
+  derecho seguía a `--sn-canvas-px`, 4vw, y la esquina quedaba descuadrada);
+  la comparten el riel `.sn-fs-md` y la X del modal. Con§tel la acerca a
+  `--sn-s-3`, a la altura de su barra, y la primera fila le reserva la esquina.
+
+### Fixed
+- **Previsualización de impresión: cambiar formato u orientación ya no se
+  traba.** Los visores Vivliostyle descartados seguían paginando en el
+  planificador global y reescribiendo el `@page` de la vista: la hoja 1 del
+  nuevo se demoraba con el spinner y se acumulaban. Ahora se detienen y su
+  `@page` se retira (tampoco contamina el Ctrl+P). Mientras se maqueta se
+  bloquean todos los controles que re-maquetan, no sólo «Tamaño».
+- **Páginas especiales en la previsualización de impresión.** Como no emiten
+  `.mw-parser-output`, salían sólo con el título; ahora se imprime
+  `#mw-content-text`, sin controles de formulario.
+
 ## [0.8.6] — 2026-09-23
 
 ### Added

@@ -490,6 +490,11 @@ html[data-sn-modal] .sn-header {
 	max-width: var(--sn-measure);
 	min-width: 0;
 }
+/* __PAGINAANCHA__ (LayoutMode.wide): la hoja se ensancha al ancho del
+   conjunto (--sn-shell, el del header) para tablas, grillas o grafos que no
+   caben en la medida de lectura. Chrome intacto. El pie acompaña a la hoja
+   (ver .sn-footer-inner). */
+.sn-wide .sn-paper-wrap { max-width: var(--sn-shell); }
 
 .sn-portlet-h {
 	margin: 0 0 var(--sn-s-2);
@@ -1756,6 +1761,7 @@ canvas, iframe,
 	grid-template-columns: 2fr 1fr;
 	align-items: start;
 }
+.sn-wide .sn-footer-inner { max-width: var(--sn-shell); }
 .sn-footer-col { min-width: 0; }
 
 /* — Columna ancha — última edición + herramientas + enlaces de sitio —
@@ -1944,6 +1950,11 @@ canvas, iframe,
 	--sn-canvas-py: clamp(var(--sn-s-5), 4vw, var(--sn-s-7));
 	--sn-paper-px: var(--sn-canvas-px);
 	--sn-paper-py: var(--sn-canvas-py);
+	/* Separación del isotipo a la esquina: UN solo valor para el borde
+	   superior y el derecho (la esquina queda cuadrada). La comparten el
+	   riel `.sn-fs-md` y la X del modal; una página puede ajustarla
+	   (con§tel la acerca a --sn-s-3, a la altura de su barra). */
+	--sn-fs-inset: var(--sn-s-6);
 	display: block;
 	min-height: 100vh;
 	padding: var(--sn-canvas-py) var(--sn-canvas-px);
@@ -1969,16 +1980,16 @@ canvas, iframe,
 	margin-inline: 0;
 }
 /* Afordancia única de pantalla completa: el isotipo SOBREPUESTO, fijo y EN
-   FRENTE del contenido, alineado al MARGEN DERECHO ESTÁNDAR del viewport (no
-   a la columna de lectura). Sin "barra": este contenedor full-width es solo
-   el RIEL de posición; `pointer-events: none` deja pasar los clics al
-   contenido salvo en el glifo (y el menú). `flex-end` + el padding derecho
-   de `--sn-canvas-px` lo clavan al margen estándar; el `padding-top` lo baja
-   un poco respecto al borde del viewport. */
+   FRENTE del contenido, en la esquina superior derecha del viewport. Sin
+   "barra": este contenedor full-width es solo el RIEL de posición;
+   `pointer-events: none` deja pasar los clics al contenido salvo en el glifo
+   (y el menú). `flex-end` + el padding lo clavan a la esquina con la MISMA
+   separación arriba y a la derecha (`--sn-fs-inset`): antes el derecho
+   seguía a `--sn-canvas-px` (4vw) y la esquina quedaba descuadrada. */
 .sn-fs-md {
 	position: fixed; inset: 0 0 auto 0; z-index: var(--sn-z-panel);
 	display: flex; align-items: flex-start; justify-content: flex-end;
-	padding: var(--sn-s-6) var(--sn-canvas-px) 0;
+	padding: var(--sn-fs-inset) var(--sn-fs-inset) 0;
 	pointer-events: none;
 }
 .sn-fs-md > * { pointer-events: auto; }
@@ -2105,12 +2116,12 @@ canvas, iframe,
 	clip: rect(0 0 0 0); white-space: nowrap; border: 0;
 }
 .sn-md.sn-md-fs .sn-modal-x {
-	/* Al MARGEN DERECHO ESTÁNDAR del viewport — EXACTAMENTE donde queda el
-	   isotipo (mismo `top` y mismo `--sn-canvas-px`): al abrir, la X cae
-	   sobre el lugar del iso. */
+	/* EXACTAMENTE donde queda el isotipo (misma esquina, `--sn-fs-inset`),
+	   centrada sobre él: la X mide 2.5rem y el iso 3rem, de ahí el cuarto
+	   de rem. Al abrir, la X cae sobre el lugar del iso. */
 	position: absolute;
-	top: var(--sn-s-6);
-	right: var(--sn-canvas-px);
+	top: calc(var(--sn-fs-inset) + .25rem);
+	right: calc(var(--sn-fs-inset) + .25rem);
 	z-index: 2;
 	display: grid; place-items: center;
 	background: transparent; border: 0; padding: 0;
@@ -2759,6 +2770,22 @@ details[open]::details-content { block-size: auto; opacity: 1; }
 	vertical-align: top;
 	color: var(--sn-ink);
 }
+/* TODA celda de cabecera, esté donde esté en la tabla. El core pinta
+   `.wikitable th` con un gris CLARO literal (`background-color:#eaecf0`) y
+   tinta oscura literal, valores horneados en tiempo de compilación desde las
+   variables LESS de skin —no reaccionan a `light-dark()`. La skin ya reenruta
+   el TEXTO a `--sn-ink`, así que en modo oscuro quedaba tinta clara sobre
+   fondo gris claro: cabecera ilegible. El caso que lo destapa es la tabla de
+   «cabecera por fila» (primera columna escrita con `!`), cuyas `th` NO están
+   en la primera fila y por eso escapaban a la regla de abajo, que solo cubría
+   `thead`/primera fila. Aquí se apaga el relleno del core para todas las `th`
+   y el peso tipográfico queda como única marca de cabecera, coherente con el
+   diseño sin rellenos ni filetes verticales. */
+.sn-body :is(table.wikitable, table.smwtable, table.broadtable) th {
+	background: transparent;
+	color: var(--sn-ink);
+	font-weight: 600;
+}
 /* Fila(s) de cabecera: sin relleno de fondo, filete NORMAL (más marcado)
    separando cabeceras del cuerpo. Cubre <thead> y la 1ª fila de <th>
    cuando no hay <thead> — el caso típico de los resultados #ask de SMW. */
@@ -2768,6 +2795,18 @@ details[open]::details-content { block-size: auto; opacity: 1; }
 	background: transparent;
 	font-weight: 600;
 	box-shadow: inset 0 -1px 0 var(--sn-hairline);     /* filete normal cabecera→cuerpo */
+}
+/* Corrección para la tabla de «cabecera por fila»: si la primera fila MEZCLA
+   `th` y `td` no es una fila de cabecera, sino una fila normal cuya primera
+   celda es su rótulo → su filete inferior vuelve al fino de entre-filas, para
+   no dejar un filete marcado bajo la primera fila y ninguno bajo las demás.
+   Va en regla aparte (y no como `:not(:has(...))` sobre la regla de arriba)
+   porque un navegador sin `:has()` descarta la regla entera: así lo que se
+   pierde es solo este ajuste, no el filete de cabecera. `:not(:last-child)`
+   protege la tabla de una sola fila, que no debe cerrar con filete. */
+.sn-body :is(table.wikitable, table.smwtable, table.broadtable) > :is(thead, tbody) > tr:first-child:not(:last-child):has(> td) > th,
+.sn-body :is(table.wikitable, table.smwtable, table.broadtable) > tr:first-child:not(:last-child):has(> td) > th {
+	box-shadow: inset 0 -1px 0 var(--sn-hairline-soft);
 }
 /* Sin borde exterior: la última fila no lleva filete inferior (se leería
    como contorno de cierre). */
