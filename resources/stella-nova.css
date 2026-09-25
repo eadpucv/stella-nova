@@ -1944,6 +1944,11 @@ canvas, iframe,
 	--sn-canvas-py: clamp(var(--sn-s-5), 4vw, var(--sn-s-7));
 	--sn-paper-px: var(--sn-canvas-px);
 	--sn-paper-py: var(--sn-canvas-py);
+	/* Separación del isotipo a la esquina: UN solo valor para el borde
+	   superior y el derecho (la esquina queda cuadrada). La comparten el
+	   riel `.sn-fs-md` y la X del modal; una página puede ajustarla
+	   (con§tel la acerca a --sn-s-3, a la altura de su barra). */
+	--sn-fs-inset: var(--sn-s-6);
 	display: block;
 	min-height: 100vh;
 	padding: var(--sn-canvas-py) var(--sn-canvas-px);
@@ -1969,16 +1974,16 @@ canvas, iframe,
 	margin-inline: 0;
 }
 /* Afordancia única de pantalla completa: el isotipo SOBREPUESTO, fijo y EN
-   FRENTE del contenido, alineado al MARGEN DERECHO ESTÁNDAR del viewport (no
-   a la columna de lectura). Sin "barra": este contenedor full-width es solo
-   el RIEL de posición; `pointer-events: none` deja pasar los clics al
-   contenido salvo en el glifo (y el menú). `flex-end` + el padding derecho
-   de `--sn-canvas-px` lo clavan al margen estándar; el `padding-top` lo baja
-   un poco respecto al borde del viewport. */
+   FRENTE del contenido, en la esquina superior derecha del viewport. Sin
+   "barra": este contenedor full-width es solo el RIEL de posición;
+   `pointer-events: none` deja pasar los clics al contenido salvo en el glifo
+   (y el menú). `flex-end` + el padding lo clavan a la esquina con la MISMA
+   separación arriba y a la derecha (`--sn-fs-inset`): antes el derecho
+   seguía a `--sn-canvas-px` (4vw) y la esquina quedaba descuadrada. */
 .sn-fs-md {
 	position: fixed; inset: 0 0 auto 0; z-index: var(--sn-z-panel);
 	display: flex; align-items: flex-start; justify-content: flex-end;
-	padding: var(--sn-s-6) var(--sn-canvas-px) 0;
+	padding: var(--sn-fs-inset) var(--sn-fs-inset) 0;
 	pointer-events: none;
 }
 .sn-fs-md > * { pointer-events: auto; }
@@ -2105,12 +2110,12 @@ canvas, iframe,
 	clip: rect(0 0 0 0); white-space: nowrap; border: 0;
 }
 .sn-md.sn-md-fs .sn-modal-x {
-	/* Al MARGEN DERECHO ESTÁNDAR del viewport — EXACTAMENTE donde queda el
-	   isotipo (mismo `top` y mismo `--sn-canvas-px`): al abrir, la X cae
-	   sobre el lugar del iso. */
+	/* EXACTAMENTE donde queda el isotipo (misma esquina, `--sn-fs-inset`),
+	   centrada sobre él: la X mide 2.5rem y el iso 3rem, de ahí el cuarto
+	   de rem. Al abrir, la X cae sobre el lugar del iso. */
 	position: absolute;
-	top: var(--sn-s-6);
-	right: var(--sn-canvas-px);
+	top: calc(var(--sn-fs-inset) + .25rem);
+	right: calc(var(--sn-fs-inset) + .25rem);
 	z-index: 2;
 	display: grid; place-items: center;
 	background: transparent; border: 0; padding: 0;
