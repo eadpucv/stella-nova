@@ -112,6 +112,7 @@ class Hooks {
 	 */
 	public static function onGetDoubleUnderscoreIDs( array &$ids ): void {
 		$ids[] = 'stellanova_fullscreen';
+		$ids[] = 'stellanova_wide';
 	}
 
 
@@ -128,6 +129,15 @@ class Hooks {
 			: $pOut->getProperty( 'stellanova_fullscreen' );
 		if ( $prop !== null && $prop !== false ) {
 			$out->setProperty( 'stellanova-fullscreen', true );
+		}
+		// __PAGINAANCHA__: layout estándar con la hoja ensanchada. Basta una
+		// clase en <body>; el CSS (`.sn-wide`) resuelve el ancho. En
+		// fullscreen no aplica (el canvas ya no está acotado a la medida).
+		$wide = method_exists( $pOut, 'getPageProperty' )
+			? $pOut->getPageProperty( 'stellanova_wide' )
+			: $pOut->getProperty( 'stellanova_wide' );
+		if ( $wide !== null && $wide !== false ) {
+			$out->addBodyClasses( 'sn-wide' );
 		}
 		// __NOTITLE__ (extensión NoTitle) es INDEPENDIENTE de pantalla
 		// completa: se lee aquí para que la plantilla pueda omitir el título

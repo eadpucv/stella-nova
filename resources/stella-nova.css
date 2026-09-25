@@ -490,6 +490,11 @@ html[data-sn-modal] .sn-header {
 	max-width: var(--sn-measure);
 	min-width: 0;
 }
+/* __PAGINAANCHA__ (LayoutMode.wide): la hoja se ensancha al ancho del
+   conjunto (--sn-shell, el del header) para tablas, grillas o grafos que no
+   caben en la medida de lectura. Chrome intacto. El pie acompaña a la hoja
+   (ver .sn-footer-inner). */
+.sn-wide .sn-paper-wrap { max-width: var(--sn-shell); }
 
 .sn-portlet-h {
 	margin: 0 0 var(--sn-s-2);
@@ -1756,6 +1761,7 @@ canvas, iframe,
 	grid-template-columns: 2fr 1fr;
 	align-items: start;
 }
+.sn-wide .sn-footer-inner { max-width: var(--sn-shell); }
 .sn-footer-col { min-width: 0; }
 
 /* — Columna ancha — última edición + herramientas + enlaces de sitio —

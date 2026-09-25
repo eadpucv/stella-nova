@@ -52,8 +52,11 @@
 --      reaparece); por-navegador, no cross-device (ver surface SiteNotice).
 --   3. Qué expone cada región según identidad (anónimo / cuenta temporal
 --      1.43 / registrado).
---   4. Modo de página: standard (chrome del tema) | fullscreen (control
---      total para páginas experimentales; sólo afordancia de escape).
+--   4. Modo de página: standard (chrome del tema) | wide (chrome del tema,
+--      hoja ensanchada de la medida de lectura al ancho del conjunto;
+--      __PAGINAANCHA__) | fullscreen (control total para páginas
+--      experimentales; sólo afordancia de escape). Si una página declara
+--      ancha y pantalla completa, gana fullscreen.
 --   5. Pie compuesto: obligaciones core de MediaWiki (última modificación,
 --      licencia/atribución, places, icons, hooks) SIEMPRE + un bloque
 --      institucional gestionado desde una página del namespace del skin.
@@ -288,7 +291,7 @@ enum UserIdentity { anonymous | temporary | registered }
 -- de spec, no un detalle de realización.
 enum ChromeSlot { footer | notice }
 
-enum LayoutMode { standard | fullscreen }
+enum LayoutMode { standard | wide | fullscreen }
 
 -- Las 3 preferencias de skin (estilo Citizen/Vector-2022): tema (enum
 -- ThemeChoice, arriba), tamaño de letra y familia tipográfica. Histórico

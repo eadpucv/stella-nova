@@ -159,6 +159,14 @@ Notas:
   constelación sola, sin wordmark, en cuadrado de 2 rem.
 - El JS escucha `matchMedia('(max-width: 48rem)')` para alternar.
 
+## 2b. Layout `__PAGINAANCHA__` (`body.sn-wide`)
+
+Mismo layout estándar (header, hoja, pie), pero `.sn-paper-wrap` y
+`.sn-footer-inner` pasan de `--sn-measure` a `--sn-shell`: la hoja se alinea
+con los bordes del header. Alias en inglés: `__WIDEPAGE__`. Es el mismo ancho
+que Especial:Constelación/MiConstel obtienen con `constel-wide`. Si se combina
+con `__PANTALLACOMPLETA__`, gana pantalla completa.
+
 ## 3. Layout `__PANTALLACOMPLETA__` (`.sn-canvas`)
 
 ```
