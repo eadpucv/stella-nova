@@ -271,11 +271,19 @@
 		var toc = state.toc ? tocClone() : null;
 		if ( toc ) { inner.appendChild( toc ); }
 
+		/* Artículos: el cuerpo del parser. Páginas especiales: no emiten
+		   `.mw-parser-output` (escriben directo en #mw-content-text) → sin este
+		   respaldo la vista salía solo con el título. En el respaldo se quitan
+		   además los controles de formulario, que no tienen sentido en papel. */
 		var body = doc.querySelector( '.mw-parser-output' );
+		var isFallback = !body;
+		if ( isFallback ) { body = doc.querySelector( '#mw-content-text' ); }
 		if ( body ) {
 			var bodyClone = body.cloneNode( true );
+			bodyClone.removeAttribute( 'id' );
 			bodyClone.querySelectorAll(
-				'.noprint, .mw-editsection, .catlinks, .printfooter, #toc, .toc, .mw-table-of-contents'
+				'.noprint, .mw-editsection, .catlinks, .printfooter, #toc, .toc, .mw-table-of-contents' +
+				( isFallback ? ', script, button, input, select, textarea' : '' )
 			).forEach( function ( n ) { n.remove(); } );
 			inner.appendChild( bodyClone );
 		}
@@ -294,7 +302,7 @@
 
 	var state = { overlay: null, viewer: null, srcUrl: null, lastFocus: null,
 		busy: false, size: DEFAULT_SIZE, orient: 'portrait', zoom: 1, toc: true,
-		page: 0, total: 0, last: false, ready: false };
+		page: 0, total: 0, last: false, ready: false, hasToc: false, awaitLoad: false };
 
 	/* Vivliostyle (CoreViewer) es un visor PÁGINA-A-PÁGINA: solo dimensiona la
 	   hoja actual. Habilitamos la barra en el primer evento `nav` (hoja 1 visible),
@@ -351,9 +359,27 @@
 		if ( state.srcUrl ) { try { URL.revokeObjectURL( state.srcUrl ); } catch ( e ) {} state.srcUrl = null; }
 	}
 
+	/* Detiene un CoreViewer. Vivliostyle no trae `destroy()`: un visor
+	   descartado SIGUE paginando (renderAllPages) en el planificador GLOBAL del
+	   motor —compartido por todos los visores—, conserva su listener de `resize`
+	   en window y reescribe el <style id="vivliostyle-page-rules"> (único por
+	   documento) con SU tamaño de hoja. Al cambiar formato/orientación, esos
+	   visores zombis retrasaban la hoja 1 del nuevo (la barra quedaba bloqueada
+	   con el spinner) y se acumulaban con cada cambio. Usamos la API interna
+	   (`adaptViewer_`, Vivliostyle Core 2.43.3 vendorizado) con try/catch. */
+	function stopViewer( viewer ) {
+		var av = viewer && viewer.adaptViewer_;
+		if ( !av ) { return; }
+		try { av.cancelRenderingTask(); } catch ( e ) {}
+		try { av.window.removeEventListener( 'resize', av.resizeListener, false ); } catch ( e ) {}
+	}
+
 	function teardown() {
 		if ( state.viewer ) {
-			try { state.viewer.removeListener && state.viewer.removeListener( 'readystatechange' ); } catch ( e ) {}
+			var av = state.viewer.adaptViewer_;
+			stopViewer( state.viewer );
+			// sin esto el @page de la vista queda en <head> y afecta el Ctrl+P
+			try { av.removePageSizePageRules(); } catch ( e ) {}
 			state.viewer = null;
 		}
 		revokeSrc();
@@ -383,57 +409,53 @@
 		return html;
 	}
 
-	/* (Re)maqueta la previsualización con el tamaño/columnas actuales. */
-	function render() {
-		var overlay = state.overlay;
-		if ( !overlay ) { return; }
-		var pages = overlay.querySelector( '.sn-pp-pages' );
-		var status = overlay.querySelector( '.sn-pp-status' );
-		var printBtn = overlay.querySelector( '.sn-pp-print' );
-		function setExportEnabled( on ) { printBtn.disabled = !on; }
-		var sizeSel = overlay.querySelector( '.sn-pp-size' );
-		var ent = sizeEntryById( state.size );
-
-		state.busy = true;
-		state.page = 0;
-		state.total = 0;
-		state.last = false;
-		state.ready = false;
-		setExportEnabled( false );
-		if ( sizeSel ) { sizeSel.disabled = true; }
-		overlay.classList.add( 'sn-pp-loading' );   // muestra el spinner
-		status.textContent = 'Preparando la vista de impresión…';
+	/* Controles que re-maquetan (formato, orientación, índice) + Imprimir: se
+	   bloquean TODOS mientras se maqueta. Antes solo se bloqueaba «Tamaño»: un
+	   cambio de orientación/índice en ese lapso se ignoraba pero el <select>
+	   quedaba mostrando el valor nuevo → vista y barra desincronizadas. */
+	function setControlsEnabled( on ) {
+		var o = state.overlay; if ( !o ) { return; }
+		o.querySelectorAll( '.sn-pp-print, .sn-pp-size, .sn-pp-orient' ).forEach( function ( el ) {
+			el.disabled = !on;
+		} );
+		var toc = o.querySelector( '.sn-pp-toc' );
+		if ( toc ) { toc.disabled = !on || !state.hasToc; }
+	}
+	function showCount() {
+		var st = state.overlay && state.overlay.querySelector( '.sn-pp-status' );
+		if ( !st ) { return; }
+		st.textContent = state.total
+			? ( state.total + ( state.total === 1 ? ' página' : ' páginas' ) )
+			: 'Vista de impresión';
+	}
+	// La hoja 1 ya está visible: habilita la barra y oculta el spinner. Una vez
+	// por maqueta (en el primer `nav`, mucho antes que `complete`).
+	function markReady() {
+		if ( state.ready || !state.overlay ) { return; }
+		state.ready = true;
+		state.busy = false;
+		setControlsEnabled( true );
+		state.overlay.classList.remove( 'sn-pp-loading' );
+		applyZoom();
 		updateNav();
-
-		// viewport limpio + nuevo CoreViewer
+	}
+	function renderFailed() {
+		var o = state.overlay; if ( !o ) { return; }
+		o.querySelector( '.sn-pp-status' ).textContent =
+			'No se pudo preparar la vista. Usa Imprimir del navegador.';
+		// visor en estado dudoso → el próximo render parte con uno nuevo
+		stopViewer( state.viewer );
 		state.viewer = null;
-		revokeSrc();
-		pages.innerHTML = '<div class="sn-pp-viewport"></div>';
-		var viewport = pages.querySelector( '.sn-pp-viewport' );
-		viewport.style.zoom = state.zoom;
+		state.busy = false;
+		setControlsEnabled( true );
+		o.classList.remove( 'sn-pp-loading' );
+	}
 
-		var src = buildSourceDoc( ent, state.orient );
-		state.srcUrl = URL.createObjectURL( new Blob( [ src ], { type: 'text/html' } ) );
-
-		// La hoja 1 ya está visible: habilita la barra y oculta el spinner. Se
-		// llama una sola vez (en el primer `nav`, que llega apenas se muestra la
-		// hoja 1, mucho antes que `complete`).
-		function markReady() {
-			if ( state.ready || viewer !== state.viewer ) { return; }
-			state.ready = true;
-			state.busy = false;
-			setExportEnabled( true );
-			if ( sizeSel ) { sizeSel.disabled = false; }
-			overlay.classList.remove( 'sn-pp-loading' );
-			applyZoom();
-			updateNav();
-		}
-		function showCount() {
-			status.textContent = state.total
-				? ( state.total + ( state.total === 1 ? ' página' : ' páginas' ) )
-				: 'Vista de impresión';
-		}
-
+	/* UN CoreViewer por overlay (ver stopViewer). Los listeners se registran una
+	   vez y leen `state`. `awaitLoad`: tras pedir una re-maqueta, el visor aún
+	   puede emitir un `nav` de la maqueta anterior; se ignoran hasta que el
+	   nuevo loadXML pasa el visor a readyState «loading». */
+	function createViewer( viewport ) {
 		var viewer = new window.Vivliostyle.CoreViewer(
 			{ viewportElement: viewport },
 			// renderAllPages:true → pagina todo (TOC con números reales y total
@@ -445,11 +467,10 @@
 			// (confuso para una previsualización página-a-página con Prev/Next).
 			{ renderAllPages: true, pageViewMode: 'singlePage' }
 		);
-		state.viewer = viewer;
 		// `nav`: página actual + total estimado + first/last. Llega apenas se
 		// muestra una hoja, así que es nuestra señal de «listo» y de navegación.
 		viewer.addListener( 'nav', function ( ev ) {
-			if ( viewer !== state.viewer ) { return; }
+			if ( viewer !== state.viewer || state.awaitLoad ) { return; }
 			if ( ev && typeof ev.epage === 'number' ) { state.page = Math.max( 0, Math.round( ev.epage ) ); }
 			if ( ev && typeof ev.epageCount === 'number' && ev.epageCount > 0 ) { state.total = Math.round( ev.epageCount ); }
 			if ( ev && typeof ev.last === 'boolean' ) { state.last = ev.last; }
@@ -457,31 +478,64 @@
 			markReady();
 			updateNav();
 		} );
-		// `complete`: la maqueta perezosa terminó en segundo plano → afinamos el
-		// total exacto (no bloquea: la barra ya está usable desde el primer `nav`).
 		viewer.addListener( 'readystatechange', function () {
 			if ( viewer !== state.viewer ) { return; }
-			if ( viewer.readyState !== 'complete' ) { return; }
-			var n = 0;
-			try { n = viewer.getPageCount ? viewer.getPageCount() : 0; } catch ( e ) {}
-			if ( n ) { state.total = n; showCount(); }
-			markReady();   // respaldo, por si `nav` no hubiera llegado
-			updateNav();
+			if ( viewer.readyState === 'loading' ) { state.awaitLoad = false; return; }
+			// `complete` = la paginación en segundo plano terminó; respaldo por
+			// si `nav` no hubiera llegado.
+			if ( viewer.readyState === 'complete' && !state.awaitLoad ) { markReady(); updateNav(); }
 		} );
 		viewer.addListener( 'error', function () {
 			if ( viewer !== state.viewer ) { return; }
-			status.textContent = 'No se pudo preparar la vista. Usa Imprimir del navegador.';
-			setExportEnabled( true );
-			if ( sizeSel ) { sizeSel.disabled = false; }
-			state.busy = false;
-			overlay.classList.remove( 'sn-pp-loading' );
+			renderFailed();
 		} );
-		try { viewer.loadDocument( { url: state.srcUrl } ); }
-		catch ( e ) {
-			status.textContent = 'No se pudo preparar la vista. Usa Imprimir del navegador.';
-			setExportEnabled( true ); if ( sizeSel ) { sizeSel.disabled = false; } state.busy = false;
-			overlay.classList.remove( 'sn-pp-loading' );
+		return viewer;
+	}
+
+	/* (Re)maqueta la previsualización con el tamaño/columnas actuales. */
+	function render() {
+		var overlay = state.overlay;
+		if ( !overlay ) { return; }
+		var pages = overlay.querySelector( '.sn-pp-pages' );
+		var ent = sizeEntryById( state.size );
+
+		state.busy = true;
+		state.page = 0;
+		state.total = 0;
+		state.last = false;
+		state.ready = false;
+		setControlsEnabled( false );
+		overlay.classList.add( 'sn-pp-loading' );   // muestra el spinner
+		overlay.querySelector( '.sn-pp-status' ).textContent = 'Preparando la vista de impresión…';
+		updateNav();
+
+		revokeSrc();
+		var src = buildSourceDoc( ent, state.orient );
+		state.srcUrl = URL.createObjectURL( new Blob( [ src ], { type: 'text/html' } ) );
+
+		// Se reutiliza el visor: loadDocument sobre el mismo visor cancela su
+		// maqueta en curso (cancelRenderingTask). Solo si quedó a medio cargar
+		// (readyState «loading»: no emitiría el cambio que libera awaitLoad) se
+		// descarta y se crea otro sobre un viewport limpio.
+		var viewer = state.viewer;
+		if ( viewer && viewer.readyState === 'loading' ) {
+			stopViewer( viewer );
+			viewer = state.viewer = null;
 		}
+		if ( viewer ) {
+			// corta ya la paginación anterior (loadXML lo haría recién en el
+			// siguiente frame del bucle de comandos)
+			try { viewer.adaptViewer_.cancelRenderingTask(); } catch ( e ) {}
+			state.awaitLoad = true;
+		} else {
+			pages.innerHTML = '<div class="sn-pp-viewport"></div>';
+			var viewport = pages.querySelector( '.sn-pp-viewport' );
+			viewport.style.zoom = state.zoom;
+			viewer = state.viewer = createViewer( viewport );
+			state.awaitLoad = false;   // visor nuevo: no hay maqueta vieja que filtrar
+		}
+		try { viewer.loadDocument( { url: state.srcUrl } ); }
+		catch ( e ) { renderFailed(); }
 	}
 
 	/* Imprime / exporta a PDF re-maquetando el MISMO documento fuente en un iframe
@@ -562,7 +616,8 @@
 		// visible; deshabilitado si no hay TOC del todo.
 		state.toc = tocVisibleByDefault();
 		tocChk.checked = state.toc;
-		tocChk.disabled = !tocClone();
+		state.hasToc = !!tocClone();
+		tocChk.disabled = !state.hasToc;
 		orientSel.value = state.orient;
 
 		closeBtn.addEventListener( 'click', teardown );
@@ -571,17 +626,17 @@
 		// «Guardar como PDF» ES la exportación a PDF (no hace falta botón aparte).
 		printBtn.addEventListener( 'click', printDocument );
 		sizeSel.addEventListener( 'change', function () {
-			if ( state.busy ) { return; }
+			if ( state.busy ) { sizeSel.value = state.size; return; }
 			state.size = sizeSel.value;
 			render();
 		} );
 		orientSel.addEventListener( 'change', function () {
-			if ( state.busy ) { return; }
+			if ( state.busy ) { orientSel.value = state.orient; return; }
 			state.orient = orientSel.value;
 			render();
 		} );
 		tocChk.addEventListener( 'change', function () {
-			if ( state.busy ) { return; }
+			if ( state.busy ) { tocChk.checked = state.toc; return; }
 			state.toc = tocChk.checked;
 			render();
 		} );
