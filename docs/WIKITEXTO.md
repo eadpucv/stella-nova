@@ -113,6 +113,7 @@ borde-a-borde del artículo. Funciona en tres patrones de wikitexto:
 [[Archivo:foo.jpg|class=full-width]]
 [[Archivo:foo.jpg|frameless|class=full-width]]
 <div class="full-width">[[Archivo:foo.jpg]]</div>
+[[Archivo:foo.jpg|class=ancho-completo]]
 ```
 
 **Consecuencias:**
@@ -126,6 +127,12 @@ borde-a-borde del artículo. Funciona en tres patrones de wikitexto:
   ancho del **viewport completo**, no del paper.
 - El thumb-caption se mantiene alineado al ancho del cuerpo (no se
   estira con la imagen) — pensado para legibilidad de la leyenda.
+- **Sin esquinas redondeadas:** un elemento `full-width` no lleva
+  `border-radius` (va de borde a borde). La excepción es el primer y el último
+  elemento de la página, que se redondean para calzar con las esquinas de la
+  hoja. Vale también para el mapa `{{#constel: class=full-width}}` de con§tel.
+- **Sinónimo en castellano:** `ancho-completo` hace exactamente lo mismo
+  (`class=ancho-completo`). Todas las reglas de `full-width` lo reconocen.
 - Tolerante a las dos formas con que MediaWiki preserva la clase:
   `class=full-width` (canónico) y `class='full-width'` (con apóstrofes,
   resultado del paso a `[[Imagen:|class='…']]`).
