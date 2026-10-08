@@ -1226,7 +1226,10 @@ html[data-sn-notice-hide] .sn-notice { display: none; }
 }
 .sn-body .img-circle > figcaption { display: none; }
 
-/* Full-bleed: imagen/figura/wrapper con class="full-width" se revienta del
+/* Sinónimo en castellano: class=ancho-completo equivale a class=full-width en
+   todas las reglas de abajo.
+
+   Full-bleed: imagen/figura/wrapper con class="full-width" se revienta del
    padding lateral del .sn-paper para ir borde-a-borde del <article>.
    Funciona para tres patrones de wikitexto:
      [[Archivo:foo.jpg|class=full-width]]                → clase en <img>
@@ -1242,7 +1245,7 @@ html[data-sn-notice-hide] .sn-notice { display: none; }
    selector de atributo `[class~="'full-width'"]` matchea ese token
    tal cual. El canónico sigue siendo `class=full-width` sin comillas. */
 :is(.sn-paper, .sn-canvas) :is(
-	.full-width, .thumb.full-width, figure.full-width,
+	:is(.full-width, .ancho-completo), .thumb:is(.full-width, .ancho-completo), figure:is(.full-width, .ancho-completo),
 	[class~="'full-width'"], .thumb[class~="'full-width'"], figure[class~="'full-width'"]
 ) {
 	display: block;
@@ -1250,23 +1253,25 @@ html[data-sn-notice-hide] .sn-notice { display: none; }
 	max-width: none;
 	margin-inline: calc(-1 * var(--sn-paper-px));
 	margin-block: var(--sn-s-5);
+	border-radius: 0;  /* a sangre no hay esquinas: el bleed de borde repone las del papel */
 	float: none;  /* anula el float que ponen thumb-left/right de core */
 }
 :is(.sn-paper, .sn-canvas) :is(
-	.full-width, .thumb.full-width, figure.full-width,
+	:is(.full-width, .ancho-completo), .thumb:is(.full-width, .ancho-completo), figure:is(.full-width, .ancho-completo),
 	[class~="'full-width'"], .thumb[class~="'full-width'"], figure[class~="'full-width'"]
 ) :is(img, video),
-:is(.sn-paper, .sn-canvas) :is(img, video):is(.full-width, [class~="'full-width'"]) {
+:is(.sn-paper, .sn-canvas) :is(img, video):is(:is(.full-width, .ancho-completo), [class~="'full-width'"]) {
 	display: block;
 	width: 100%;
 	height: auto;
 	max-width: 100%;
 	margin-inline: 0;
+	border-radius: 0;
 }
 /* Si el .full-width es un <img> o un <a class="image"> directo (no envuelto
    en .thumb), aplicar la misma regla — class va al elemento mismo. */
 :is(.sn-paper, .sn-canvas) :is(
-	a.image.full-width, img.full-width, video.full-width,
+	a.image:is(.full-width, .ancho-completo), img:is(.full-width, .ancho-completo), video:is(.full-width, .ancho-completo),
 	a.image[class~="'full-width'"], img[class~="'full-width'"], video[class~="'full-width'"]
 ) {
 	display: block;
@@ -1274,15 +1279,23 @@ html[data-sn-notice-hide] .sn-notice { display: none; }
 	max-width: none;
 	margin-inline: calc(-1 * var(--sn-paper-px));
 	margin-block: var(--sn-s-5);
+	border-radius: 0;
 }
-:is(.sn-paper, .sn-canvas) :is(a.image.full-width, a.image[class~="'full-width'"]) img {
+:is(.sn-paper, .sn-canvas) :is(a.image:is(.full-width, .ancho-completo), a.image[class~="'full-width'"]) img {
 	width: 100%; height: auto; display: block;
 }
 /* La leyenda dentro de un .thumb full-width vuelve al ancho del cuerpo para
    no quedar pegada al borde del paper. */
-:is(.sn-paper, .sn-canvas) :is(.thumb.full-width, .thumb[class~="'full-width'"]) .thumbcaption {
+:is(.sn-paper, .sn-canvas) :is(.thumb:is(.full-width, .ancho-completo), .thumb[class~="'full-width'"]) .thumbcaption {
 	padding-inline: var(--sn-paper-px);
 	text-align: start;
+}
+
+/* El mapa de con§tel ({{#constel: class=full-width}}): su lienzo también va sin
+   esquinas redondeadas ni borde lateral. */
+:is(.sn-paper, .sn-canvas) .constel-embed:is(.full-width, .ancho-completo) .constel-map__canvas {
+	border-radius: 0;
+	border-inline-width: 0;
 }
 
 /* Bleed vertical de borde: cuando .full-width es el PRIMER o ÚLTIMO elemento
@@ -1317,14 +1330,14 @@ html[data-sn-notice-hide] .sn-notice { display: none; }
    :first-child y la cadena de arriba no dispara. Reconocemos el patrón con
    `p.mw-empty-elt:first-child + .full-width` en cada nivel de wrapper, mismas
    declaraciones. */
-.sn-body > :is(.full-width, [class~="'full-width'"]):first-child,
-.sn-body > *:first-child > :is(.full-width, [class~="'full-width'"]):first-child,
-.sn-body > *:first-child > *:first-child > :is(.full-width, [class~="'full-width'"]):first-child,
-.sn-body > *:first-child > *:first-child > *:first-child > :is(.full-width, [class~="'full-width'"]):first-child,
-.sn-body > p.mw-empty-elt:first-child + :is(.full-width, [class~="'full-width'"]),
-.sn-body > *:first-child > p.mw-empty-elt:first-child + :is(.full-width, [class~="'full-width'"]),
-.sn-body > *:first-child > *:first-child > p.mw-empty-elt:first-child + :is(.full-width, [class~="'full-width'"]),
-.sn-body > *:first-child > *:first-child > *:first-child > p.mw-empty-elt:first-child + :is(.full-width, [class~="'full-width'"]) {
+.sn-body > :is(:is(.full-width, .ancho-completo), [class~="'full-width'"]):first-child,
+.sn-body > *:first-child > :is(:is(.full-width, .ancho-completo), [class~="'full-width'"]):first-child,
+.sn-body > *:first-child > *:first-child > :is(:is(.full-width, .ancho-completo), [class~="'full-width'"]):first-child,
+.sn-body > *:first-child > *:first-child > *:first-child > :is(:is(.full-width, .ancho-completo), [class~="'full-width'"]):first-child,
+.sn-body > p.mw-empty-elt:first-child + :is(:is(.full-width, .ancho-completo), [class~="'full-width'"]),
+.sn-body > *:first-child > p.mw-empty-elt:first-child + :is(:is(.full-width, .ancho-completo), [class~="'full-width'"]),
+.sn-body > *:first-child > *:first-child > p.mw-empty-elt:first-child + :is(:is(.full-width, .ancho-completo), [class~="'full-width'"]),
+.sn-body > *:first-child > *:first-child > *:first-child > p.mw-empty-elt:first-child + :is(:is(.full-width, .ancho-completo), [class~="'full-width'"]) {
 	margin-block-start: calc(-1 * var(--sn-paper-py));
 	border-start-start-radius: var(--sn-radius-paper);
 	border-start-end-radius:   var(--sn-radius-paper);
@@ -1336,7 +1349,7 @@ html[data-sn-notice-hide] .sn-notice { display: none; }
    de la regla de arriba. Reconocemos ese <style> líder con `style:first-child + *`
    para que el bleed-top igual se dispare cuando el primer elemento de flujo
    es una imagen .full-width. Mismo cuerpo de declaraciones que la regla base. */
-.sn-body style:first-child + * > :is(.full-width, [class~="'full-width'"]):first-child {
+.sn-body style:first-child + * > :is(:is(.full-width, .ancho-completo), [class~="'full-width'"]):first-child {
 	margin-block-start: calc(-1 * var(--sn-paper-py));
 	border-start-start-radius: var(--sn-radius-paper);
 	border-start-end-radius:   var(--sn-radius-paper);
@@ -1352,7 +1365,7 @@ html[data-sn-notice-hide] .sn-notice { display: none; }
    evita el caso legítimo "párrafo de texto + imagen full-width a media página".
    Mismo cuerpo de declaraciones que la regla base. */
 .sn-body :is(p):first-child:has(> script):not(:has(> :not(script)))
-	+ :is(.full-width, [class~="'full-width'"]) {
+	+ :is(:is(.full-width, .ancho-completo), [class~="'full-width'"]) {
 	margin-block-start: calc(-1 * var(--sn-paper-py));
 	border-start-start-radius: var(--sn-radius-paper);
 	border-start-end-radius:   var(--sn-radius-paper);
@@ -1376,20 +1389,20 @@ html[data-sn-notice-hide] .sn-notice { display: none; }
    directa, mw-empty-elt, <style> líder y Widget solo-scripts (Widget:P5). En
    navegadores sin :has() (Macs muy viejos) la variante Widget del bleed-top
    tampoco dispara, así que el canvas ya trae margen normal → mismo resultado. */
-html:not([data-sn-notice-hide]) .sn-notice ~ .sn-body > :is(.full-width, [class~="'full-width'"]):first-child,
-html:not([data-sn-notice-hide]) .sn-notice ~ .sn-body > *:first-child > :is(.full-width, [class~="'full-width'"]):first-child,
-html:not([data-sn-notice-hide]) .sn-notice ~ .sn-body > p.mw-empty-elt:first-child + :is(.full-width, [class~="'full-width'"]),
-html:not([data-sn-notice-hide]) .sn-notice ~ .sn-body style:first-child + * > :is(.full-width, [class~="'full-width'"]):first-child,
-html:not([data-sn-notice-hide]) .sn-notice ~ .sn-body :is(p):first-child:has(> script):not(:has(> :not(script))) + :is(.full-width, [class~="'full-width'"]) {
+html:not([data-sn-notice-hide]) .sn-notice ~ .sn-body > :is(:is(.full-width, .ancho-completo), [class~="'full-width'"]):first-child,
+html:not([data-sn-notice-hide]) .sn-notice ~ .sn-body > *:first-child > :is(:is(.full-width, .ancho-completo), [class~="'full-width'"]):first-child,
+html:not([data-sn-notice-hide]) .sn-notice ~ .sn-body > p.mw-empty-elt:first-child + :is(:is(.full-width, .ancho-completo), [class~="'full-width'"]),
+html:not([data-sn-notice-hide]) .sn-notice ~ .sn-body style:first-child + * > :is(:is(.full-width, .ancho-completo), [class~="'full-width'"]):first-child,
+html:not([data-sn-notice-hide]) .sn-notice ~ .sn-body :is(p):first-child:has(> script):not(:has(> :not(script))) + :is(:is(.full-width, .ancho-completo), [class~="'full-width'"]) {
 	margin-block-start: var(--sn-s-5);
 	border-start-start-radius: 0;
 	border-start-end-radius: 0;
 	overflow: visible;
 }
-.sn-body > :is(.full-width, [class~="'full-width'"]):last-child,
-.sn-body > *:last-child > :is(.full-width, [class~="'full-width'"]):last-child,
-.sn-body > *:last-child > *:last-child > :is(.full-width, [class~="'full-width'"]):last-child,
-.sn-body > *:last-child > *:last-child > *:last-child > :is(.full-width, [class~="'full-width'"]):last-child {
+.sn-body > :is(:is(.full-width, .ancho-completo), [class~="'full-width'"]):last-child,
+.sn-body > *:last-child > :is(:is(.full-width, .ancho-completo), [class~="'full-width'"]):last-child,
+.sn-body > *:last-child > *:last-child > :is(:is(.full-width, .ancho-completo), [class~="'full-width'"]):last-child,
+.sn-body > *:last-child > *:last-child > *:last-child > :is(:is(.full-width, .ancho-completo), [class~="'full-width'"]):last-child {
 	margin-block-end: calc(-1 * var(--sn-paper-py));
 	border-end-start-radius: var(--sn-radius-paper);
 	border-end-end-radius:   var(--sn-radius-paper);
@@ -1405,7 +1418,7 @@ html:not([data-sn-notice-hide]) .sn-notice ~ .sn-body :is(p):first-child:has(> s
    Wins por orden de cascada (misma especificidad que la regla
    `:is(.sn-paper, .sn-canvas) :is(.full-width, …)` de arriba). */
 .sn-canvas :is(
-	.full-width, .thumb.full-width, figure.full-width,
+	:is(.full-width, .ancho-completo), .thumb:is(.full-width, .ancho-completo), figure:is(.full-width, .ancho-completo),
 	[class~="'full-width'"], .thumb[class~="'full-width'"], figure[class~="'full-width'"]
 ) {
 	width: 100vw;
