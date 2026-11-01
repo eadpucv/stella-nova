@@ -1298,6 +1298,16 @@ html[data-sn-notice-hide] .sn-notice { display: none; }
 	border-inline-width: 0;
 }
 
+/* Combinación .ancho-completo + .fondo-*: la familia .fondo-* repone
+   `padding-inline: var(--sn-paper-px)` para que el contenido textual de una
+   banda a sangre vuelva al ancho de lectura. En un embed de con§tel el único
+   hijo es el lienzo del mapa, que debe ir a sangre completo. Anulamos ese
+   padding solo cuando .ancho-completo coincide con una banda .fondo-*: el
+   borde-a-borde lo decreta .ancho-completo, el color lo pone .fondo-*. */
+:is(.sn-paper, .sn-canvas) .constel-embed:is(.full-width, .ancho-completo):is(.fondo-ahuesado, .fondo-coral, .fondo-verde, .fondo-ambar, .fondo-info, .fondo-noche, .fondo-dia, .fondo-opuesto) {
+	padding-inline: 0;
+}
+
 /* Bleed vertical de borde: cuando .full-width es el PRIMER o ÚLTIMO elemento
    del cuerpo (.sn-body), también revienta el padding vertical del paper
    y redondea las esquinas para alinearse con el border-radius del <article>.
