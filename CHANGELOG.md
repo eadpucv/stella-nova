@@ -9,6 +9,77 @@ ajustes editoriales. La fuente de verdad del comportamiento es
 [`specs/stella-nova.allium`](specs/stella-nova.allium); cada entrada que toque
 comportamiento debería reflejarse también ahí.
 
+## [0.9.3] — 2026-10-21
+
+### Added
+- **`.pegado`.** Pega un bloque al anterior: anula su margen superior y, por
+  `:has()`, el inferior del hermano previo. Reemplaza el `margin-top`
+  negativo a mano para poner una banda `fondo-*` como pie de un mapa de
+  Con§tel o de una imagen a sangre. Documentado en el espécimen.
+
+### Fixed
+- **`.sn-notice` escrito en el contenido se montaba sobre el texto.** El
+  bleed superior está pensado para el `<aside>` que el skin pone antes del
+  cuerpo; dentro de `.mw-parser-output` se neutraliza. El espécimen usaba
+  mal la clase en la diagramación de portada: ahora va con `fondo-ambar` y el
+  inventario deja claro que para avisos en el contenido se usa esa banda.
+
+## [0.9.2] — 2026-10-21
+
+### Added
+- **`.wiki-btn.grande` (alias `.lg`).** Modificador de tamaño del botón de
+  contenido: dos líneas base de alto, doble relleno horizontal, misma píldora.
+  Para llamadas a la acción que van solas (descarga, portada). Sigue en
+  retícula. Documentado con el caso «Descargar Luca» en el espécimen.
+
+### Fixed
+- **Formularios: el texto libre se achicaba al previsualizar.** La
+  previsualización en tiempo real de WikiEditor quita `rows` al textarea y
+  solo le devuelve el alto a `#wpTextbox1`; en PageForms el texto libre es
+  `#pf_free_text` y quedaba en dos filas dentro de un envoltorio de la altura
+  original. La regla upstream se generaliza en `skinStyles/wikieditor.css`.
+  Se retira de `pageforms.css` una regla muerta que apuntaba a `#free_text`
+  (PageForms 6 emite `#pf_free_text`).
+
+## [0.9.1] — 2026-10-21
+
+### Added
+- **Espécimen: inventario completo de clases instrumentales.** Nueva sección
+  al cierre de `components.html` con todas las clases que el skin pone a
+  disposición del wikitexto, por categoría (texto, medios, grilla, bandas,
+  tablas, controles, accesibilidad e impresión, palabras mágicas, retiradas),
+  con sinónimos en castellano, uso previsto y enlace a su demo.
+- **Espécimen: demo del sangrado a tope de `.full-width`.** La sección muestra
+  el caso «primer/último elemento del cuerpo» (sangra arriba o abajo y hereda
+  el radio de la hoja) y explica cuándo no se dispara (título visible sin
+  `__NOTITLE__`, aviso administrado visible).
+
+- **Espécimen: «Fundamentos» explica las tres capas de variables.** Nueva
+  sección inicial con el encadenamiento primitiva → semántica → componente,
+  una demo en claro y oscuro de por qué una primitiva queda como isla y la
+  semántica voltea, y rótulos de capa antes de cada grupo. En `tokens.css`
+  se rotularon con `/* — … */` las secciones de la capa de componente y el
+  apilamiento, para que el espécimen las agrupe.
+- **Espécimen: «Layout» pasa a «Estilos aplicados», con subpáginas.** Página
+  tipo más cinco páginas simuladas con el chrome completo: tipografía,
+  grilla, tablas (simula `__PAGINAANCHA__`), imágenes (cabecera a sangre con
+  `__NOTITLE__`) y diagramaciones (portada con bandas, secciones plegables,
+  tarjetas). La hoja del simulacro usa ahora el relleno real de la hoja
+  (`--sn-paper-px/py`), así los sangrados calzan exacto.
+
+### Fixed
+- **SMW: espacio entre el sujeto y sus printouts** en resultados en línea
+  (`#ask format=list/ul`, búsqueda semántica). Antes vivía como arreglo en
+  `MediaWiki:Common.css`; pasa a `skinStyles/smw.css`.
+- **Espécimen: «Fundamentos» volvía a salir como una sola lista «General».**
+  El limpiador de comentarios del generador borraba también las cabeceras
+  `/* — Sección */` que agrupan los tokens; ahora las conserva.
+- **`scripts/build-specimen.py` corre con Python 3.11.** Una f-string con
+  barra invertida exigía 3.12+; el `python3` por defecto de macOS fallaba.
+- **Espécimen: referencias falsas.** Las clases de color remitían a unas cajas
+  `.wash` inexistentes (ahora a `.fondo-*`); se advierte que `sn-pill` sólo
+  existe en el CSS del espécimen y el skin no la define.
+
 ## [0.9.0] — 2026-09-25
 
 ### Added
