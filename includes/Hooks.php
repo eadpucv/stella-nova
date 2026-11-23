@@ -218,6 +218,13 @@ class Hooks {
 			'<link rel="icon" type="image/svg+xml" href="' . htmlspecialchars( $favicon ) . '">'
 		);
 
+		// — og:image: logo del skin para previews de WhatsApp/Telegram —
+		$ogImage = wfExpandUrl( $stylePath . '/StellaNova/resources/og-image.png', PROTO_CANONICAL );
+		$out->addHeadItem(
+			'stellanova-og-image',
+			'<meta property="og:image" content="' . htmlspecialchars( $ogImage ) . '">'
+		);
+
 		// — Busting de caché de la CSS crítica del skin —
 		// El <link> combinado de estilos que emite MediaWiki NO lleva `version`
 		// en su URL; una caché HTTP por-URL (CDN/nginx) delante de load.php sirve
