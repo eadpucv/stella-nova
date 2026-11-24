@@ -202,15 +202,9 @@ class Hooks {
 		}
 
 		// — SiteIsotype (favicon): autocontenido, viaja con el skin —
-		// MediaWiki sólo emite <link rel="icon"> si $wgFavicon difiere del
-		// default '/favicon.ico' (OutputPage::getHeadLinksArray). Como la
-		// instalación NO fija $wgFavicon, no hay etiqueta del core que
-		// colisione: inyectamos la nuestra apuntando al asset del skin.
-		// SVG con @media prefers-color-scheme dentro → adapta a la pestaña
-		// clara/oscura del navegador sin variantes por tema. Esto deja el
-		// favicon definido desde el skin, sin tocar LocalSettings (decisión
-		// deliberada: el skin es autocontenido y desplegable sin editar
-		// config del servidor).
+		// Neutralizar $wgFavicon del core para que no duplique <link rel="icon">
+		// si la instalación lo define en LocalSettings.php.
+		$GLOBALS['wgFavicon'] = false;
 		$stylePath = $skin->getConfig()->get( 'StylePath' );
 		$favicon = $stylePath . '/StellaNova/resources/favicon.svg';
 		$out->addHeadItem(
